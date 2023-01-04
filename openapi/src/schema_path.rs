@@ -9,7 +9,7 @@ pub struct ComponentPath(String);
 impl ComponentPath {
     pub fn new(path: &str) -> Self {
         let path = path.replace('.', "_");
-        debug_assert!(path.to_snake_case() == path, "Path should be snakecase");
+        assert_eq!(path.to_snake_case(), path, "Path should be snakecase");
         Self(path)
     }
 

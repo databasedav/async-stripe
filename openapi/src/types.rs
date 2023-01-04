@@ -43,7 +43,6 @@ impl RustObject {
 pub struct RustFieldedEnum {
     pub doc_comment: Option<String>,
     pub variants: Vec<FieldedEnumVariant>,
-    pub default_variant: Option<RustIdent>,
 }
 
 impl RustFieldedEnum {
@@ -59,13 +58,11 @@ pub struct FieldedEnumVariant {
     pub variant: RustIdent,
     /// The type of the single field
     pub rust_type: RustType,
-    /// If `Some`, used to apply `serde(rename)` to this variant
-    pub rename_as: Option<String>,
 }
 
 impl FieldedEnumVariant {
     pub fn new(variant: RustIdent, rust_type: RustType) -> Self {
-        Self { variant, rust_type, rename_as: None }
+        Self { variant, rust_type }
     }
 }
 
@@ -138,11 +135,7 @@ impl RustObjectBuilder {
     }
 
     pub fn start_fielded_enum(&self) -> RustFieldedEnum {
-        RustFieldedEnum {
-            doc_comment: self.doc_comment.clone(),
-            variants: vec![],
-            default_variant: None,
-        }
+        RustFieldedEnum { doc_comment: self.doc_comment.clone(), variants: vec![] }
     }
 }
 

@@ -1,12 +1,12 @@
 use std::fmt::Write as _;
 
-use indoc::{formatdoc, writedoc};
+use indoc::formatdoc;
 
 use crate::component_generator::ComponentGenerator;
 use crate::ident::RustIdent;
 use crate::templates::derives::{write_derives_line, Derive};
 use crate::types::{FieldedEnumVariant, RustFieldedEnum};
-use crate::util::{write_doc_comment, write_serde_rename};
+use crate::util::write_doc_comment;
 
 impl ComponentGenerator {
     pub fn write_fielded_enum(
@@ -17,10 +17,7 @@ impl ComponentGenerator {
     ) {
         // Build the body of the enum definition
         let mut enum_body = String::new();
-        for FieldedEnumVariant { variant, rust_type, rename_as, .. } in &enum_.variants {
-            if let Some(rename) = rename_as {
-                let _ = writeln!(enum_body, "{}", write_serde_rename(rename));
-            }
+        for FieldedEnumVariant { variant, rust_type, .. } in &enum_.variants {
             let printable =
                 self.make_type_printable(rust_type, RustIdent::joined(enum_name, variant));
             let _ = writeln!(enum_body, "{variant}({printable}),");
@@ -28,7 +25,7 @@ impl ComponentGenerator {
         let doc_comment = write_doc_comment(enum_.doc_comment.as_deref().unwrap_or_default(), 0);
         let trimmed_doc = doc_comment.trim();
         let derives = write_derives_line(additional_derives);
-        let mut out = formatdoc!(
+        let out = formatdoc!(
             r#"
             
             {trimmed_doc}
@@ -40,18 +37,6 @@ impl ComponentGenerator {
         "#
         );
 
-        if let Some(variant) = &enum_.default_variant {
-            let _ = writedoc!(
-                out,
-                r"
-                impl std::default::Default for {enum_name} {{
-                    fn default() -> Self {{
-                        Self::{variant}(Default::default())
-                    }}
-                }}
-                "
-            );
-        };
         self.write_string(out);
     }
 }
