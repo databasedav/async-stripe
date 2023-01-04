@@ -1,21 +1,8 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::TaxRateId;
-use crate::params::{Expand, List, Metadata, Object, Paginable, RangeQuery, Timestamp};
-
-/// The resource representing a Stripe "TaxRate".
+/// Tax rates can be applied to [invoices](https://stripe.com/docs/billing/invoices/tax-rates), [subscriptions](https://stripe.com/docs/billing/subscriptions/taxes) and [Checkout Sessions](https://stripe.com/docs/payments/checkout/set-up-a-subscription#tax-rates) to collect tax.
 ///
-/// For more details see <https://stripe.com/docs/api/tax_rates/object>
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// Related guide: [Tax Rates](https://stripe.com/docs/billing/taxes/tax-rates).
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct TaxRate {
-    /// Unique identifier for the object.
-    pub id: TaxRateId,
-
     /// Defaults to `true`.
     ///
     /// When set to `false`, this tax rate cannot be used with new applications or Checkout Sessions, but will still work for subscriptions and invoices that already have it set.
@@ -27,7 +14,7 @@ pub struct TaxRate {
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-    pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
     /// An arbitrary string attached to the tax rate for your internal use only.
     ///
@@ -36,6 +23,9 @@ pub struct TaxRate {
 
     /// The display name of the tax rates as it will appear to your customer on their receipt email, PDF, and the hosted invoice page.
     pub display_name: String,
+
+    /// Unique identifier for the object.
+    pub id: String,
 
     /// This specifies if the tax rate is inclusive or exclusive.
     pub inclusive: bool,
@@ -52,7 +42,7 @@ pub struct TaxRate {
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
     /// This can be useful for storing additional information about the object in a structured format.
-    pub metadata: Metadata,
+    pub metadata: Option<crate::params::Metadata>,
 
     /// This represents the tax rate percent out of 100.
     pub percentage: f64,
@@ -66,43 +56,38 @@ pub struct TaxRate {
     pub tax_type: Option<TaxRateTaxType>,
 }
 
-impl TaxRate {
-    /// Returns a list of your tax rates.
-    ///
-    /// Tax rates are returned sorted by creation date, with the most recently created tax rates appearing first.
-    pub fn list(client: &Client, params: &ListTaxRates<'_>) -> Response<List<TaxRate>> {
-        client.get_query("/tax_rates", &params)
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetTaxRatesParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub active: Option<bool>,
 
-    /// Creates a new tax rate.
-    pub fn create(client: &Client, params: CreateTaxRate<'_>) -> Response<TaxRate> {
-        client.post_form("/tax_rates", &params)
-    }
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created: Option<crate::params::RangeQueryTs>,
 
-    /// Retrieves a tax rate with the given ID.
-    pub fn retrieve(client: &Client, id: &TaxRateId, expand: &[&str]) -> Response<TaxRate> {
-        client.get_query(&format!("/tax_rates/{}", id), &Expand { expand })
-    }
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
 
-    /// Updates an existing tax rate.
-    pub fn update(client: &Client, id: &TaxRateId, params: UpdateTaxRate<'_>) -> Response<TaxRate> {
-        client.post_form(&format!("/tax_rates/{}", id), &params)
-    }
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub inclusive: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
 }
 
-impl Object for TaxRate {
-    type Id = TaxRateId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "tax_rate"
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetTaxRatesTaxRateParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-/// The parameters for `TaxRate::create`.
-#[derive(Clone, Debug, Serialize)]
-pub struct CreateTaxRate<'a> {
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTaxRatesParams {
     /// Flag determining whether the tax rate is active or inactive (archived).
     ///
     /// Inactive tax rates cannot be used with new applications or Checkout Sessions, but will still work for subscriptions and invoices that already have it set.
@@ -111,20 +96,20 @@ pub struct CreateTaxRate<'a> {
 
     /// Two-letter country code ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub country: Option<&'a str>,
+    pub country: Option<String>,
 
     /// An arbitrary string attached to the tax rate for your internal use only.
     ///
     /// It will not be visible to your customers.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<&'a str>,
+    pub description: Option<String>,
 
     /// The display name of the tax rate, which will be shown to users.
-    pub display_name: &'a str,
+    pub display_name: String,
 
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
     /// This specifies if the tax rate is inclusive or exclusive.
     pub inclusive: bool,
@@ -134,7 +119,7 @@ pub struct CreateTaxRate<'a> {
     /// You can use this label field for tax reporting purposes.
     /// It also appears on your customer’s invoice.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub jurisdiction: Option<&'a str>,
+    pub jurisdiction: Option<String>,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
@@ -142,7 +127,7 @@ pub struct CreateTaxRate<'a> {
     /// Individual keys can be unset by posting an empty value to them.
     /// All keys can be unset by posting an empty value to `metadata`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Metadata>,
+    pub metadata: Option<crate::params::Metadata>,
 
     /// This represents the tax rate percent out of 100.
     pub percentage: f64,
@@ -151,88 +136,15 @@ pub struct CreateTaxRate<'a> {
     ///
     /// For example, "NY" for New York, United States.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub state: Option<&'a str>,
+    pub state: Option<String>,
 
     /// The high-level tax type, such as `vat` or `sales_tax`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tax_type: Option<TaxRateTaxType>,
+    pub tax_type: Option<PostTaxRatesParamsTaxType>,
 }
 
-impl<'a> CreateTaxRate<'a> {
-    pub fn new(display_name: &'a str, percentage: f64) -> Self {
-        CreateTaxRate {
-            active: Default::default(),
-            country: Default::default(),
-            description: Default::default(),
-            display_name,
-            expand: Default::default(),
-            inclusive: Default::default(),
-            jurisdiction: Default::default(),
-            metadata: Default::default(),
-            percentage,
-            state: Default::default(),
-            tax_type: Default::default(),
-        }
-    }
-}
-
-/// The parameters for `TaxRate::list`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct ListTaxRates<'a> {
-    /// Optional flag to filter by tax rates that are either active or inactive (archived).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub active: Option<bool>,
-
-    /// Optional range for filtering created date.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<RangeQuery<Timestamp>>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `ending_before` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, starting with `obj_bar`, your subsequent call can include `ending_before=obj_bar` in order to fetch the previous page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ending_before: Option<TaxRateId>,
-
-    /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
-
-    /// Optional flag to filter by tax rates that are inclusive (or those that are not inclusive).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub inclusive: Option<bool>,
-
-    /// A limit on the number of objects to be returned.
-    ///
-    /// Limit can range between 1 and 100, and the default is 10.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub limit: Option<u64>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `starting_after` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, ending with `obj_foo`, your subsequent call can include `starting_after=obj_foo` in order to fetch the next page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub starting_after: Option<TaxRateId>,
-}
-
-impl<'a> ListTaxRates<'a> {
-    pub fn new() -> Self {
-        ListTaxRates {
-            active: Default::default(),
-            created: Default::default(),
-            ending_before: Default::default(),
-            expand: Default::default(),
-            inclusive: Default::default(),
-            limit: Default::default(),
-            starting_after: Default::default(),
-        }
-    }
-}
-
-/// The parameters for `TaxRate::update`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct UpdateTaxRate<'a> {
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTaxRatesTaxRateParams {
     /// Flag determining whether the tax rate is active or inactive (archived).
     ///
     /// Inactive tax rates cannot be used with new applications or Checkout Sessions, but will still work for subscriptions and invoices that already have it set.
@@ -241,28 +153,28 @@ pub struct UpdateTaxRate<'a> {
 
     /// Two-letter country code ([ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub country: Option<&'a str>,
+    pub country: Option<String>,
 
     /// An arbitrary string attached to the tax rate for your internal use only.
     ///
     /// It will not be visible to your customers.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<&'a str>,
+    pub description: Option<String>,
 
     /// The display name of the tax rate, which will be shown to users.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub display_name: Option<&'a str>,
+    pub display_name: Option<String>,
 
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
     /// The jurisdiction for the tax rate.
     ///
     /// You can use this label field for tax reporting purposes.
     /// It also appears on your customer’s invoice.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub jurisdiction: Option<&'a str>,
+    pub jurisdiction: Option<String>,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
@@ -270,44 +182,20 @@ pub struct UpdateTaxRate<'a> {
     /// Individual keys can be unset by posting an empty value to them.
     /// All keys can be unset by posting an empty value to `metadata`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Metadata>,
+    pub metadata: Option<crate::params::Metadata>,
 
     /// [ISO 3166-2 subdivision code](https://en.wikipedia.org/wiki/ISO_3166-2:US), without country prefix.
     ///
     /// For example, "NY" for New York, United States.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub state: Option<&'a str>,
+    pub state: Option<String>,
 
     /// The high-level tax type, such as `vat` or `sales_tax`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tax_type: Option<TaxRateTaxType>,
+    pub tax_type: Option<PostTaxRatesTaxRateParamsTaxType>,
 }
 
-impl<'a> UpdateTaxRate<'a> {
-    pub fn new() -> Self {
-        UpdateTaxRate {
-            active: Default::default(),
-            country: Default::default(),
-            description: Default::default(),
-            display_name: Default::default(),
-            expand: Default::default(),
-            jurisdiction: Default::default(),
-            metadata: Default::default(),
-            state: Default::default(),
-            tax_type: Default::default(),
-        }
-    }
-}
-
-impl Paginable for ListTaxRates<'_> {
-    type O = TaxRate;
-    fn set_last(&mut self, item: Self::O) {
-        self.starting_after = Some(item.id());
-    }
-}
-
-/// An enum representing the possible values of an `TaxRate`'s `tax_type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TaxRateTaxType {
     Gst,
@@ -323,14 +211,14 @@ pub enum TaxRateTaxType {
 impl TaxRateTaxType {
     pub fn as_str(self) -> &'static str {
         match self {
-            TaxRateTaxType::Gst => "gst",
-            TaxRateTaxType::Hst => "hst",
-            TaxRateTaxType::Jct => "jct",
-            TaxRateTaxType::Pst => "pst",
-            TaxRateTaxType::Qst => "qst",
-            TaxRateTaxType::Rst => "rst",
-            TaxRateTaxType::SalesTax => "sales_tax",
-            TaxRateTaxType::Vat => "vat",
+            Self::Gst => "gst",
+            Self::Hst => "hst",
+            Self::Jct => "jct",
+            Self::Pst => "pst",
+            Self::Qst => "qst",
+            Self::Rst => "rst",
+            Self::SalesTax => "sales_tax",
+            Self::Vat => "vat",
         }
     }
 }
@@ -346,8 +234,130 @@ impl std::fmt::Display for TaxRateTaxType {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TaxRateTaxType {
+
+impl Default for TaxRateTaxType {
     fn default() -> Self {
         Self::Gst
     }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostTaxRatesParamsTaxType {
+    Gst,
+    Hst,
+    Jct,
+    Pst,
+    Qst,
+    Rst,
+    SalesTax,
+    Vat,
+}
+
+impl PostTaxRatesParamsTaxType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Gst => "gst",
+            Self::Hst => "hst",
+            Self::Jct => "jct",
+            Self::Pst => "pst",
+            Self::Qst => "qst",
+            Self::Rst => "rst",
+            Self::SalesTax => "sales_tax",
+            Self::Vat => "vat",
+        }
+    }
+}
+
+impl AsRef<str> for PostTaxRatesParamsTaxType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostTaxRatesParamsTaxType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostTaxRatesParamsTaxType {
+    fn default() -> Self {
+        Self::Gst
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostTaxRatesTaxRateParamsTaxType {
+    Gst,
+    Hst,
+    Jct,
+    Pst,
+    Qst,
+    Rst,
+    SalesTax,
+    Vat,
+}
+
+impl PostTaxRatesTaxRateParamsTaxType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Gst => "gst",
+            Self::Hst => "hst",
+            Self::Jct => "jct",
+            Self::Pst => "pst",
+            Self::Qst => "qst",
+            Self::Rst => "rst",
+            Self::SalesTax => "sales_tax",
+            Self::Vat => "vat",
+        }
+    }
+}
+
+impl AsRef<str> for PostTaxRatesTaxRateParamsTaxType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostTaxRatesTaxRateParamsTaxType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostTaxRatesTaxRateParamsTaxType {
+    fn default() -> Self {
+        Self::Gst
+    }
+}
+pub fn get_tax_rates(
+    client: &crate::Client,
+    params: GetTaxRatesParams,
+) -> crate::Response<crate::params::List<crate::generated::TaxRate>> {
+    client.get_query("/tax_rates", params)
+}
+
+pub fn get_tax_rates_tax_rate(
+    client: &crate::Client,
+    tax_rate: String,
+    params: GetTaxRatesTaxRateParams,
+) -> crate::Response<crate::generated::TaxRate> {
+    client.get_query(&format!("/tax_rates/{tax_rate}", tax_rate = tax_rate), params)
+}
+
+pub fn post_tax_rates(
+    client: &crate::Client,
+    params: PostTaxRatesParams,
+) -> crate::Response<crate::generated::TaxRate> {
+    client.post_form("/tax_rates", params)
+}
+
+pub fn post_tax_rates_tax_rate(
+    client: &crate::Client,
+    tax_rate: String,
+    params: PostTaxRatesTaxRateParams,
+) -> crate::Response<crate::generated::TaxRate> {
+    client.post_form(&format!("/tax_rates/{tax_rate}", tax_rate = tax_rate), params)
 }

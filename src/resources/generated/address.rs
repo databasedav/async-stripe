@@ -1,11 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "Address".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct Address {
     /// City, district, suburb, town, or village.
     pub city: Option<String>,

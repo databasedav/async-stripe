@@ -1,18 +1,10 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "invoice_payment_method_options_bancontact".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct InvoicePaymentMethodOptionsBancontact {
     /// Preferred language of the Bancontact authorization page that the customer is redirected to.
     pub preferred_language: InvoicePaymentMethodOptionsBancontactPreferredLanguage,
 }
 
-/// An enum representing the possible values of an `InvoicePaymentMethodOptionsBancontact`'s `preferred_language` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum InvoicePaymentMethodOptionsBancontactPreferredLanguage {
     De,
@@ -24,10 +16,10 @@ pub enum InvoicePaymentMethodOptionsBancontactPreferredLanguage {
 impl InvoicePaymentMethodOptionsBancontactPreferredLanguage {
     pub fn as_str(self) -> &'static str {
         match self {
-            InvoicePaymentMethodOptionsBancontactPreferredLanguage::De => "de",
-            InvoicePaymentMethodOptionsBancontactPreferredLanguage::En => "en",
-            InvoicePaymentMethodOptionsBancontactPreferredLanguage::Fr => "fr",
-            InvoicePaymentMethodOptionsBancontactPreferredLanguage::Nl => "nl",
+            Self::De => "de",
+            Self::En => "en",
+            Self::Fr => "fr",
+            Self::Nl => "nl",
         }
     }
 }
@@ -43,7 +35,8 @@ impl std::fmt::Display for InvoicePaymentMethodOptionsBancontactPreferredLanguag
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for InvoicePaymentMethodOptionsBancontactPreferredLanguage {
+
+impl Default for InvoicePaymentMethodOptionsBancontactPreferredLanguage {
     fn default() -> Self {
         Self::De
     }

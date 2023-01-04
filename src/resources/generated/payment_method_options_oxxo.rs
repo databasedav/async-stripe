@@ -1,11 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "payment_method_options_oxxo".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct PaymentMethodOptionsOxxo {
     /// The number of calendar days before an OXXO invoice expires.
     ///
@@ -21,8 +14,7 @@ pub struct PaymentMethodOptionsOxxo {
     pub setup_future_usage: Option<PaymentMethodOptionsOxxoSetupFutureUsage>,
 }
 
-/// An enum representing the possible values of an `PaymentMethodOptionsOxxo`'s `setup_future_usage` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOptionsOxxoSetupFutureUsage {
     None,
@@ -31,7 +23,7 @@ pub enum PaymentMethodOptionsOxxoSetupFutureUsage {
 impl PaymentMethodOptionsOxxoSetupFutureUsage {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentMethodOptionsOxxoSetupFutureUsage::None => "none",
+            Self::None => "none",
         }
     }
 }
@@ -47,7 +39,8 @@ impl std::fmt::Display for PaymentMethodOptionsOxxoSetupFutureUsage {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentMethodOptionsOxxoSetupFutureUsage {
+
+impl Default for PaymentMethodOptionsOxxoSetupFutureUsage {
     fn default() -> Self {
         Self::None
     }

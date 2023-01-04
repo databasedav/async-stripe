@@ -1,9 +1,12 @@
+use std::fs::File;
+use std::io::Write;
+
 use heck::SnakeCase;
 use lazy_static::lazy_static;
 use openapiv3::{IntegerFormat, VariantOrUnknownOrEmpty};
 use regex::Regex;
 
-use crate::file_generator::FileGenerator;
+use crate::rust_type::{ExtType, IntType, RustType};
 
 pub fn write_serde_rename(rename: &str) -> String {
     format!(r#"#[serde(rename = "{rename}")]"#)
@@ -88,29 +91,40 @@ fn format_doc_comment(doc: &str) -> String {
 }
 
 pub fn infer_integer_type(
-    state: &mut FileGenerator,
-    name: &str,
+    field_name: Option<&str>,
     int_fmt: &VariantOrUnknownOrEmpty<IntegerFormat>,
-) -> String {
+) -> RustType {
     let is_unix_time_fmt = match int_fmt {
         VariantOrUnknownOrEmpty::Unknown(val) => val == "unix-time",
         _ => false,
     };
+    if is_unix_time_fmt {
+        return RustType::ext(ExtType::Timestamp);
+    }
+
+    // Infer based on field name
+    let Some(name) = field_name else { return RustType::int(IntType::I64)};
+
     let name_snake = name.to_snake_case();
     let name_words = name_snake.split('_').collect::<Vec<_>>();
-    if is_unix_time_fmt || name_words.contains(&"date") {
-        state.use_params.insert("Timestamp");
-        "Timestamp".into()
+    if name_words.contains(&"date") {
+        RustType::ext(ExtType::Timestamp)
     } else if name == "monthly_anchor" {
-        "u8".into()
+        RustType::int(IntType::U8)
     } else if name_words.contains(&"days") {
-        "u32".into()
+        RustType::int(IntType::U32)
     } else if name_words.contains(&"count")
         || name_words.contains(&"size")
         || name_words.contains(&"quantity")
     {
-        "u64".into()
+        RustType::int(IntType::U64)
     } else {
-        "i64".into()
+        RustType::int(IntType::I64)
     }
+}
+
+pub fn write_to_file(content: &[u8], out_path: &str) -> anyhow::Result<()> {
+    let path = format!("out/{out_path}");
+    File::create(path)?.write_all(content)?;
+    Ok(())
 }

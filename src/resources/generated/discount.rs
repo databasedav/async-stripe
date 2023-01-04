@@ -1,43 +1,29 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::ids::DiscountId;
-use crate::params::{Expandable, Object, Timestamp};
-use crate::resources::{Coupon, Customer, PromotionCode};
-
-/// The resource representing a Stripe "Discount".
+/// A discount represents the actual application of a [coupon](https://stripe.com/docs/api#coupons) or [promotion code](https://stripe.com/docs/api#promotion_codes).
+/// It contains information about when the discount began, when it will end, and what it is applied to.
 ///
-/// For more details see <https://stripe.com/docs/api/discounts/object>
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// Related guide: [Applying Discounts to Subscriptions](https://stripe.com/docs/billing/subscriptions/discounts).
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Discount {
-    /// The ID of the discount object.
-    ///
-    /// Discounts cannot be fetched by ID.
-    /// Use `expand[]=discounts` in API calls to expand discount IDs in an array.
-    pub id: DiscountId,
-
     /// The Checkout session that this coupon is applied to, if it is applied to a particular session in payment mode.
     ///
     /// Will not be present for subscription mode.
     pub checkout_session: Option<String>,
 
-    pub coupon: Coupon,
+    pub coupon: crate::generated::Coupon,
 
     /// The ID of the customer associated with this discount.
-    pub customer: Option<Expandable<Customer>>,
-
-    /// Always true for a deleted object.
-    #[serde(default)]
-    pub deleted: bool,
+    pub customer: Option<Vec<crate::generated::Customer>>,
 
     /// If the coupon has a duration of `repeating`, the date that this discount will end.
     ///
     /// If the coupon has a duration of `once` or `forever`, this attribute will be null.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub end: Option<Timestamp>,
+    pub end: Option<crate::params::Timestamp>,
+
+    /// The ID of the discount object.
+    ///
+    /// Discounts cannot be fetched by ID.
+    /// Use `expand[]=discounts` in API calls to expand discount IDs in an array.
+    pub id: String,
 
     /// The invoice that the discount's coupon was applied to, if it was applied directly to a particular invoice.
     pub invoice: Option<String>,
@@ -46,21 +32,11 @@ pub struct Discount {
     pub invoice_item: Option<String>,
 
     /// The promotion code applied to create this discount.
-    pub promotion_code: Option<Expandable<PromotionCode>>,
+    pub promotion_code: Option<Vec<crate::generated::PromotionCode>>,
 
     /// Date that the coupon was applied.
-    pub start: Timestamp,
+    pub start: crate::params::Timestamp,
 
     /// The subscription that this coupon is applied to, if it is applied to a particular subscription.
     pub subscription: Option<String>,
-}
-
-impl Object for Discount {
-    type Id = DiscountId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "discount"
-    }
 }

@@ -1,11 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "payment_method_options_bancontact".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct PaymentMethodOptionsBancontact {
     /// Preferred language of the Bancontact authorization page that the customer is redirected to.
     pub preferred_language: PaymentMethodOptionsBancontactPreferredLanguage,
@@ -19,8 +12,7 @@ pub struct PaymentMethodOptionsBancontact {
     pub setup_future_usage: Option<PaymentMethodOptionsBancontactSetupFutureUsage>,
 }
 
-/// An enum representing the possible values of an `PaymentMethodOptionsBancontact`'s `preferred_language` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOptionsBancontactPreferredLanguage {
     De,
@@ -32,10 +24,10 @@ pub enum PaymentMethodOptionsBancontactPreferredLanguage {
 impl PaymentMethodOptionsBancontactPreferredLanguage {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentMethodOptionsBancontactPreferredLanguage::De => "de",
-            PaymentMethodOptionsBancontactPreferredLanguage::En => "en",
-            PaymentMethodOptionsBancontactPreferredLanguage::Fr => "fr",
-            PaymentMethodOptionsBancontactPreferredLanguage::Nl => "nl",
+            Self::De => "de",
+            Self::En => "en",
+            Self::Fr => "fr",
+            Self::Nl => "nl",
         }
     }
 }
@@ -51,14 +43,14 @@ impl std::fmt::Display for PaymentMethodOptionsBancontactPreferredLanguage {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentMethodOptionsBancontactPreferredLanguage {
+
+impl Default for PaymentMethodOptionsBancontactPreferredLanguage {
     fn default() -> Self {
         Self::De
     }
 }
 
-/// An enum representing the possible values of an `PaymentMethodOptionsBancontact`'s `setup_future_usage` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOptionsBancontactSetupFutureUsage {
     None,
@@ -68,8 +60,8 @@ pub enum PaymentMethodOptionsBancontactSetupFutureUsage {
 impl PaymentMethodOptionsBancontactSetupFutureUsage {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentMethodOptionsBancontactSetupFutureUsage::None => "none",
-            PaymentMethodOptionsBancontactSetupFutureUsage::OffSession => "off_session",
+            Self::None => "none",
+            Self::OffSession => "off_session",
         }
     }
 }
@@ -85,7 +77,8 @@ impl std::fmt::Display for PaymentMethodOptionsBancontactSetupFutureUsage {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentMethodOptionsBancontactSetupFutureUsage {
+
+impl Default for PaymentMethodOptionsBancontactSetupFutureUsage {
     fn default() -> Self {
         Self::None
     }

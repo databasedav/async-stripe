@@ -1,17 +1,7 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::ids::UsageRecordSummaryId;
-use crate::params::{Object, Timestamp};
-
-/// The resource representing a Stripe "UsageRecordSummary".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct UsageRecordSummary {
     /// Unique identifier for the object.
-    pub id: UsageRecordSummaryId,
+    pub id: String,
 
     /// The invoice in which this usage period has been billed for.
     pub invoice: Option<String>,
@@ -19,7 +9,7 @@ pub struct UsageRecordSummary {
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
     pub livemode: bool,
 
-    pub period: Period,
+    pub period: crate::generated::Period,
 
     /// The ID of the subscription item this summary is describing.
     pub subscription_item: String,
@@ -28,25 +18,31 @@ pub struct UsageRecordSummary {
     pub total_usage: i64,
 }
 
-impl Object for UsageRecordSummary {
-    type Id = UsageRecordSummaryId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "usage_record_summary"
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetSubscriptionItemsSubscriptionItemUsageRecordSummariesParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct Period {
-    /// The end date of this usage period.
-    ///
-    /// All usage up to and including this point in time is included.
-    pub end: Option<Timestamp>,
-
-    /// The start date of this usage period.
-    ///
-    /// All usage after this point in time is included.
-    pub start: Option<Timestamp>,
+pub fn get_subscription_items_subscription_item_usage_record_summaries(
+    client: &crate::Client,
+    subscription_item: String,
+    params: GetSubscriptionItemsSubscriptionItemUsageRecordSummariesParams,
+) -> crate::Response<crate::params::List<crate::generated::UsageRecordSummary>> {
+    client.get_query(
+        &format!(
+            "/subscription_items/{subscription_item}/usage_record_summaries",
+            subscription_item = subscription_item
+        ),
+        params,
+    )
 }

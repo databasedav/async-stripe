@@ -1,16 +1,7 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::resources::Address;
-
-/// The resource representing a Stripe "Shipping".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct Shipping {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub address: Option<Address>,
+    pub address: Option<crate::generated::Address>,
 
     /// The delivery service that shipped a physical product, such as Fedex, UPS, USPS, etc.
     #[serde(skip_serializing_if = "Option::is_none")]

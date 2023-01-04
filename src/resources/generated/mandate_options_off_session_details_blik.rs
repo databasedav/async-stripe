@@ -1,19 +1,10 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::resources::Currency;
-
-/// The resource representing a Stripe "mandate_options_off_session_details_blik".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct MandateOptionsOffSessionDetailsBlik {
     /// Amount of each recurring payment.
     pub amount: Option<i64>,
 
     /// Currency of each recurring payment.
-    pub currency: Option<Currency>,
+    pub currency: Option<crate::currency::Currency>,
 
     /// Frequency interval of each recurring payment.
     pub interval: Option<MandateOptionsOffSessionDetailsBlikInterval>,
@@ -22,8 +13,7 @@ pub struct MandateOptionsOffSessionDetailsBlik {
     pub interval_count: Option<u64>,
 }
 
-/// An enum representing the possible values of an `MandateOptionsOffSessionDetailsBlik`'s `interval` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum MandateOptionsOffSessionDetailsBlikInterval {
     Day,
@@ -35,10 +25,10 @@ pub enum MandateOptionsOffSessionDetailsBlikInterval {
 impl MandateOptionsOffSessionDetailsBlikInterval {
     pub fn as_str(self) -> &'static str {
         match self {
-            MandateOptionsOffSessionDetailsBlikInterval::Day => "day",
-            MandateOptionsOffSessionDetailsBlikInterval::Month => "month",
-            MandateOptionsOffSessionDetailsBlikInterval::Week => "week",
-            MandateOptionsOffSessionDetailsBlikInterval::Year => "year",
+            Self::Day => "day",
+            Self::Month => "month",
+            Self::Week => "week",
+            Self::Year => "year",
         }
     }
 }
@@ -54,7 +44,8 @@ impl std::fmt::Display for MandateOptionsOffSessionDetailsBlikInterval {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for MandateOptionsOffSessionDetailsBlikInterval {
+
+impl Default for MandateOptionsOffSessionDetailsBlikInterval {
     fn default() -> Self {
         Self::Day
     }

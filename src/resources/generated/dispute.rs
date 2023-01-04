@@ -1,46 +1,37 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::{ChargeId, DisputeId, PaymentIntentId};
-use crate::params::{Expand, Expandable, List, Metadata, Object, Paginable, RangeQuery, Timestamp};
-use crate::resources::{BalanceTransaction, Charge, Currency, File, PaymentIntent};
-
-/// The resource representing a Stripe "Dispute".
+/// A dispute occurs when a customer questions your charge with their card issuer.
+/// When this happens, you're given the opportunity to respond to the dispute with
+/// evidence that shows that the charge is legitimate.
 ///
-/// For more details see <https://stripe.com/docs/api/disputes/object>
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// You can find more information about the dispute process in our [Disputes and Fraud](/docs/disputes) documentation.  Related guide: [Disputes and Fraud](https://stripe.com/docs/disputes).
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Dispute {
-    /// Unique identifier for the object.
-    pub id: DisputeId,
-
     /// Disputed amount.
     ///
     /// Usually the amount of the charge, but can differ (usually because of currency fluctuation or because only part of the order is disputed).
     pub amount: i64,
 
     /// List of zero, one, or two balance transactions that show funds withdrawn and reinstated to your Stripe account as a result of this dispute.
-    pub balance_transactions: Vec<BalanceTransaction>,
+    pub balance_transactions: Vec<crate::generated::BalanceTransaction>,
 
     /// ID of the charge that was disputed.
-    pub charge: Expandable<Charge>,
+    pub charge: Vec<crate::generated::Charge>,
 
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-    pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
+    pub currency: crate::currency::Currency,
 
-    pub evidence: DisputeEvidence,
+    pub evidence: crate::generated::DisputeEvidence,
 
-    pub evidence_details: DisputeEvidenceDetails,
+    pub evidence_details: crate::generated::DisputeEvidenceDetails,
+
+    /// Unique identifier for the object.
+    pub id: String,
 
     /// If true, it is still possible to refund the disputed payment.
     ///
@@ -53,14 +44,14 @@ pub struct Dispute {
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
     /// This can be useful for storing additional information about the object in a structured format.
-    pub metadata: Metadata,
+    pub metadata: crate::params::Metadata,
 
     /// Network-dependent reason code for the dispute.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub network_reason_code: Option<String>,
 
     /// ID of the PaymentIntent that was disputed.
-    pub payment_intent: Option<Expandable<PaymentIntent>>,
+    pub payment_intent: Option<Vec<crate::generated::PaymentIntent>>,
 
     /// Reason given by cardholder for dispute.
     ///
@@ -74,213 +65,73 @@ pub struct Dispute {
     pub status: DisputeStatus,
 }
 
-impl Dispute {
-    /// Returns a list of your disputes.
-    pub fn list(client: &Client, params: &ListDisputes<'_>) -> Response<List<Dispute>> {
-        client.get_query("/disputes", &params)
-    }
-
-    /// Retrieves the dispute with the given ID.
-    pub fn retrieve(client: &Client, id: &DisputeId, expand: &[&str]) -> Response<Dispute> {
-        client.get_query(&format!("/disputes/{}", id), &Expand { expand })
-    }
-}
-
-impl Object for Dispute {
-    type Id = DisputeId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "dispute"
-    }
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct DisputeEvidence {
-    /// Any server or activity logs showing proof that the customer accessed or downloaded the purchased digital product.
-    ///
-    /// This information should include IP addresses, corresponding timestamps, and any detailed recorded activity.
-    pub access_activity_log: Option<String>,
-
-    /// The billing address provided by the customer.
-    pub billing_address: Option<String>,
-
-    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Your subscription cancellation policy, as shown to the customer.
-    pub cancellation_policy: Option<Expandable<File>>,
-
-    /// An explanation of how and when the customer was shown your refund policy prior to purchase.
-    pub cancellation_policy_disclosure: Option<String>,
-
-    /// A justification for why the customer's subscription was not canceled.
-    pub cancellation_rebuttal: Option<String>,
-
-    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Any communication with the customer that you feel is relevant to your case.
-    ///
-    /// Examples include emails proving that the customer received the product or service, or demonstrating their use of or satisfaction with the product or service.
-    pub customer_communication: Option<Expandable<File>>,
-
-    /// The email address of the customer.
-    pub customer_email_address: Option<String>,
-
-    /// The name of the customer.
-    pub customer_name: Option<String>,
-
-    /// The IP address that the customer used when making the purchase.
-    pub customer_purchase_ip: Option<String>,
-
-    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) A relevant document or contract showing the customer's signature.
-    pub customer_signature: Option<Expandable<File>>,
-
-    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Documentation for the prior charge that can uniquely identify the charge, such as a receipt, shipping label, work order, etc.
-    ///
-    /// This document should be paired with a similar document from the disputed payment that proves the two payments are separate.
-    pub duplicate_charge_documentation: Option<Expandable<File>>,
-
-    /// An explanation of the difference between the disputed charge versus the prior charge that appears to be a duplicate.
-    pub duplicate_charge_explanation: Option<String>,
-
-    /// The Stripe ID for the prior charge which appears to be a duplicate of the disputed charge.
-    pub duplicate_charge_id: Option<String>,
-
-    /// A description of the product or service that was sold.
-    pub product_description: Option<String>,
-
-    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Any receipt or message sent to the customer notifying them of the charge.
-    pub receipt: Option<Expandable<File>>,
-
-    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Your refund policy, as shown to the customer.
-    pub refund_policy: Option<Expandable<File>>,
-
-    /// Documentation demonstrating that the customer was shown your refund policy prior to purchase.
-    pub refund_policy_disclosure: Option<String>,
-
-    /// A justification for why the customer is not entitled to a refund.
-    pub refund_refusal_explanation: Option<String>,
-
-    /// The date on which the customer received or began receiving the purchased service, in a clear human-readable format.
-    pub service_date: Option<String>,
-
-    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Documentation showing proof that a service was provided to the customer.
-    ///
-    /// This could include a copy of a signed contract, work order, or other form of written agreement.
-    pub service_documentation: Option<Expandable<File>>,
-
-    /// The address to which a physical product was shipped.
-    ///
-    /// You should try to include as complete address information as possible.
-    pub shipping_address: Option<String>,
-
-    /// The delivery service that shipped a physical product, such as Fedex, UPS, USPS, etc.
-    ///
-    /// If multiple carriers were used for this purchase, please separate them with commas.
-    pub shipping_carrier: Option<String>,
-
-    /// The date on which a physical product began its route to the shipping address, in a clear human-readable format.
-    pub shipping_date: Option<String>,
-
-    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Documentation showing proof that a product was shipped to the customer at the same address the customer provided to you.
-    ///
-    /// This could include a copy of the shipment receipt, shipping label, etc.
-    /// It should show the customer's full shipping address, if possible.
-    pub shipping_documentation: Option<Expandable<File>>,
-
-    /// The tracking number for a physical product, obtained from the delivery service.
-    ///
-    /// If multiple tracking numbers were generated for this purchase, please separate them with commas.
-    pub shipping_tracking_number: Option<String>,
-
-    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Any additional evidence or statements.
-    pub uncategorized_file: Option<Expandable<File>>,
-
-    /// Any additional evidence or statements.
-    pub uncategorized_text: Option<String>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct DisputeEvidenceDetails {
-    /// Date by which evidence must be submitted in order to successfully challenge dispute.
-    ///
-    /// Will be null if the customer's bank or credit card company doesn't allow a response for this particular dispute.
-    pub due_by: Option<Timestamp>,
-
-    /// Whether evidence has been staged for this dispute.
-    pub has_evidence: bool,
-
-    /// Whether the last evidence submission was submitted past the due date.
-    ///
-    /// Defaults to `false` if no evidence submissions have occurred.
-    /// If `true`, then delivery of the latest evidence is *not* guaranteed.
-    pub past_due: bool,
-
-    /// The number of times evidence has been submitted.
-    ///
-    /// Typically, you may only submit evidence once.
-    pub submission_count: u64,
-}
-
-/// The parameters for `Dispute::list`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct ListDisputes<'a> {
-    /// Only return disputes associated to the charge specified by this charge ID.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetDisputesParams {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub charge: Option<ChargeId>,
+    pub charge: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<RangeQuery<Timestamp>>,
+    pub created: Option<crate::params::RangeQueryTs>,
 
-    /// A cursor for use in pagination.
-    ///
-    /// `ending_before` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, starting with `obj_bar`, your subsequent call can include `ending_before=obj_bar` in order to fetch the previous page of the list.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ending_before: Option<DisputeId>,
+    pub ending_before: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payment_intent: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetDisputesDisputeParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostDisputesDisputeParams {
+    /// Evidence to upload, to respond to a dispute.
+    ///
+    /// Updating any field in the hash will submit all fields in the hash for review.
+    /// The combined character count of all fields is limited to 150,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub evidence: Option<PostDisputesDisputeParamsEvidence>,
 
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
-    /// A limit on the number of objects to be returned.
+    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
-    /// Limit can range between 1 and 100, and the default is 10.
+    /// This can be useful for storing additional information about the object in a structured format.
+    /// Individual keys can be unset by posting an empty value to them.
+    /// All keys can be unset by posting an empty value to `metadata`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub limit: Option<u64>,
+    pub metadata: Option<crate::params::Metadata>,
 
-    /// Only return disputes associated to the PaymentIntent specified by this PaymentIntent ID.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_intent: Option<PaymentIntentId>,
-
-    /// A cursor for use in pagination.
+    /// Whether to immediately submit evidence to the bank.
     ///
-    /// `starting_after` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, ending with `obj_foo`, your subsequent call can include `starting_after=obj_foo` in order to fetch the next page of the list.
+    /// If `false`, evidence is staged on the dispute.
+    /// Staged evidence is visible in the API and Dashboard, and can be submitted to the bank by making another request with this attribute set to `true` (the default).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub starting_after: Option<DisputeId>,
+    pub submit: Option<bool>,
 }
 
-impl<'a> ListDisputes<'a> {
-    pub fn new() -> Self {
-        ListDisputes {
-            charge: Default::default(),
-            created: Default::default(),
-            ending_before: Default::default(),
-            expand: Default::default(),
-            limit: Default::default(),
-            payment_intent: Default::default(),
-            starting_after: Default::default(),
-        }
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostDisputesDisputeCloseParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-impl Paginable for ListDisputes<'_> {
-    type O = Dispute;
-    fn set_last(&mut self, item: Self::O) {
-        self.starting_after = Some(item.id());
-    }
-}
-
-/// An enum representing the possible values of an `Dispute`'s `status` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DisputeStatus {
     ChargeRefunded,
@@ -296,14 +147,14 @@ pub enum DisputeStatus {
 impl DisputeStatus {
     pub fn as_str(self) -> &'static str {
         match self {
-            DisputeStatus::ChargeRefunded => "charge_refunded",
-            DisputeStatus::Lost => "lost",
-            DisputeStatus::NeedsResponse => "needs_response",
-            DisputeStatus::UnderReview => "under_review",
-            DisputeStatus::WarningClosed => "warning_closed",
-            DisputeStatus::WarningNeedsResponse => "warning_needs_response",
-            DisputeStatus::WarningUnderReview => "warning_under_review",
-            DisputeStatus::Won => "won",
+            Self::ChargeRefunded => "charge_refunded",
+            Self::Lost => "lost",
+            Self::NeedsResponse => "needs_response",
+            Self::UnderReview => "under_review",
+            Self::WarningClosed => "warning_closed",
+            Self::WarningNeedsResponse => "warning_needs_response",
+            Self::WarningUnderReview => "warning_under_review",
+            Self::Won => "won",
         }
     }
 }
@@ -319,8 +170,186 @@ impl std::fmt::Display for DisputeStatus {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for DisputeStatus {
+
+impl Default for DisputeStatus {
     fn default() -> Self {
         Self::ChargeRefunded
     }
+}
+/// Evidence to upload, to respond to a dispute.
+///
+/// Updating any field in the hash will submit all fields in the hash for review.
+/// The combined character count of all fields is limited to 150,000.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostDisputesDisputeParamsEvidence {
+    /// Any server or activity logs showing proof that the customer accessed or downloaded the purchased digital product.
+    ///
+    /// This information should include IP addresses, corresponding timestamps, and any detailed recorded activity.
+    /// Has a maximum character count of 20,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub access_activity_log: Option<String>,
+
+    /// The billing address provided by the customer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub billing_address: Option<String>,
+
+    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Your subscription cancellation policy, as shown to the customer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cancellation_policy: Option<String>,
+
+    /// An explanation of how and when the customer was shown your refund policy prior to purchase.
+    ///
+    /// Has a maximum character count of 20,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cancellation_policy_disclosure: Option<String>,
+
+    /// A justification for why the customer's subscription was not canceled.
+    ///
+    /// Has a maximum character count of 20,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cancellation_rebuttal: Option<String>,
+
+    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Any communication with the customer that you feel is relevant to your case.
+    ///
+    /// Examples include emails proving that the customer received the product or service, or demonstrating their use of or satisfaction with the product or service.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer_communication: Option<String>,
+
+    /// The email address of the customer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer_email_address: Option<String>,
+
+    /// The name of the customer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer_name: Option<String>,
+
+    /// The IP address that the customer used when making the purchase.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer_purchase_ip: Option<String>,
+
+    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) A relevant document or contract showing the customer's signature.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer_signature: Option<String>,
+
+    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Documentation for the prior charge that can uniquely identify the charge, such as a receipt, shipping label, work order, etc.
+    ///
+    /// This document should be paired with a similar document from the disputed payment that proves the two payments are separate.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub duplicate_charge_documentation: Option<String>,
+
+    /// An explanation of the difference between the disputed charge versus the prior charge that appears to be a duplicate.
+    ///
+    /// Has a maximum character count of 20,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub duplicate_charge_explanation: Option<String>,
+
+    /// The Stripe ID for the prior charge which appears to be a duplicate of the disputed charge.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub duplicate_charge_id: Option<String>,
+
+    /// A description of the product or service that was sold.
+    ///
+    /// Has a maximum character count of 20,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product_description: Option<String>,
+
+    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Any receipt or message sent to the customer notifying them of the charge.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub receipt: Option<String>,
+
+    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Your refund policy, as shown to the customer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refund_policy: Option<String>,
+
+    /// Documentation demonstrating that the customer was shown your refund policy prior to purchase.
+    ///
+    /// Has a maximum character count of 20,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refund_policy_disclosure: Option<String>,
+
+    /// A justification for why the customer is not entitled to a refund.
+    ///
+    /// Has a maximum character count of 20,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub refund_refusal_explanation: Option<String>,
+
+    /// The date on which the customer received or began receiving the purchased service, in a clear human-readable format.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub service_date: Option<String>,
+
+    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Documentation showing proof that a service was provided to the customer.
+    ///
+    /// This could include a copy of a signed contract, work order, or other form of written agreement.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub service_documentation: Option<String>,
+
+    /// The address to which a physical product was shipped.
+    ///
+    /// You should try to include as complete address information as possible.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shipping_address: Option<String>,
+
+    /// The delivery service that shipped a physical product, such as Fedex, UPS, USPS, etc.
+    ///
+    /// If multiple carriers were used for this purchase, please separate them with commas.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shipping_carrier: Option<String>,
+
+    /// The date on which a physical product began its route to the shipping address, in a clear human-readable format.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shipping_date: Option<String>,
+
+    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Documentation showing proof that a product was shipped to the customer at the same address the customer provided to you.
+    ///
+    /// This could include a copy of the shipment receipt, shipping label, etc.
+    /// It should show the customer's full shipping address, if possible.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shipping_documentation: Option<String>,
+
+    /// The tracking number for a physical product, obtained from the delivery service.
+    ///
+    /// If multiple tracking numbers were generated for this purchase, please separate them with commas.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shipping_tracking_number: Option<String>,
+
+    /// (ID of a [file upload](https://stripe.com/docs/guides/file-upload)) Any additional evidence or statements.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uncategorized_file: Option<String>,
+
+    /// Any additional evidence or statements.
+    ///
+    /// Has a maximum character count of 20,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uncategorized_text: Option<String>,
+}
+
+pub fn get_disputes(
+    client: &crate::Client,
+    params: GetDisputesParams,
+) -> crate::Response<crate::params::List<crate::generated::Dispute>> {
+    client.get_query("/disputes", params)
+}
+
+pub fn get_disputes_dispute(
+    client: &crate::Client,
+    dispute: String,
+    params: GetDisputesDisputeParams,
+) -> crate::Response<crate::generated::Dispute> {
+    client.get_query(&format!("/disputes/{dispute}", dispute = dispute), params)
+}
+
+pub fn post_disputes_dispute(
+    client: &crate::Client,
+    dispute: String,
+    params: PostDisputesDisputeParams,
+) -> crate::Response<crate::generated::Dispute> {
+    client.post_form(&format!("/disputes/{dispute}", dispute = dispute), params)
+}
+
+pub fn post_disputes_dispute_close(
+    client: &crate::Client,
+    dispute: String,
+    params: PostDisputesDisputeCloseParams,
+) -> crate::Response<crate::generated::Dispute> {
+    client.post_form(&format!("/disputes/{dispute}/close", dispute = dispute), params)
 }

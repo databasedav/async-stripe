@@ -32,31 +32,9 @@ cargo-args = ["-Zunstable-options", "-Zrustdoc-scrape-examples=examples"]
 name = "stripe"
 
 [features]
-default = ["full", "webhook-events", "uuid", "stream"]
-full = [
-  "checkout",
-  "billing",
-  "connect",
-  "fraud",
-  "issuing",
-  "orders",
-  "sigma",
-  "terminal",
-  "webhook-endpoints",
-]
+default = ["webhook-events", "uuid", "stream"]
 
 stream = []
-
-# stripe feature groups
-checkout = ["billing"]
-billing = []
-connect = []
-fraud = []
-issuing = []
-orders = []
-sigma = []
-terminal = []
-webhook-endpoints = []
 
 # deserialize events from webhooks
 webhook-events = ["events", "hmac", "sha2", "chrono", "hex"]

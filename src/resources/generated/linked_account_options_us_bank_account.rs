@@ -1,11 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "linked_account_options_us_bank_account".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct LinkedAccountOptionsUsBankAccount {
     /// The list of permissions to request.
     ///
@@ -20,8 +13,7 @@ pub struct LinkedAccountOptionsUsBankAccount {
     pub return_url: Option<String>,
 }
 
-/// An enum representing the possible values of an `LinkedAccountOptionsUsBankAccount`'s `permissions` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LinkedAccountOptionsUsBankAccountPermissions {
     Balances,
@@ -33,10 +25,10 @@ pub enum LinkedAccountOptionsUsBankAccountPermissions {
 impl LinkedAccountOptionsUsBankAccountPermissions {
     pub fn as_str(self) -> &'static str {
         match self {
-            LinkedAccountOptionsUsBankAccountPermissions::Balances => "balances",
-            LinkedAccountOptionsUsBankAccountPermissions::Ownership => "ownership",
-            LinkedAccountOptionsUsBankAccountPermissions::PaymentMethod => "payment_method",
-            LinkedAccountOptionsUsBankAccountPermissions::Transactions => "transactions",
+            Self::Balances => "balances",
+            Self::Ownership => "ownership",
+            Self::PaymentMethod => "payment_method",
+            Self::Transactions => "transactions",
         }
     }
 }
@@ -52,7 +44,8 @@ impl std::fmt::Display for LinkedAccountOptionsUsBankAccountPermissions {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for LinkedAccountOptionsUsBankAccountPermissions {
+
+impl Default for LinkedAccountOptionsUsBankAccountPermissions {
     fn default() -> Self {
         Self::Balances
     }

@@ -1,14 +1,8 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "payment_intent_payment_method_options_sepa_debit".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct PaymentIntentPaymentMethodOptionsSepaDebit {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub mandate_options: Option<PaymentIntentPaymentMethodOptionsMandateOptionsSepaDebit>,
+    pub mandate_options:
+        Option<crate::generated::PaymentIntentPaymentMethodOptionsMandateOptionsSepaDebit>,
 
     /// Indicates that you intend to make future payments with this PaymentIntent's payment method.
     ///
@@ -19,11 +13,7 @@ pub struct PaymentIntentPaymentMethodOptionsSepaDebit {
     pub setup_future_usage: Option<PaymentIntentPaymentMethodOptionsSepaDebitSetupFutureUsage>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentIntentPaymentMethodOptionsMandateOptionsSepaDebit {}
-
-/// An enum representing the possible values of an `PaymentIntentPaymentMethodOptionsSepaDebit`'s `setup_future_usage` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentIntentPaymentMethodOptionsSepaDebitSetupFutureUsage {
     None,
@@ -34,9 +24,9 @@ pub enum PaymentIntentPaymentMethodOptionsSepaDebitSetupFutureUsage {
 impl PaymentIntentPaymentMethodOptionsSepaDebitSetupFutureUsage {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentIntentPaymentMethodOptionsSepaDebitSetupFutureUsage::None => "none",
-            PaymentIntentPaymentMethodOptionsSepaDebitSetupFutureUsage::OffSession => "off_session",
-            PaymentIntentPaymentMethodOptionsSepaDebitSetupFutureUsage::OnSession => "on_session",
+            Self::None => "none",
+            Self::OffSession => "off_session",
+            Self::OnSession => "on_session",
         }
     }
 }
@@ -52,7 +42,8 @@ impl std::fmt::Display for PaymentIntentPaymentMethodOptionsSepaDebitSetupFuture
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentIntentPaymentMethodOptionsSepaDebitSetupFutureUsage {
+
+impl Default for PaymentIntentPaymentMethodOptionsSepaDebitSetupFutureUsage {
     fn default() -> Self {
         Self::None
     }

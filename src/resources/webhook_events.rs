@@ -6,392 +6,18 @@ use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 
 use crate::error::WebhookError;
+use crate::generated::webhook_endpoint::PostWebhookEndpointsParamsEnabledEvents;
+use crate::generated::{
+    Account, AccountCapabilities, Application, ApplicationFee, Balance, BankAccount,
+    BillingPortalConfiguration, Card, Charge, CheckoutSession, Coupon, Customer, Discount, Dispute,
+    FeeRefund, File, Invoice, Invoiceitem, IssuingAuthorization, IssuingCard, IssuingCardholder,
+    IssuingDispute, IssuingTransaction, Mandate, NotificationEventRequest, Order, PaymentIntent,
+    PaymentLink, PaymentMethod, Payout, Person, Plan, Price, Product, PromotionCode, Quote, Refund,
+    Review, SetupIntent, Sku, Subscription, SubscriptionSchedule, TaxId, TaxRate,
+    TestHelpersTestClock, Topup, Transfer,
+};
 use crate::ids::EventId;
-use crate::{resources::*, AccountId, Timestamp};
-
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq, Hash)]
-pub enum EventType {
-    #[serde(rename = "account.application.authorized")]
-    AccountApplicationAuthorized,
-    #[serde(rename = "account.application.deauthorized")]
-    AccountApplicationDeauthorized,
-    #[serde(rename = "account.external_account.created")]
-    AccountExternalAccountCreated,
-    #[serde(rename = "account.external_account.deleted")]
-    AccountExternalAccountDeleted,
-    #[serde(rename = "account.external_account.updated")]
-    AccountExternalAccountUpdated,
-    #[serde(rename = "account.updated")]
-    AccountUpdated,
-    #[serde(rename = "application_fee.created")]
-    ApplicationFeeCreated,
-    #[serde(rename = "application_fee.refund.updated")]
-    ApplicationFeeRefundUpdated,
-    #[serde(rename = "application_fee.refunded")]
-    ApplicationFeeRefunded,
-    #[serde(rename = "balance.available")]
-    BalanceAvailable,
-    #[serde(rename = "billing_portal.configuration.created")]
-    BillingPortalConfigurationCreated,
-    #[serde(rename = "billing_portal.configuration.updated")]
-    BillingPortalConfigurationUpdated,
-    #[serde(rename = "capability.updated")]
-    CapabilityUpdated,
-    #[serde(rename = "cash_balance.funds_available")]
-    CashBalanceFundsAvailable,
-    #[serde(rename = "charge.captured")]
-    ChargeCaptured,
-    #[serde(rename = "charge.dispute.closed")]
-    ChargeDisputeClosed,
-    #[serde(rename = "charge.dispute.created")]
-    ChargeDisputeCreated,
-    #[serde(rename = "charge.dispute.funds_reinstated")]
-    ChargeDisputeFundsReinstated,
-    #[serde(rename = "charge.dispute.funds_withdrawn")]
-    ChargeDisputeFundsWithdrawn,
-    #[serde(rename = "charge.dispute.updated")]
-    ChargeDisputeUpdated,
-    #[serde(rename = "charge.expired")]
-    ChargeExpired,
-    #[serde(rename = "charge.failed")]
-    ChargeFailed,
-    #[serde(rename = "charge.pending")]
-    ChargePending,
-    #[serde(rename = "charge.refund.updated")]
-    ChargeRefundUpdated,
-    #[serde(rename = "charge.refunded")]
-    ChargeRefunded,
-    #[serde(rename = "charge.succeeded")]
-    ChargeSucceeded,
-    #[serde(rename = "charge.updated")]
-    ChargeUpdated,
-    #[serde(rename = "checkout.session.async_payment_failed")]
-    CheckoutSessionAsyncPaymentFailed,
-    #[serde(rename = "checkout.session.async_payment_succeeded")]
-    CheckoutSessionAsyncPaymentSucceeded,
-    #[serde(rename = "checkout.session.completed")]
-    CheckoutSessionCompleted,
-    #[serde(rename = "checkout.session.expired")]
-    CheckoutSessionExpired,
-    #[serde(rename = "coupon.created")]
-    CouponCreated,
-    #[serde(rename = "coupon.deleted")]
-    CouponDeleted,
-    #[serde(rename = "coupon.updated")]
-    CouponUpdated,
-    #[serde(rename = "credit_note.created")]
-    CreditNoteCreated,
-    #[serde(rename = "credit_note.updated")]
-    CreditNoteUpdated,
-    #[serde(rename = "credit_note.voided")]
-    CreditNoteVoided,
-    #[serde(rename = "customer.created")]
-    CustomerCreated,
-    #[serde(rename = "customer.deleted")]
-    CustomerDeleted,
-    #[serde(rename = "customer.discount.created")]
-    CustomerDiscountCreated,
-    #[serde(rename = "customer.discount.deleted")]
-    CustomerDiscountDeleted,
-    #[serde(rename = "customer.discount.updated")]
-    CustomerDiscountUpdated,
-    #[serde(rename = "customer.source.created")]
-    CustomerSourceCreated,
-    #[serde(rename = "customer.source.deleted")]
-    CustomerSourceDeleted,
-    #[serde(rename = "customer.source.expiring")]
-    CustomerSourceExpiring,
-    #[serde(rename = "customer.source.updated")]
-    CustomerSourceUpdated,
-    #[serde(rename = "customer.subscription.created")]
-    CustomerSubscriptionCreated,
-    #[serde(rename = "customer.subscription.deleted")]
-    CustomerSubscriptionDeleted,
-    #[serde(rename = "customer.subscription.pending_update_applied")]
-    CustomerSubscriptionPendingUpdateApplied,
-    #[serde(rename = "customer.subscription.pending_update_expired")]
-    CustomerSubscriptionPendingUpdateExpired,
-    #[serde(rename = "customer.subscription.trial_will_end")]
-    CustomerSubscriptionTrialWillEnd,
-    #[serde(rename = "customer.subscription.updated")]
-    CustomerSubscriptionUpdated,
-    #[serde(rename = "customer.tax_id.created")]
-    CustomerTaxIdCreated,
-    #[serde(rename = "customer.tax_id.deleted")]
-    CustomerTaxIdDeleted,
-    #[serde(rename = "customer.tax_id.updated")]
-    CustomerTaxIdUpdated,
-    #[serde(rename = "customer.updated")]
-    CustomerUpdated,
-    #[serde(rename = "file.created")]
-    FileCreated,
-    #[serde(rename = "identity.verification_session.canceled")]
-    IdentityVerificationSessionCanceled,
-    #[serde(rename = "identity.verification_session.created")]
-    IdentityVerificationSessionCreated,
-    #[serde(rename = "identity.verification_session.processing")]
-    IdentityVerificationSessionProcessing,
-    #[serde(rename = "identity.verification_session.redacted")]
-    IdentityVerificationSessionRedacted,
-    #[serde(rename = "identity.verification_session.requires_input")]
-    IdentityVerificationSessionRequiresInput,
-    #[serde(rename = "identity.verification_session.verified")]
-    IdentityVerificationSessionVerified,
-    #[serde(rename = "invoice.created")]
-    InvoiceCreated,
-    #[serde(rename = "invoice.deleted")]
-    InvoiceDeleted,
-    #[serde(rename = "invoice.finalization_failed")]
-    InvoiceFinalizationFailed,
-    #[serde(rename = "invoice.finalized")]
-    InvoiceFinalized,
-    #[serde(rename = "invoice.marked_uncollectible")]
-    InvoiceMarkedUncollectible,
-    #[serde(rename = "invoice.paid")]
-    InvoicePaid,
-    #[serde(rename = "invoice.payment_action_required")]
-    InvoicePaymentActionRequired,
-    #[serde(rename = "invoice.payment_failed")]
-    InvoicePaymentFailed,
-    #[serde(rename = "invoice.payment_succeeded")]
-    InvoicePaymentSucceeded,
-    #[serde(rename = "invoice.sent")]
-    InvoiceSent,
-    #[serde(rename = "invoice.upcoming")]
-    InvoiceUpcoming,
-    #[serde(rename = "invoice.updated")]
-    InvoiceUpdated,
-    #[serde(rename = "invoice.voided")]
-    InvoiceVoided,
-    #[serde(rename = "invoiceitem.created")]
-    InvoiceItemCreated,
-    #[serde(rename = "invoiceitem.deleted")]
-    InvoiceItemDeleted,
-    #[serde(rename = "invoiceitem.updated")]
-    InvoiceItemUpdated,
-    #[serde(rename = "issuing_authorization.created")]
-    IssuingAuthorizationCreated,
-    #[serde(rename = "issuing_authorization.request")]
-    IssuingAuthorizationRequest,
-    #[serde(rename = "issuing_authorization.updated")]
-    IssuingAuthorizationUpdated,
-    #[serde(rename = "issuing_card.created")]
-    IssuingCardCreated,
-    #[serde(rename = "issuing_card.updated")]
-    IssuingCardUpdated,
-    #[serde(rename = "issuing_cardholder.created")]
-    IssuingCardholderCreated,
-    #[serde(rename = "issuing_cardholder.updated")]
-    IssuingCardholderUpdated,
-    #[serde(rename = "issuing_dispute.closed")]
-    IssuingDisputeClosed,
-    #[serde(rename = "issuing_dispute.created")]
-    IssuingDisputeCreated,
-    #[serde(rename = "issuing_dispute.funds_reinstated")]
-    IssuingDisputeFundsReinstated,
-    #[serde(rename = "issuing_dispute.submitted")]
-    IssuingDisputeSubmitted,
-    #[serde(rename = "issuing_dispute.updated")]
-    IssuingDisputeUpdated,
-    #[serde(rename = "issuing_transaction.created")]
-    IssuingTransactionCreated,
-    #[serde(rename = "issuing_transaction.updated")]
-    IssuingTransactionUpdated,
-    #[serde(rename = "mandate.updated")]
-    MandateUpdated,
-    #[serde(rename = "order.created")]
-    OrderCreated,
-    #[serde(rename = "order.payment_failed")]
-    OrderPaymentFailed,
-    #[serde(rename = "order.payment_succeeded")]
-    OrderPaymentSucceeded,
-    #[serde(rename = "order.updated")]
-    OrderUpdated,
-    #[serde(rename = "order_return.created")]
-    OrderReturnCreated,
-    #[serde(rename = "order_return.updated")]
-    OrderReturnUpdated,
-    #[serde(rename = "payment_intent.amount_capturable_updated")]
-    PaymentIntentAmountCapturableUpdated,
-    #[serde(rename = "payment_intent.canceled")]
-    PaymentIntentCanceled,
-    #[serde(rename = "payment_intent.created")]
-    PaymentIntentCreated,
-    #[serde(rename = "payment_intent.partially_funded")]
-    PaymentIntentPartiallyFunded,
-    #[serde(rename = "payment_intent.payment_failed")]
-    PaymentIntentPaymentFailed,
-    #[serde(rename = "payment_intent.processing")]
-    PaymentIntentProcessing,
-    #[serde(rename = "payment_intent.requires_action")]
-    PaymentIntentRequiresAction,
-    #[serde(rename = "payment_intent.requires_capture")]
-    PaymentIntentRequiresCapture,
-    #[serde(rename = "payment_intent.succeeded")]
-    PaymentIntentSucceeded,
-    #[serde(rename = "payment_link.created")]
-    PaymentLinkCreated,
-    #[serde(rename = "payment_link.updated")]
-    PaymentLinkUpdated,
-    #[serde(rename = "payment_method.attached")]
-    PaymentMethodAttached,
-    #[serde(rename = "payment_method.automatically_updated")]
-    PaymentMethodAutomaticallyUpdated,
-    #[serde(rename = "payment_method.detached")]
-    PaymentMethodDetached,
-    #[serde(rename = "payment_method.updated")]
-    PaymentMethodUpdated,
-    #[serde(rename = "payout.canceled")]
-    PayoutCanceled,
-    #[serde(rename = "payout.created")]
-    PayoutCreated,
-    #[serde(rename = "payout.failed")]
-    PayoutFailed,
-    #[serde(rename = "payout.paid")]
-    PayoutPaid,
-    #[serde(rename = "payout.updated")]
-    PayoutUpdated,
-    #[serde(rename = "person.created")]
-    PersonCreated,
-    #[serde(rename = "person.deleted")]
-    PersonDeleted,
-    #[serde(rename = "person.updated")]
-    PersonUpdated,
-    #[serde(rename = "plan.created")]
-    PlanCreated,
-    #[serde(rename = "plan.deleted")]
-    PlanDeleted,
-    #[serde(rename = "plan.updated")]
-    PlanUpdated,
-    #[serde(rename = "price.created")]
-    PriceCreated,
-    #[serde(rename = "price.deleted")]
-    PriceDeleted,
-    #[serde(rename = "price.updated")]
-    PriceUpdated,
-    #[serde(rename = "product.created")]
-    ProductCreated,
-    #[serde(rename = "product.deleted")]
-    ProductDeleted,
-    #[serde(rename = "product.updated")]
-    ProductUpdated,
-    #[serde(rename = "promotion_code.created")]
-    PromotionCodeCreated,
-    #[serde(rename = "promotion_code.updated")]
-    PromotionCodeUpdated,
-    #[serde(rename = "quote.accepted")]
-    QuoteAccepted,
-    #[serde(rename = "quote.canceled")]
-    QuoteCanceled,
-    #[serde(rename = "quote.created")]
-    QuoteCreated,
-    #[serde(rename = "quote.finalized")]
-    QuoteFinalized,
-    #[serde(rename = "radar.early_fraud_warning.created")]
-    RadarEarlyFraudWarningCreated,
-    #[serde(rename = "radar.early_fraud_warning.updated")]
-    RadarEarlyFraudWarningUpdated,
-    #[serde(rename = "recipient.created")]
-    RecipientCreated,
-    #[serde(rename = "recipient.deleted")]
-    RecipientDeleted,
-    #[serde(rename = "recipient.updated")]
-    RecipientUpdated,
-    #[serde(rename = "reporting.report_run.failed")]
-    ReportingReportRunFailed,
-    #[serde(rename = "reporting.report_run.succeeded")]
-    ReportingReportRunSucceeded,
-    #[serde(rename = "reporting.report_type.updated")]
-    ReportingReportTypeUpdated,
-    #[serde(rename = "review.closed")]
-    ReviewClosed,
-    #[serde(rename = "review.opened")]
-    ReviewOpened,
-    #[serde(rename = "setup_intent.canceled")]
-    SetupIntentCanceled,
-    #[serde(rename = "setup_intent.created")]
-    SetupIntentCreated,
-    #[serde(rename = "setup_intent.requires_action")]
-    SetupIntentRequiresAction,
-    #[serde(rename = "setup_intent.setup_failed")]
-    SetupIntentSetupFailed,
-    #[serde(rename = "setup_intent.succeeded")]
-    SetupIntentSucceeded,
-    #[serde(rename = "sigma.scheduled_query_run.created")]
-    SigmaScheduledQueryRunCreated,
-    #[serde(rename = "sku.created")]
-    SkuCreated,
-    #[serde(rename = "sku.deleted")]
-    SkuDeleted,
-    #[serde(rename = "sku.updated")]
-    SkuUpdated,
-    #[serde(rename = "source.canceled")]
-    SourceCanceled,
-    #[serde(rename = "source.chargeable")]
-    SourceChargeable,
-    #[serde(rename = "source.failed")]
-    SourceFailed,
-    #[serde(rename = "source.mandate_notification")]
-    SourceMandateNotification,
-    #[serde(rename = "source.refund_attributes_required")]
-    SourceRefundAttributesRequired,
-    #[serde(rename = "source.transaction.created")]
-    SourceTransactionCreated,
-    #[serde(rename = "source.transaction.updated")]
-    SourceTransactionUpdated,
-    #[serde(rename = "subscription_schedule.aborted")]
-    SubscriptionScheduleAborted,
-    #[serde(rename = "subscription_schedule.canceled")]
-    SubscriptionScheduleCanceled,
-    #[serde(rename = "subscription_schedule.completed")]
-    SubscriptionScheduleCompleted,
-    #[serde(rename = "subscription_schedule.created")]
-    SubscriptionScheduleCreated,
-    #[serde(rename = "subscription_schedule.expiring")]
-    SubscriptionScheduleExpiring,
-    #[serde(rename = "subscription_schedule.released")]
-    SubscriptionScheduleReleased,
-    #[serde(rename = "subscription_schedule.updated")]
-    SubscriptionScheduleUpdated,
-    #[serde(rename = "tax_rate.created")]
-    TaxRateCreated,
-    #[serde(rename = "tax_rate.updated")]
-    TaxRateUpdated,
-    #[serde(rename = "terminal.reader.action_failed")]
-    TerminalReaderActionFailed,
-    #[serde(rename = "terminal.reader.action_succeeded")]
-    TerminalReaderActionSucceeded,
-    #[serde(rename = "test_helpers.test_clock.advancing")]
-    TestHelpersTestClockAdvancing,
-    #[serde(rename = "test_helpers.test_clock.created")]
-    TestHelpersTestClockCreated,
-    #[serde(rename = "test_helpers.test_clock.deleted")]
-    TestHelpersTestClockDeleted,
-    #[serde(rename = "test_helpers.test_clock.internal_failure")]
-    TestHelpersTestClockInternalFailure,
-    #[serde(rename = "test_helpers.test_clock.ready")]
-    TestHelpersTestClockReady,
-    #[serde(rename = "topup.canceled")]
-    TopupCanceled,
-    #[serde(rename = "topup.created")]
-    TopupCreated,
-    #[serde(rename = "topup.failed")]
-    TopupFailed,
-    #[serde(rename = "topup.reversed")]
-    TopupReversed,
-    #[serde(rename = "topup.succeeded")]
-    TopupSucceeded,
-    #[serde(rename = "transfer.created")]
-    TransferCreated,
-    #[serde(rename = "transfer.failed")]
-    TransferFailed,
-    #[serde(rename = "transfer.paid")]
-    TransferPaid,
-    #[serde(rename = "transfer.reversed")]
-    TransferReversed,
-    #[serde(rename = "transfer.updated")]
-    TransferUpdated,
-}
+use crate::{AccountId, Timestamp};
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct WebhookEvent {
@@ -400,7 +26,8 @@ pub struct WebhookEvent {
 
     /// Description of the event (e.g., `invoice.created` or `charge.refunded`).
     #[serde(rename = "type")]
-    pub event_type: EventType,
+    // TODO: use deduplicated EventType instead
+    pub event_type: PostWebhookEndpointsParamsEnabledEvents,
 
     /// The connected account that originated the event.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -445,7 +72,7 @@ pub enum EventObject {
     Application(Application),
     ApplicationFee(ApplicationFee),
     #[serde(rename = "fee_refund")]
-    ApplicationFeeRefund(ApplicationFeeRefund),
+    ApplicationFeeRefund(FeeRefund),
     Balance(Balance),
     BankAccount(BankAccount),
     #[serde(rename = "billing_portal.configuration")]
@@ -461,7 +88,7 @@ pub enum EventObject {
     File(File),
     Invoice(Invoice),
     #[serde(rename = "invoiceitem")]
-    InvoiceItem(InvoiceItem),
+    InvoiceItem(Invoiceitem),
     #[serde(rename = "issuing.authorization")]
     IssuingAuthorization(IssuingAuthorization),
     #[serde(rename = "issuing.card")]

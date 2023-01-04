@@ -1,11 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "payment_intent_payment_method_options_link".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct PaymentIntentPaymentMethodOptionsLink {
     /// Controls when the funds will be captured from the customer's account.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -23,8 +16,7 @@ pub struct PaymentIntentPaymentMethodOptionsLink {
     pub setup_future_usage: Option<PaymentIntentPaymentMethodOptionsLinkSetupFutureUsage>,
 }
 
-/// An enum representing the possible values of an `PaymentIntentPaymentMethodOptionsLink`'s `capture_method` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentIntentPaymentMethodOptionsLinkCaptureMethod {
     Manual,
@@ -33,7 +25,7 @@ pub enum PaymentIntentPaymentMethodOptionsLinkCaptureMethod {
 impl PaymentIntentPaymentMethodOptionsLinkCaptureMethod {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentIntentPaymentMethodOptionsLinkCaptureMethod::Manual => "manual",
+            Self::Manual => "manual",
         }
     }
 }
@@ -49,14 +41,14 @@ impl std::fmt::Display for PaymentIntentPaymentMethodOptionsLinkCaptureMethod {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentIntentPaymentMethodOptionsLinkCaptureMethod {
+
+impl Default for PaymentIntentPaymentMethodOptionsLinkCaptureMethod {
     fn default() -> Self {
         Self::Manual
     }
 }
 
-/// An enum representing the possible values of an `PaymentIntentPaymentMethodOptionsLink`'s `setup_future_usage` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentIntentPaymentMethodOptionsLinkSetupFutureUsage {
     None,
@@ -66,8 +58,8 @@ pub enum PaymentIntentPaymentMethodOptionsLinkSetupFutureUsage {
 impl PaymentIntentPaymentMethodOptionsLinkSetupFutureUsage {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentIntentPaymentMethodOptionsLinkSetupFutureUsage::None => "none",
-            PaymentIntentPaymentMethodOptionsLinkSetupFutureUsage::OffSession => "off_session",
+            Self::None => "none",
+            Self::OffSession => "off_session",
         }
     }
 }
@@ -83,7 +75,8 @@ impl std::fmt::Display for PaymentIntentPaymentMethodOptionsLinkSetupFutureUsage
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentIntentPaymentMethodOptionsLinkSetupFutureUsage {
+
+impl Default for PaymentIntentPaymentMethodOptionsLinkSetupFutureUsage {
     fn default() -> Self {
         Self::None
     }

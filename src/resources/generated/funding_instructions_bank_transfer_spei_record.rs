@@ -1,0 +1,12 @@
+/// SPEI Records contain Mexico bank account details per the SPEI format.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct FundingInstructionsBankTransferSpeiRecord {
+    /// The three-digit bank code.
+    pub bank_code: String,
+
+    /// The short banking institution name.
+    pub bank_name: String,
+
+    /// The CLABE number.
+    pub clabe: String,
+}

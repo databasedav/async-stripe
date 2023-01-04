@@ -1,26 +1,7 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::{ApplicationFeeId, ChargeId};
-use crate::params::{Expand, Expandable, List, Object, Paginable, RangeQuery, Timestamp};
-use crate::resources::{
-    Account, Application, ApplicationFeeRefund, BalanceTransaction, Charge, Currency,
-};
-
-/// The resource representing a Stripe "PlatformFee".
-///
-/// For more details see <https://stripe.com/docs/api/application_fees/object>
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct ApplicationFee {
-    /// Unique identifier for the object.
-    pub id: ApplicationFeeId,
-
     /// ID of the Stripe account this fee was taken from.
-    pub account: Expandable<Account>,
+    pub account: Vec<crate::generated::Account>,
 
     /// Amount earned, in %s.
     pub amount: i64,
@@ -29,29 +10,32 @@ pub struct ApplicationFee {
     pub amount_refunded: i64,
 
     /// ID of the Connect application that earned the fee.
-    pub application: Expandable<Application>,
+    pub application: Vec<crate::generated::Application>,
 
     /// Balance transaction that describes the impact of this collected application fee on your account balance (not including refunds).
-    pub balance_transaction: Option<Expandable<BalanceTransaction>>,
+    pub balance_transaction: Option<Vec<crate::generated::BalanceTransaction>>,
 
     /// ID of the charge that the application fee was taken from.
-    pub charge: Expandable<Charge>,
+    pub charge: Vec<crate::generated::Charge>,
 
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-    pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
+    pub currency: crate::currency::Currency,
+
+    /// Unique identifier for the object.
+    pub id: String,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
     pub livemode: bool,
 
     /// ID of the corresponding charge on the platform account, if this fee was the result of a charge using the `destination` parameter.
-    pub originating_transaction: Option<Expandable<Charge>>,
+    pub originating_transaction: Option<Vec<crate::generated::Charge>>,
 
     /// Whether the fee has been fully refunded.
     ///
@@ -59,93 +43,47 @@ pub struct ApplicationFee {
     pub refunded: bool,
 
     /// A list of refunds that have been applied to the fee.
-    pub refunds: List<ApplicationFeeRefund>,
+    pub refunds: crate::params::List<crate::generated::FeeRefund>,
 }
 
-impl ApplicationFee {
-    /// Returns a list of application fees you’ve previously collected.
-    ///
-    /// The application fees are returned in sorted order, with the most recent fees appearing first.
-    pub fn list(
-        client: &Client,
-        params: &ListApplicationFees<'_>,
-    ) -> Response<List<ApplicationFee>> {
-        client.get_query("/application_fees", &params)
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetApplicationFeesParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub charge: Option<String>,
 
-    /// Retrieves the details of an application fee that your account has collected.
-    ///
-    /// The same information is returned when refunding the application fee.
-    pub fn retrieve(
-        client: &Client,
-        id: &ApplicationFeeId,
-        expand: &[&str],
-    ) -> Response<ApplicationFee> {
-        client.get_query(&format!("/application_fees/{}", id), &Expand { expand })
-    }
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created: Option<crate::params::RangeQueryTs>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
 }
 
-impl Object for ApplicationFee {
-    type Id = ApplicationFeeId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "application_fee"
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetApplicationFeesIdParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-/// The parameters for `ApplicationFee::list`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct ListApplicationFees<'a> {
-    /// Only return application fees for the charge specified by this charge ID.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub charge: Option<ChargeId>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<RangeQuery<Timestamp>>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `ending_before` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, starting with `obj_bar`, your subsequent call can include `ending_before=obj_bar` in order to fetch the previous page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ending_before: Option<ApplicationFeeId>,
-
-    /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
-
-    /// A limit on the number of objects to be returned.
-    ///
-    /// Limit can range between 1 and 100, and the default is 10.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub limit: Option<u64>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `starting_after` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, ending with `obj_foo`, your subsequent call can include `starting_after=obj_foo` in order to fetch the next page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub starting_after: Option<ApplicationFeeId>,
+pub fn get_application_fees(
+    client: &crate::Client,
+    params: GetApplicationFeesParams,
+) -> crate::Response<crate::params::List<crate::generated::ApplicationFee>> {
+    client.get_query("/application_fees", params)
 }
 
-impl<'a> ListApplicationFees<'a> {
-    pub fn new() -> Self {
-        ListApplicationFees {
-            charge: Default::default(),
-            created: Default::default(),
-            ending_before: Default::default(),
-            expand: Default::default(),
-            limit: Default::default(),
-            starting_after: Default::default(),
-        }
-    }
-}
-
-impl Paginable for ListApplicationFees<'_> {
-    type O = ApplicationFee;
-    fn set_last(&mut self, item: Self::O) {
-        self.starting_after = Some(item.id());
-    }
+pub fn get_application_fees_id(
+    client: &crate::Client,
+    id: String,
+    params: GetApplicationFeesIdParams,
+) -> crate::Response<crate::generated::ApplicationFee> {
+    client.get_query(&format!("/application_fees/{id}", id = id), params)
 }

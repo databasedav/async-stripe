@@ -1,30 +1,17 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::{ProductId, TaxCodeId};
-use crate::params::{
-    Deleted, Expand, Expandable, List, Metadata, Object, Paginable, RangeQuery, Timestamp,
-};
-use crate::resources::{Currency, PackageDimensions, Price, TaxCode, UpTo};
-
-/// The resource representing a Stripe "Product".
+/// Products describe the specific goods or services you offer to your customers.
+/// For example, you might offer a Standard and Premium version of your goods or service; each version would be a separate Product.
+/// They can be used in conjunction with [Prices](https://stripe.com/docs/api#prices) to configure pricing in Payment Links, Checkout, and Subscriptions.
 ///
-/// For more details see <https://stripe.com/docs/api/products/object>
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// Related guides: [Set up a subscription](https://stripe.com/docs/billing/subscriptions/set-up-subscription),
+/// [share a Payment Link](https://stripe.com/docs/payments/payment-links/overview),
+/// [accept payments with Checkout](https://stripe.com/docs/payments/accept-a-payment#create-product-prices-upfront),
+/// and more about [Products and Prices](https://stripe.com/docs/products-prices/overview).
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Product {
-    /// Unique identifier for the object.
-    pub id: ProductId,
-
     /// Whether the product is currently available for purchase.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub active: Option<bool>,
+    pub active: bool,
 
     /// A list of up to 5 attributes that each SKU can provide values for (e.g., `["color", "size"]`).
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub attributes: Option<Vec<String>>,
 
     /// A short one-line description of the product, meant to be displayable to the customer.
@@ -36,8 +23,7 @@ pub struct Product {
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<Timestamp>,
+    pub created: crate::params::Timestamp,
 
     /// An array of connect application identifiers that cannot purchase this product.
     ///
@@ -47,42 +33,34 @@ pub struct Product {
 
     /// The ID of the [Price](https://stripe.com/docs/api/prices) object that is the default price for this product.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub default_price: Option<Expandable<Price>>,
-
-    /// Always true for a deleted object.
-    #[serde(default)]
-    pub deleted: bool,
+    pub default_price: Option<Vec<crate::generated::Price>>,
 
     /// The product's description, meant to be displayable to the customer.
     ///
     /// Use this field to optionally store a long form explanation of the product being sold for your own rendering purposes.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
+    /// Unique identifier for the object.
+    pub id: String,
+
     /// A list of up to 8 URLs of images for this product, meant to be displayable to the customer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub images: Option<Vec<String>>,
+    pub images: Vec<String>,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub livemode: Option<bool>,
+    pub livemode: bool,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
     /// This can be useful for storing additional information about the object in a structured format.
-    #[serde(default)]
-    pub metadata: Metadata,
+    pub metadata: crate::params::Metadata,
 
     /// The product's name, meant to be displayable to the customer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    pub name: String,
 
     /// The dimensions of this product for shipping purposes.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub package_dimensions: Option<PackageDimensions>,
+    pub package_dimensions: Option<crate::generated::PackageDimensions>,
 
     /// Whether this product is shipped (i.e., physical goods).
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub shippable: Option<bool>,
 
     /// Extra information about a product which will appear on your customer's credit card statement.
@@ -92,15 +70,13 @@ pub struct Product {
     pub statement_descriptor: Option<String>,
 
     /// A [tax code](https://stripe.com/docs/tax/tax-categories) ID.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tax_code: Option<Expandable<TaxCode>>,
+    pub tax_code: Option<Vec<crate::generated::TaxCode>>,
 
     /// The type of the product.
     ///
     /// The product is either of type `good`, which is eligible for use with Orders and SKUs, or `service`, which is eligible for use with Subscriptions and Plans.
     #[serde(rename = "type")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub type_: Option<ProductType>,
+    pub type_: ProductType,
 
     /// A label that represents units of this product in Stripe and on customers’ receipts and invoices.
     ///
@@ -111,63 +87,48 @@ pub struct Product {
     /// Time at which the object was last updated.
     ///
     /// Measured in seconds since the Unix epoch.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated: Option<Timestamp>,
+    pub updated: crate::params::Timestamp,
 
     /// A URL of a publicly-accessible webpage for this product.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 }
 
-impl Product {
-    /// Returns a list of your products.
-    ///
-    /// The products are returned sorted by creation date, with the most recently created products appearing first.
-    pub fn list(client: &Client, params: &ListProducts<'_>) -> Response<List<Product>> {
-        client.get_query("/products", &params)
-    }
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct ReturnedGetProductsSearch {
+    pub data: Vec<crate::generated::Product>,
 
-    /// Creates a new product object.
-    pub fn create(client: &Client, params: CreateProduct<'_>) -> Response<Product> {
-        client.post_form("/products", &params)
-    }
+    pub has_more: bool,
 
-    /// Retrieves the details of an existing product.
-    ///
-    /// Supply the unique product ID from either a product creation request or the product list, and Stripe will return the corresponding product information.
-    pub fn retrieve(client: &Client, id: &ProductId, expand: &[&str]) -> Response<Product> {
-        client.get_query(&format!("/products/{}", id), &Expand { expand })
-    }
+    pub next_page: Option<String>,
 
-    /// Updates the specific product by setting the values of the parameters passed.
+    /// String representing the object's type.
     ///
-    /// Any parameters not provided will be left unchanged.
-    pub fn update(client: &Client, id: &ProductId, params: UpdateProduct<'_>) -> Response<Product> {
-        client.post_form(&format!("/products/{}", id), &params)
-    }
+    /// Objects of the same type share the same value.
+    pub object: ReturnedGetProductsSearchObject,
 
-    /// Delete a product.
-    ///
-    /// Deleting a product is only possible if it has no prices associated with it.
-    /// Additionally, deleting a product with `type=good` is only possible if it has no SKUs associated with it.
-    pub fn delete(client: &Client, id: &ProductId) -> Response<Deleted<ProductId>> {
-        client.delete(&format!("/products/{}", id))
-    }
+    /// The total number of objects that match the query, only accurate up to 10,000.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub total_count: Option<u64>,
+
+    pub url: String,
 }
 
-impl Object for Product {
-    type Id = ProductId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "product"
-    }
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct GetProductsSearchParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub page: Option<String>,
+
+    pub query: String,
 }
 
-/// The parameters for `Product::create`.
-#[derive(Clone, Debug, Serialize)]
-pub struct CreateProduct<'a> {
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostProductsParams {
     /// Whether the product is currently available for purchase.
     ///
     /// Defaults to `true`.
@@ -184,7 +145,7 @@ pub struct CreateProduct<'a> {
     ///
     /// May only be set if type=`good`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub caption: Option<&'a str>,
+    pub caption: Option<String>,
 
     /// An array of Connect application names or identifiers that should not be able to order the SKUs for this product.
     ///
@@ -196,23 +157,23 @@ pub struct CreateProduct<'a> {
     ///
     /// This Price will be set as the default price for this product.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub default_price_data: Option<CreateProductDefaultPriceData>,
+    pub default_price_data: Option<PostProductsParamsDefaultPriceData>,
 
     /// The product's description, meant to be displayable to the customer.
     ///
     /// Use this field to optionally store a long form explanation of the product being sold for your own rendering purposes.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<&'a str>,
+    pub description: Option<String>,
 
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
     /// An identifier will be randomly generated by Stripe.
     ///
     /// You can optionally override this ID, but the ID must be unique across all products in your Stripe account.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<&'a str>,
+    pub id: Option<String>,
 
     /// A list of up to 8 URLs of images for this product, meant to be displayable to the customer.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -224,14 +185,14 @@ pub struct CreateProduct<'a> {
     /// Individual keys can be unset by posting an empty value to them.
     /// All keys can be unset by posting an empty value to `metadata`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Metadata>,
+    pub metadata: Option<crate::params::Metadata>,
 
     /// The product's name, meant to be displayable to the customer.
-    pub name: &'a str,
+    pub name: String,
 
     /// The dimensions of this product for shipping purposes.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub package_dimensions: Option<PackageDimensions>,
+    pub package_dimensions: Option<PostProductsParamsPackageDimensions>,
 
     /// Whether this product is shipped (i.e., physical goods).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -243,11 +204,11 @@ pub struct CreateProduct<'a> {
     /// The statement description may not include `<`, `>`, `\`, `"`, `'` characters, and will appear on your customer's statement in capital letters.
     /// Non-ASCII characters are automatically stripped.  It must contain at least one letter.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub statement_descriptor: Option<&'a str>,
+    pub statement_descriptor: Option<String>,
 
     /// A [tax code](https://stripe.com/docs/tax/tax-categories) ID.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tax_code: Option<TaxCodeId>,
+    pub tax_code: Option<String>,
 
     /// The type of the product.
     ///
@@ -256,119 +217,27 @@ pub struct CreateProduct<'a> {
     /// On API versions before `2018-02-05`, this field defaults to `good` for compatibility reasons.
     #[serde(rename = "type")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub type_: Option<ProductType>,
+    pub type_: Option<PostProductsParamsType>,
 
     /// A label that represents units of this product in Stripe and on customers’ receipts and invoices.
     ///
     /// When set, this will be included in associated invoice line item descriptions.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub unit_label: Option<&'a str>,
+    pub unit_label: Option<String>,
 
     /// A URL of a publicly-accessible webpage for this product.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub url: Option<&'a str>,
+    pub url: Option<String>,
 }
 
-impl<'a> CreateProduct<'a> {
-    pub fn new(name: &'a str) -> Self {
-        CreateProduct {
-            active: Default::default(),
-            attributes: Default::default(),
-            caption: Default::default(),
-            deactivate_on: Default::default(),
-            default_price_data: Default::default(),
-            description: Default::default(),
-            expand: Default::default(),
-            id: Default::default(),
-            images: Default::default(),
-            metadata: Default::default(),
-            name,
-            package_dimensions: Default::default(),
-            shippable: Default::default(),
-            statement_descriptor: Default::default(),
-            tax_code: Default::default(),
-            type_: Default::default(),
-            unit_label: Default::default(),
-            url: Default::default(),
-        }
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetProductsIdParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-/// The parameters for `Product::list`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct ListProducts<'a> {
-    /// Only return products that are active or inactive (e.g., pass `false` to list all inactive products).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub active: Option<bool>,
-
-    /// Only return products that were created during the given date interval.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<RangeQuery<Timestamp>>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `ending_before` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, starting with `obj_bar`, your subsequent call can include `ending_before=obj_bar` in order to fetch the previous page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ending_before: Option<ProductId>,
-
-    /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
-
-    /// Only return products with the given IDs.
-    ///
-    /// Cannot be used with [starting_after](https://stripe.com/docs/api#list_products-starting_after) or [ending_before](https://stripe.com/docs/api#list_products-ending_before).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ids: Option<Vec<String>>,
-
-    /// A limit on the number of objects to be returned.
-    ///
-    /// Limit can range between 1 and 100, and the default is 10.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub limit: Option<u64>,
-
-    /// Only return products that can be shipped (i.e., physical, not digital products).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub shippable: Option<bool>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `starting_after` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, ending with `obj_foo`, your subsequent call can include `starting_after=obj_foo` in order to fetch the next page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub starting_after: Option<ProductId>,
-
-    /// Only return products of this type.
-    #[serde(rename = "type")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub type_: Option<ProductType>,
-
-    /// Only return products with the given url.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub url: Option<&'a str>,
-}
-
-impl<'a> ListProducts<'a> {
-    pub fn new() -> Self {
-        ListProducts {
-            active: Default::default(),
-            created: Default::default(),
-            ending_before: Default::default(),
-            expand: Default::default(),
-            ids: Default::default(),
-            limit: Default::default(),
-            shippable: Default::default(),
-            starting_after: Default::default(),
-            type_: Default::default(),
-            url: Default::default(),
-        }
-    }
-}
-
-/// The parameters for `Product::update`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct UpdateProduct<'a> {
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostProductsIdParams {
     /// Whether the product is available for purchase.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub active: Option<bool>,
@@ -384,7 +253,7 @@ pub struct UpdateProduct<'a> {
     ///
     /// May only be set if `type=good`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub caption: Option<&'a str>,
+    pub caption: Option<String>,
 
     /// An array of Connect application names or identifiers that should not be able to order the SKUs for this product.
     ///
@@ -394,17 +263,17 @@ pub struct UpdateProduct<'a> {
 
     /// The ID of the [Price](https://stripe.com/docs/api/prices) object that is the default price for this product.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub default_price: Option<&'a str>,
+    pub default_price: Option<String>,
 
     /// The product's description, meant to be displayable to the customer.
     ///
     /// Use this field to optionally store a long form explanation of the product being sold for your own rendering purposes.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<&'a str>,
+    pub description: Option<String>,
 
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
     /// A list of up to 8 URLs of images for this product, meant to be displayable to the customer.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -416,15 +285,15 @@ pub struct UpdateProduct<'a> {
     /// Individual keys can be unset by posting an empty value to them.
     /// All keys can be unset by posting an empty value to `metadata`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Metadata>,
+    pub metadata: Option<crate::params::Metadata>,
 
     /// The product's name, meant to be displayable to the customer.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<&'a str>,
+    pub name: Option<String>,
 
     /// The dimensions of this product for shipping purposes.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub package_dimensions: Option<PackageDimensions>,
+    pub package_dimensions: Option<PostProductsIdParamsPackageDimensions>,
 
     /// Whether this product is shipped (i.e., physical goods).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -437,7 +306,7 @@ pub struct UpdateProduct<'a> {
     /// Non-ASCII characters are automatically stripped.  It must contain at least one letter.
     /// May only be set if `type=service`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub statement_descriptor: Option<&'a str>,
+    pub statement_descriptor: Option<String>,
 
     /// A [tax code](https://stripe.com/docs/tax/tax-categories) ID.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -448,65 +317,138 @@ pub struct UpdateProduct<'a> {
     /// When set, this will be included in associated invoice line item descriptions.
     /// May only be set if `type=service`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub unit_label: Option<&'a str>,
+    pub unit_label: Option<String>,
 
     /// A URL of a publicly-accessible webpage for this product.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 }
 
-impl<'a> UpdateProduct<'a> {
-    pub fn new() -> Self {
-        UpdateProduct {
-            active: Default::default(),
-            attributes: Default::default(),
-            caption: Default::default(),
-            deactivate_on: Default::default(),
-            default_price: Default::default(),
-            description: Default::default(),
-            expand: Default::default(),
-            images: Default::default(),
-            metadata: Default::default(),
-            name: Default::default(),
-            package_dimensions: Default::default(),
-            shippable: Default::default(),
-            statement_descriptor: Default::default(),
-            tax_code: Default::default(),
-            unit_label: Default::default(),
-            url: Default::default(),
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetProductsParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub active: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created: Option<crate::params::RangeQueryTs>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ids: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shippable: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
+
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub type_: Option<GetProductsParamsType>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ProductType {
+    Good,
+    Service,
+}
+
+impl ProductType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Good => "good",
+            Self::Service => "service",
         }
     }
 }
 
-impl Paginable for ListProducts<'_> {
-    type O = Product;
-    fn set_last(&mut self, item: Self::O) {
-        self.starting_after = Some(item.id());
+impl AsRef<str> for ProductType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
     }
 }
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreateProductDefaultPriceData {
+
+impl std::fmt::Display for ProductType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for ProductType {
+    fn default() -> Self {
+        Self::Good
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ReturnedGetProductsSearchObject {
+    SearchResult,
+}
+
+impl ReturnedGetProductsSearchObject {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::SearchResult => "search_result",
+        }
+    }
+}
+
+impl AsRef<str> for ReturnedGetProductsSearchObject {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for ReturnedGetProductsSearchObject {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for ReturnedGetProductsSearchObject {
+    fn default() -> Self {
+        Self::SearchResult
+    }
+}
+/// Data used to generate a new [Price](https://stripe.com/docs/api/prices) object.
+///
+/// This Price will be set as the default price for this product.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostProductsParamsDefaultPriceData {
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
+    pub currency: crate::currency::Currency,
 
     /// Prices defined in each available currency option.
     ///
     /// Each key must be a three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html) and a [supported currency](https://stripe.com/docs/currencies).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency_options: Option<CreateProductDefaultPriceDataCurrencyOptions>,
+    pub currency_options: Option<PostProductsParamsDefaultPriceDataCurrencyOptions>,
 
     /// The recurring components of a price such as `interval` and `interval_count`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub recurring: Option<CreateProductDefaultPriceDataRecurring>,
+    pub recurring: Option<PostProductsParamsDefaultPriceDataRecurring>,
 
     /// Specifies whether the price is considered inclusive of taxes or exclusive of taxes.
     ///
     /// One of `inclusive`, `exclusive`, or `unspecified`.
     /// Once specified as either `inclusive` or `exclusive`, it cannot be changed.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tax_behavior: Option<CreateProductDefaultPriceDataTaxBehavior>,
+    pub tax_behavior: Option<PostProductsParamsDefaultPriceDataTaxBehavior>,
 
     /// A positive integer in cents (or local equivalent) (or 0 for a free price) representing how much to charge.
     ///
@@ -521,25 +463,139 @@ pub struct CreateProductDefaultPriceData {
     pub unit_amount_decimal: Option<String>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreateProductDefaultPriceDataCurrencyOptions {
+/// The dimensions of this product for shipping purposes.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostProductsParamsPackageDimensions {
+    /// Height, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub height: f64,
+
+    /// Length, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub length: f64,
+
+    /// Weight, in ounces.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub weight: f64,
+
+    /// Width, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub width: f64,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostProductsParamsType {
+    Good,
+    Service,
+}
+
+impl PostProductsParamsType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Good => "good",
+            Self::Service => "service",
+        }
+    }
+}
+
+impl AsRef<str> for PostProductsParamsType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostProductsParamsType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostProductsParamsType {
+    fn default() -> Self {
+        Self::Good
+    }
+}
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostProductsIdParamsPackageDimensions {
+    /// Height, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub height: f64,
+
+    /// Length, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub length: f64,
+
+    /// Weight, in ounces.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub weight: f64,
+
+    /// Width, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub width: f64,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum GetProductsParamsType {
+    Good,
+    Service,
+}
+
+impl GetProductsParamsType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Good => "good",
+            Self::Service => "service",
+        }
+    }
+}
+
+impl AsRef<str> for GetProductsParamsType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for GetProductsParamsType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for GetProductsParamsType {
+    fn default() -> Self {
+        Self::Good
+    }
+}
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostProductsParamsDefaultPriceDataCurrencyOptions {
     /// When set, provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom_unit_amount: Option<CreateProductDefaultPriceDataCurrencyOptionsCustomUnitAmount>,
+    pub custom_unit_amount:
+        Option<PostProductsParamsDefaultPriceDataCurrencyOptionsCustomUnitAmount>,
 
     /// Specifies whether the price is considered inclusive of taxes or exclusive of taxes.
     ///
     /// One of `inclusive`, `exclusive`, or `unspecified`.
     /// Once specified as either `inclusive` or `exclusive`, it cannot be changed.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tax_behavior: Option<CreateProductDefaultPriceDataCurrencyOptionsTaxBehavior>,
+    pub tax_behavior: Option<PostProductsParamsDefaultPriceDataCurrencyOptionsTaxBehavior>,
 
     /// Each element represents a pricing tier.
     ///
     /// This parameter requires `billing_scheme` to be set to `tiered`.
     /// See also the documentation for `billing_scheme`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tiers: Option<Vec<CreateProductDefaultPriceDataCurrencyOptionsTiers>>,
+    pub tiers: Option<Vec<PostProductsParamsDefaultPriceDataCurrencyOptionsTiers>>,
 
     /// A positive integer in cents (or local equivalent) (or 0 for a free price) representing how much to charge.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -552,12 +608,13 @@ pub struct CreateProductDefaultPriceDataCurrencyOptions {
     pub unit_amount_decimal: Option<String>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreateProductDefaultPriceDataRecurring {
+/// The recurring components of a price such as `interval` and `interval_count`.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostProductsParamsDefaultPriceDataRecurring {
     /// Specifies billing frequency.
     ///
     /// Either `day`, `week`, `month` or `year`.
-    pub interval: CreateProductDefaultPriceDataRecurringInterval,
+    pub interval: PostProductsParamsDefaultPriceDataRecurringInterval,
 
     /// The number of intervals between subscription billings.
     ///
@@ -567,8 +624,44 @@ pub struct CreateProductDefaultPriceDataRecurring {
     pub interval_count: Option<u64>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreateProductDefaultPriceDataCurrencyOptionsCustomUnitAmount {
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostProductsParamsDefaultPriceDataTaxBehavior {
+    Exclusive,
+    Inclusive,
+    Unspecified,
+}
+
+impl PostProductsParamsDefaultPriceDataTaxBehavior {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Exclusive => "exclusive",
+            Self::Inclusive => "inclusive",
+            Self::Unspecified => "unspecified",
+        }
+    }
+}
+
+impl AsRef<str> for PostProductsParamsDefaultPriceDataTaxBehavior {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostProductsParamsDefaultPriceDataTaxBehavior {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostProductsParamsDefaultPriceDataTaxBehavior {
+    fn default() -> Self {
+        Self::Exclusive
+    }
+}
+/// When set, provides configuration for the amount to be adjusted by the customer during Checkout Sessions and Payment Links.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostProductsParamsDefaultPriceDataCurrencyOptionsCustomUnitAmount {
     /// Pass in `true` to enable `custom_unit_amount`, otherwise omit `custom_unit_amount`.
     pub enabled: bool,
 
@@ -587,8 +680,43 @@ pub struct CreateProductDefaultPriceDataCurrencyOptionsCustomUnitAmount {
     pub preset: Option<i64>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreateProductDefaultPriceDataCurrencyOptionsTiers {
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostProductsParamsDefaultPriceDataCurrencyOptionsTaxBehavior {
+    Exclusive,
+    Inclusive,
+    Unspecified,
+}
+
+impl PostProductsParamsDefaultPriceDataCurrencyOptionsTaxBehavior {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Exclusive => "exclusive",
+            Self::Inclusive => "inclusive",
+            Self::Unspecified => "unspecified",
+        }
+    }
+}
+
+impl AsRef<str> for PostProductsParamsDefaultPriceDataCurrencyOptionsTaxBehavior {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostProductsParamsDefaultPriceDataCurrencyOptionsTaxBehavior {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostProductsParamsDefaultPriceDataCurrencyOptionsTaxBehavior {
+    fn default() -> Self {
+        Self::Exclusive
+    }
+}
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostProductsParamsDefaultPriceDataCurrencyOptionsTiers {
     /// The flat billing amount for an entire tier, regardless of the number of units in the tier.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub flat_amount: Option<i64>,
@@ -613,149 +741,86 @@ pub struct CreateProductDefaultPriceDataCurrencyOptionsTiers {
     ///
     /// The lower bound of a tier is the upper bound of the previous tier adding one.
     /// Use `inf` to define a fallback tier.
-    pub up_to: Option<UpTo>,
+    pub up_to: crate::resources::UpTo,
 }
 
-/// An enum representing the possible values of an `CreateProductDefaultPriceDataCurrencyOptions`'s `tax_behavior` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum CreateProductDefaultPriceDataCurrencyOptionsTaxBehavior {
-    Exclusive,
-    Inclusive,
-    Unspecified,
-}
-
-impl CreateProductDefaultPriceDataCurrencyOptionsTaxBehavior {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            CreateProductDefaultPriceDataCurrencyOptionsTaxBehavior::Exclusive => "exclusive",
-            CreateProductDefaultPriceDataCurrencyOptionsTaxBehavior::Inclusive => "inclusive",
-            CreateProductDefaultPriceDataCurrencyOptionsTaxBehavior::Unspecified => "unspecified",
-        }
-    }
-}
-
-impl AsRef<str> for CreateProductDefaultPriceDataCurrencyOptionsTaxBehavior {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for CreateProductDefaultPriceDataCurrencyOptionsTaxBehavior {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for CreateProductDefaultPriceDataCurrencyOptionsTaxBehavior {
-    fn default() -> Self {
-        Self::Exclusive
-    }
-}
-
-/// An enum representing the possible values of an `CreateProductDefaultPriceDataRecurring`'s `interval` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum CreateProductDefaultPriceDataRecurringInterval {
+pub enum PostProductsParamsDefaultPriceDataRecurringInterval {
     Day,
     Month,
     Week,
     Year,
 }
 
-impl CreateProductDefaultPriceDataRecurringInterval {
+impl PostProductsParamsDefaultPriceDataRecurringInterval {
     pub fn as_str(self) -> &'static str {
         match self {
-            CreateProductDefaultPriceDataRecurringInterval::Day => "day",
-            CreateProductDefaultPriceDataRecurringInterval::Month => "month",
-            CreateProductDefaultPriceDataRecurringInterval::Week => "week",
-            CreateProductDefaultPriceDataRecurringInterval::Year => "year",
+            Self::Day => "day",
+            Self::Month => "month",
+            Self::Week => "week",
+            Self::Year => "year",
         }
     }
 }
 
-impl AsRef<str> for CreateProductDefaultPriceDataRecurringInterval {
+impl AsRef<str> for PostProductsParamsDefaultPriceDataRecurringInterval {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for CreateProductDefaultPriceDataRecurringInterval {
+impl std::fmt::Display for PostProductsParamsDefaultPriceDataRecurringInterval {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for CreateProductDefaultPriceDataRecurringInterval {
+
+impl Default for PostProductsParamsDefaultPriceDataRecurringInterval {
     fn default() -> Self {
         Self::Day
     }
 }
-
-/// An enum representing the possible values of an `CreateProductDefaultPriceData`'s `tax_behavior` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum CreateProductDefaultPriceDataTaxBehavior {
-    Exclusive,
-    Inclusive,
-    Unspecified,
+pub fn get_products_search(
+    client: &crate::Client,
+    params: GetProductsSearchParams,
+) -> crate::Response<ReturnedGetProductsSearch> {
+    client.get_query("/products/search", params)
 }
 
-impl CreateProductDefaultPriceDataTaxBehavior {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            CreateProductDefaultPriceDataTaxBehavior::Exclusive => "exclusive",
-            CreateProductDefaultPriceDataTaxBehavior::Inclusive => "inclusive",
-            CreateProductDefaultPriceDataTaxBehavior::Unspecified => "unspecified",
-        }
-    }
+pub fn post_products(
+    client: &crate::Client,
+    params: PostProductsParams,
+) -> crate::Response<crate::generated::Product> {
+    client.post_form("/products", params)
 }
 
-impl AsRef<str> for CreateProductDefaultPriceDataTaxBehavior {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
+pub fn get_products_id(
+    client: &crate::Client,
+    id: String,
+    params: GetProductsIdParams,
+) -> crate::Response<crate::generated::Product> {
+    client.get_query(&format!("/products/{id}", id = id), params)
 }
 
-impl std::fmt::Display for CreateProductDefaultPriceDataTaxBehavior {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for CreateProductDefaultPriceDataTaxBehavior {
-    fn default() -> Self {
-        Self::Exclusive
-    }
+pub fn post_products_id(
+    client: &crate::Client,
+    id: String,
+    params: PostProductsIdParams,
+) -> crate::Response<crate::generated::Product> {
+    client.post_form(&format!("/products/{id}", id = id), params)
 }
 
-/// An enum representing the possible values of an `Product`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum ProductType {
-    Good,
-    Service,
+pub fn get_products(
+    client: &crate::Client,
+    params: GetProductsParams,
+) -> crate::Response<crate::params::List<crate::generated::Product>> {
+    client.get_query("/products", params)
 }
 
-impl ProductType {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            ProductType::Good => "good",
-            ProductType::Service => "service",
-        }
-    }
-}
-
-impl AsRef<str> for ProductType {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for ProductType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for ProductType {
-    fn default() -> Self {
-        Self::Good
-    }
+pub fn delete_products_id(
+    client: &crate::Client,
+    id: String,
+) -> crate::Response<crate::generated::DeletedProduct> {
+    client.delete(&format!("/products/{id}", id = id))
 }

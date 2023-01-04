@@ -1,22 +1,8 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::{CouponId, CustomerId, PromotionCodeId};
-use crate::params::{Expand, Expandable, List, Metadata, Object, Paginable, RangeQuery, Timestamp};
-use crate::resources::{Coupon, Currency, Customer};
-
-/// The resource representing a Stripe "PromotionCode".
+/// A Promotion Code represents a customer-redeemable code for a [coupon](https://stripe.com/docs/api#coupons).
 ///
-/// For more details see <https://stripe.com/docs/api/promotion_codes/object>
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// It can be used to create multiple codes for a single coupon.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct PromotionCode {
-    /// Unique identifier for the object.
-    pub id: PromotionCodeId,
-
     /// Whether the promotion code is currently active.
     ///
     /// A promotion code is only active if the coupon is also valid.
@@ -27,18 +13,21 @@ pub struct PromotionCode {
     /// Regardless of case, this code must be unique across all active promotion codes for each customer.
     pub code: String,
 
-    pub coupon: Coupon,
+    pub coupon: crate::generated::Coupon,
 
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-    pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
     /// The customer that this promotion code can be used by.
-    pub customer: Option<Expandable<Customer>>,
+    pub customer: Option<Vec<crate::generated::Customer>>,
 
     /// Date at which the promotion code can no longer be redeemed.
-    pub expires_at: Option<Timestamp>,
+    pub expires_at: Option<crate::resources::Scheduled>,
+
+    /// Unique identifier for the object.
+    pub id: String,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
     pub livemode: bool,
@@ -49,155 +38,57 @@ pub struct PromotionCode {
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
     /// This can be useful for storing additional information about the object in a structured format.
-    pub metadata: Metadata,
+    pub metadata: Option<crate::params::Metadata>,
 
-    pub restrictions: PromotionCodesResourceRestrictions,
+    pub restrictions: crate::generated::PromotionCodesResourceRestrictions,
 
     /// Number of times this promotion code has been used.
     pub times_redeemed: i64,
 }
 
-impl PromotionCode {
-    /// Returns a list of your promotion codes.
-    pub fn list(client: &Client, params: &ListPromotionCodes<'_>) -> Response<List<PromotionCode>> {
-        client.get_query("/promotion_codes", &params)
-    }
-
-    /// Retrieves the promotion code with the given ID.
-    ///
-    /// In order to retrieve a promotion code by the customer-facing `code` use [list](https://stripe.com/docs/api/promotion_codes/list) with the desired `code`.
-    pub fn retrieve(
-        client: &Client,
-        id: &PromotionCodeId,
-        expand: &[&str],
-    ) -> Response<PromotionCode> {
-        client.get_query(&format!("/promotion_codes/{}", id), &Expand { expand })
-    }
-
-    /// Updates the specified promotion code by setting the values of the parameters passed.
-    ///
-    /// Most fields are, by design, not editable.
-    pub fn update(
-        client: &Client,
-        id: &PromotionCodeId,
-        params: UpdatePromotionCode<'_>,
-    ) -> Response<PromotionCode> {
-        client.post_form(&format!("/promotion_codes/{}", id), &params)
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetPromotionCodesPromotionCodeParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-impl Object for PromotionCode {
-    type Id = PromotionCodeId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "promotion_code"
-    }
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PromotionCodesResourceRestrictions {
-    /// Promotion code restrictions defined in each available currency option.
-    ///
-    /// Each key must be a three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html) and a [supported currency](https://stripe.com/docs/currencies).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency_options: Option<PromotionCodeCurrencyOption>,
-
-    /// A Boolean indicating if the Promotion Code should only be redeemed for Customers without any successful payments or invoices.
-    pub first_time_transaction: bool,
-
-    /// Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work).
-    pub minimum_amount: Option<i64>,
-
-    /// Three-letter [ISO code](https://stripe.com/docs/currencies) for minimum_amount.
-    pub minimum_amount_currency: Option<Currency>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PromotionCodeCurrencyOption {
-    /// Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work).
-    pub minimum_amount: i64,
-}
-
-/// The parameters for `PromotionCode::list`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct ListPromotionCodes<'a> {
-    /// Filter promotion codes by whether they are active.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub active: Option<bool>,
-
-    /// Only return promotion codes that have this case-insensitive code.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub code: Option<&'a str>,
-
-    /// Only return promotion codes for this coupon.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub coupon: Option<CouponId>,
-
-    /// A filter on the list, based on the object `created` field.
-    ///
-    /// The value can be a string with an integer Unix timestamp, or it can be a dictionary with a number of different query options.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<RangeQuery<Timestamp>>,
-
-    /// Only return promotion codes that are restricted to this customer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub customer: Option<CustomerId>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `ending_before` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, starting with `obj_bar`, your subsequent call can include `ending_before=obj_bar` in order to fetch the previous page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ending_before: Option<PromotionCodeId>,
-
-    /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
-
-    /// A limit on the number of objects to be returned.
-    ///
-    /// Limit can range between 1 and 100, and the default is 10.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub limit: Option<u64>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `starting_after` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, ending with `obj_foo`, your subsequent call can include `starting_after=obj_foo` in order to fetch the next page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub starting_after: Option<PromotionCodeId>,
-}
-
-impl<'a> ListPromotionCodes<'a> {
-    pub fn new() -> Self {
-        ListPromotionCodes {
-            active: Default::default(),
-            code: Default::default(),
-            coupon: Default::default(),
-            created: Default::default(),
-            customer: Default::default(),
-            ending_before: Default::default(),
-            expand: Default::default(),
-            limit: Default::default(),
-            starting_after: Default::default(),
-        }
-    }
-}
-
-/// The parameters for `PromotionCode::update`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct UpdatePromotionCode<'a> {
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPromotionCodesParams {
     /// Whether the promotion code is currently active.
-    ///
-    /// A promotion code can only be reactivated when the coupon is still valid and the promotion code is otherwise redeemable.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub active: Option<bool>,
 
+    /// The customer-facing code.
+    ///
+    /// Regardless of case, this code must be unique across all active promotion codes for a specific customer.
+    /// If left blank, we will generate one automatically.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code: Option<String>,
+
+    /// The coupon for this promotion code.
+    pub coupon: String,
+
+    /// The customer that this promotion code can be used by.
+    ///
+    /// If not set, the promotion code can be used by all customers.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer: Option<String>,
+
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// The timestamp at which this promotion code will expire.
+    ///
+    /// If the coupon has specified a `redeems_by`, then this value cannot be after the coupon's `redeems_by`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expires_at: Option<crate::resources::Scheduled>,
+
+    /// A positive integer specifying the number of times the promotion code can be redeemed.
+    ///
+    /// If the coupon has specified a `max_redemptions`, then this value cannot be greater than the coupon's `max_redemptions`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub max_redemptions: Option<i64>,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
@@ -205,42 +96,146 @@ pub struct UpdatePromotionCode<'a> {
     /// Individual keys can be unset by posting an empty value to them.
     /// All keys can be unset by posting an empty value to `metadata`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Metadata>,
+    pub metadata: Option<crate::params::Metadata>,
 
     /// Settings that restrict the redemption of the promotion code.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub restrictions: Option<UpdatePromotionCodeRestrictions>,
+    pub restrictions: Option<PostPromotionCodesParamsRestrictions>,
 }
 
-impl<'a> UpdatePromotionCode<'a> {
-    pub fn new() -> Self {
-        UpdatePromotionCode {
-            active: Default::default(),
-            expand: Default::default(),
-            metadata: Default::default(),
-            restrictions: Default::default(),
-        }
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPromotionCodesPromotionCodeParams {
+    /// Whether the promotion code is currently active.
+    ///
+    /// A promotion code can only be reactivated when the coupon is still valid and the promotion code is otherwise redeemable.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub active: Option<bool>,
+
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
+    ///
+    /// This can be useful for storing additional information about the object in a structured format.
+    /// Individual keys can be unset by posting an empty value to them.
+    /// All keys can be unset by posting an empty value to `metadata`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<crate::params::Metadata>,
+
+    /// Settings that restrict the redemption of the promotion code.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub restrictions: Option<PostPromotionCodesPromotionCodeParamsRestrictions>,
 }
 
-impl Paginable for ListPromotionCodes<'_> {
-    type O = PromotionCode;
-    fn set_last(&mut self, item: Self::O) {
-        self.starting_after = Some(item.id());
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetPromotionCodesParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub active: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub coupon: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created: Option<crate::params::RangeQueryTs>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub customer: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
 }
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct UpdatePromotionCodeRestrictions {
+
+/// Settings that restrict the redemption of the promotion code.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPromotionCodesParamsRestrictions {
     /// Promotion codes defined in each available currency option.
     ///
     /// Each key must be a three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html) and a [supported currency](https://stripe.com/docs/currencies).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency_options: Option<UpdatePromotionCodeRestrictionsCurrencyOptions>,
-}
+    pub currency_options: Option<PostPromotionCodesParamsRestrictionsCurrencyOptions>,
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct UpdatePromotionCodeRestrictionsCurrencyOptions {
+    /// A Boolean indicating if the Promotion Code should only be redeemed for Customers without any successful payments or invoices.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub first_time_transaction: Option<bool>,
+
     /// Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub minimum_amount: Option<i64>,
+
+    /// Three-letter [ISO code](https://stripe.com/docs/currencies) for minimum_amount.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub minimum_amount_currency: Option<crate::currency::Currency>,
+}
+
+/// Settings that restrict the redemption of the promotion code.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPromotionCodesPromotionCodeParamsRestrictions {
+    /// Promotion codes defined in each available currency option.
+    ///
+    /// Each key must be a three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html) and a [supported currency](https://stripe.com/docs/currencies).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub currency_options: Option<PostPromotionCodesPromotionCodeParamsRestrictionsCurrencyOptions>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPromotionCodesParamsRestrictionsCurrencyOptions {
+    /// Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub minimum_amount: Option<i64>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPromotionCodesPromotionCodeParamsRestrictionsCurrencyOptions {
+    /// Minimum amount required to redeem this Promotion Code into a Coupon (e.g., a purchase must be $100 or more to work).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub minimum_amount: Option<i64>,
+}
+
+pub fn get_promotion_codes_promotion_code(
+    client: &crate::Client,
+    promotion_code: String,
+    params: GetPromotionCodesPromotionCodeParams,
+) -> crate::Response<crate::generated::PromotionCode> {
+    client.get_query(
+        &format!("/promotion_codes/{promotion_code}", promotion_code = promotion_code),
+        params,
+    )
+}
+
+pub fn post_promotion_codes(
+    client: &crate::Client,
+    params: PostPromotionCodesParams,
+) -> crate::Response<crate::generated::PromotionCode> {
+    client.post_form("/promotion_codes", params)
+}
+
+pub fn post_promotion_codes_promotion_code(
+    client: &crate::Client,
+    promotion_code: String,
+    params: PostPromotionCodesPromotionCodeParams,
+) -> crate::Response<crate::generated::PromotionCode> {
+    client.post_form(
+        &format!("/promotion_codes/{promotion_code}", promotion_code = promotion_code),
+        params,
+    )
+}
+
+pub fn get_promotion_codes(
+    client: &crate::Client,
+    params: GetPromotionCodesParams,
+) -> crate::Response<crate::params::List<crate::generated::PromotionCode>> {
+    client.get_query("/promotion_codes", params)
 }

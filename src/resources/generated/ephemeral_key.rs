@@ -1,28 +1,17 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::{CustomerId, EphemeralKeyId, IssuingCardId};
-use crate::params::{Deleted, Expand, Object, Timestamp};
-
-/// The resource representing a Stripe "EphemeralKey".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct EphemeralKey {
-    /// Unique identifier for the object.
-    pub id: EphemeralKeyId,
-
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-    pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
     /// Time at which the key will expire.
     ///
     /// Measured in seconds since the Unix epoch.
-    pub expires: Timestamp,
+    pub expires: crate::params::Timestamp,
+
+    /// Unique identifier for the object.
+    pub id: String,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
     pub livemode: bool,
@@ -34,50 +23,31 @@ pub struct EphemeralKey {
     pub secret: Option<String>,
 }
 
-impl EphemeralKey {
-    /// Creates a short-lived API key for a given resource.
-    pub fn create(client: &Client, params: CreateEphemeralKey<'_>) -> Response<EphemeralKey> {
-        client.post_form("/ephemeral_keys", &params)
-    }
-
-    /// Invalidates a short-lived API key for a given resource.
-    pub fn delete(client: &Client, id: &EphemeralKeyId) -> Response<Deleted<EphemeralKeyId>> {
-        client.delete(&format!("/ephemeral_keys/{}", id))
-    }
-}
-
-impl Object for EphemeralKey {
-    type Id = EphemeralKeyId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "ephemeral_key"
-    }
-}
-
-/// The parameters for `EphemeralKey::create`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct CreateEphemeralKey<'a> {
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostEphemeralKeysParams {
     /// The ID of the Customer you'd like to modify using the resulting ephemeral key.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub customer: Option<CustomerId>,
+    pub customer: Option<String>,
 
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
     /// The ID of the Issuing Card you'd like to access using the resulting ephemeral key.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub issuing_card: Option<IssuingCardId>,
+    pub issuing_card: Option<String>,
 }
 
-impl<'a> CreateEphemeralKey<'a> {
-    pub fn new() -> Self {
-        CreateEphemeralKey {
-            customer: Default::default(),
-            expand: Default::default(),
-            issuing_card: Default::default(),
-        }
-    }
+pub fn post_ephemeral_keys(
+    client: &crate::Client,
+    params: PostEphemeralKeysParams,
+) -> crate::Response<crate::generated::EphemeralKey> {
+    client.post_form("/ephemeral_keys", params)
+}
+
+pub fn delete_ephemeral_keys_key(
+    client: &crate::Client,
+    key: String,
+) -> crate::Response<crate::generated::EphemeralKey> {
+    client.delete(&format!("/ephemeral_keys/{key}", key = key))
 }

@@ -1,188 +1,202 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::ids::TerminalReaderId;
-use crate::params::{Expandable, Metadata, Object};
-use crate::resources::{Currency, PaymentIntent, SetupIntent, TerminalLocation};
-
-/// The resource representing a Stripe "TerminalReaderReader".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// A Reader represents a physical device for accepting payment details.
+///
+/// Related guide: [Connecting to a Reader](https://stripe.com/docs/terminal/payments/connect-reader).
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct TerminalReader {
-    /// Unique identifier for the object.
-    pub id: TerminalReaderId,
-
     /// The most recent action performed by the reader.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub action: Option<TerminalReaderReaderResourceReaderAction>,
-
-    /// Always true for a deleted object.
-    #[serde(default)]
-    pub deleted: bool,
+    pub action: Option<crate::generated::TerminalReaderReaderResourceReaderAction>,
 
     /// The current software version of the reader.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub device_sw_version: Option<String>,
 
     /// Type of reader, one of `bbpos_wisepad3`, `stripe_m2`, `bbpos_chipper2x`, `bbpos_wisepos_e`, `verifone_P400`, or `simulated_wisepos_e`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub device_type: Option<TerminalReaderDeviceType>,
+    pub device_type: TerminalReaderDeviceType,
+
+    /// Unique identifier for the object.
+    pub id: String,
 
     /// The local IP address of the reader.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub ip_address: Option<String>,
 
     /// Custom label given to the reader for easier identification.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub label: Option<String>,
+    pub label: String,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub livemode: Option<bool>,
+    pub livemode: bool,
 
     /// The location identifier of the reader.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub location: Option<Expandable<TerminalLocation>>,
+    pub location: Option<Vec<crate::generated::TerminalLocation>>,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
     /// This can be useful for storing additional information about the object in a structured format.
-    #[serde(default)]
-    pub metadata: Metadata,
+    pub metadata: crate::params::Metadata,
 
     /// Serial number of the reader.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub serial_number: Option<String>,
+    pub serial_number: String,
 
     /// The networking status of the reader.
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub status: Option<String>,
 }
 
-impl Object for TerminalReader {
-    type Id = TerminalReaderId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "terminal.reader"
-    }
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+#[serde(untagged, rename_all = "snake_case")]
+pub enum ReturnedPostTerminalReadersReader {
+    TerminalReader(crate::generated::TerminalReader),
+    DeletedTerminalReader(crate::generated::DeletedTerminalReader),
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct TerminalReaderReaderResourceReaderAction {
-    /// Failure code, only set if status is `failed`.
-    pub failure_code: Option<String>,
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersReaderParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
-    /// Detailed failure message, only set if status is `failed`.
-    pub failure_message: Option<String>,
+    /// The new label of the reader.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+
+    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
+    ///
+    /// This can be useful for storing additional information about the object in a structured format.
+    /// Individual keys can be unset by posting an empty value to them.
+    /// All keys can be unset by posting an empty value to `metadata`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<crate::params::Metadata>,
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+#[serde(untagged, rename_all = "snake_case")]
+pub enum ReturnedGetTerminalReadersReader {
+    TerminalReader(crate::generated::TerminalReader),
+    DeletedTerminalReader(crate::generated::DeletedTerminalReader),
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetTerminalReadersReaderParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// Custom label given to the reader for easier identification.
+    ///
+    /// If no label is specified, the registration code will be used.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub label: Option<String>,
+
+    /// The location to assign the reader to.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub location: Option<String>,
+
+    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
+    ///
+    /// This can be useful for storing additional information about the object in a structured format.
+    /// Individual keys can be unset by posting an empty value to them.
+    /// All keys can be unset by posting an empty value to `metadata`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<crate::params::Metadata>,
+
+    /// A code generated by the reader used for registering to an account.
+    pub registration_code: String,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetTerminalReadersParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub device_type: Option<GetTerminalReadersParamsDeviceType>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub process_payment_intent: Option<TerminalReaderReaderResourceProcessPaymentIntentAction>,
+    pub ending_before: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub process_setup_intent: Option<TerminalReaderReaderResourceProcessSetupIntentAction>,
+    pub expand: Option<Vec<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub set_reader_display: Option<TerminalReaderReaderResourceSetReaderDisplayAction>,
+    pub limit: Option<i64>,
 
-    /// Status of the action performed by the reader.
-    pub status: TerminalReaderReaderResourceReaderActionStatus,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub location: Option<String>,
 
-    /// Type of action performed by the reader.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<GetTerminalReadersParamsStatus>,
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersReaderProcessPaymentIntentParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// PaymentIntent ID.
+    pub payment_intent: String,
+
+    /// Configuration overrides.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub process_config: Option<PostTerminalReadersReaderProcessPaymentIntentParamsProcessConfig>,
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersReaderProcessSetupIntentParams {
+    /// Customer Consent Collected.
+    pub customer_consent_collected: bool,
+
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// SetupIntent ID.
+    pub setup_intent: String,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersReaderCancelActionParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersReaderSetReaderDisplayParams {
+    /// Cart.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cart: Option<PostTerminalReadersReaderSetReaderDisplayParamsCart>,
+
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// Type.
     #[serde(rename = "type")]
-    pub type_: TerminalReaderReaderResourceReaderActionType,
+    pub type_: PostTerminalReadersReaderSetReaderDisplayParamsType,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct TerminalReaderReaderResourceProcessPaymentIntentAction {
-    /// Most recent PaymentIntent processed by the reader.
-    pub payment_intent: Expandable<PaymentIntent>,
-
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTestHelpersTerminalReadersReaderPresentPaymentMethodParams {
+    /// Simulated data for the card_present payment method.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub process_config: Option<TerminalReaderReaderResourceProcessConfig>,
-}
+    pub card_present:
+        Option<PostTestHelpersTerminalReadersReaderPresentPaymentMethodParamsCardPresent>,
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct TerminalReaderReaderResourceProcessConfig {
-    /// Override showing a tipping selection screen on this transaction.
+    /// Specifies which fields in the response should be expanded.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub skip_tipping: Option<bool>,
+    pub expand: Option<Vec<String>>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tipping: Option<TerminalReaderReaderResourceTippingConfig>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct TerminalReaderReaderResourceProcessSetupIntentAction {
-    /// ID of a card PaymentMethod generated from the card_present PaymentMethod that may be attached to a Customer for future transactions.
-    ///
-    /// Only present if it was possible to generate a card PaymentMethod.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub generated_card: Option<String>,
-
-    /// Most recent SetupIntent processed by the reader.
-    pub setup_intent: Expandable<SetupIntent>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct TerminalReaderReaderResourceSetReaderDisplayAction {
-    /// Cart object to be displayed by the reader.
-    pub cart: Option<TerminalReaderReaderResourceCart>,
-
-    /// Type of information to be displayed by the reader.
+    /// Simulated payment type.
     #[serde(rename = "type")]
-    pub type_: TerminalReaderReaderResourceSetReaderDisplayActionType,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct TerminalReaderReaderResourceCart {
-    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
-    ///
-    /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
-
-    /// List of line items in the cart.
-    pub line_items: Vec<TerminalReaderReaderResourceLineItem>,
-
-    /// Tax amount for the entire cart.
-    ///
-    /// A positive integer in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    pub tax: Option<i64>,
-
-    /// Total amount for the entire cart, including tax.
-    ///
-    /// A positive integer in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    pub total: i64,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct TerminalReaderReaderResourceLineItem {
-    /// The amount of the line item.
-    ///
-    /// A positive integer in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    pub amount: i64,
-
-    /// Description of the line item.
-    pub description: String,
-
-    /// The quantity of the line item.
-    pub quantity: u64,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct TerminalReaderReaderResourceTippingConfig {
-    /// Amount used to calculate tip suggestions on tipping selection screen for this transaction.
-    ///
-    /// Must be a positive integer in the smallest currency unit (e.g., 100 cents to represent $1.00 or 100 to represent ¥100, a zero-decimal currency).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub amount_eligible: Option<i64>,
+    pub type_: Option<PostTestHelpersTerminalReadersReaderPresentPaymentMethodParamsType>,
 }
 
-/// An enum representing the possible values of an `TerminalReader`'s `device_type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TerminalReaderDeviceType {
     BbposChipper2x,
@@ -197,12 +211,12 @@ pub enum TerminalReaderDeviceType {
 impl TerminalReaderDeviceType {
     pub fn as_str(self) -> &'static str {
         match self {
-            TerminalReaderDeviceType::BbposChipper2x => "bbpos_chipper2x",
-            TerminalReaderDeviceType::BbposWisepad3 => "bbpos_wisepad3",
-            TerminalReaderDeviceType::BbposWiseposE => "bbpos_wisepos_e",
-            TerminalReaderDeviceType::SimulatedWiseposE => "simulated_wisepos_e",
-            TerminalReaderDeviceType::StripeM2 => "stripe_m2",
-            TerminalReaderDeviceType::VerifoneP400 => "verifone_P400",
+            Self::BbposChipper2x => "bbpos_chipper2x",
+            Self::BbposWisepad3 => "bbpos_wisepad3",
+            Self::BbposWiseposE => "bbpos_wisepos_e",
+            Self::SimulatedWiseposE => "simulated_wisepos_e",
+            Self::StripeM2 => "stripe_m2",
+            Self::VerifoneP400 => "verifone_P400",
         }
     }
 }
@@ -218,116 +232,297 @@ impl std::fmt::Display for TerminalReaderDeviceType {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TerminalReaderDeviceType {
+
+impl Default for TerminalReaderDeviceType {
     fn default() -> Self {
         Self::BbposChipper2x
     }
 }
 
-/// An enum representing the possible values of an `TerminalReaderReaderResourceReaderAction`'s `status` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum TerminalReaderReaderResourceReaderActionStatus {
-    Failed,
-    InProgress,
-    Succeeded,
+pub enum GetTerminalReadersParamsDeviceType {
+    BbposChipper2x,
+    BbposWisepad3,
+    BbposWiseposE,
+    SimulatedWiseposE,
+    StripeM2,
+    #[serde(rename = "verifone_P400")]
+    VerifoneP400,
 }
 
-impl TerminalReaderReaderResourceReaderActionStatus {
+impl GetTerminalReadersParamsDeviceType {
     pub fn as_str(self) -> &'static str {
         match self {
-            TerminalReaderReaderResourceReaderActionStatus::Failed => "failed",
-            TerminalReaderReaderResourceReaderActionStatus::InProgress => "in_progress",
-            TerminalReaderReaderResourceReaderActionStatus::Succeeded => "succeeded",
+            Self::BbposChipper2x => "bbpos_chipper2x",
+            Self::BbposWisepad3 => "bbpos_wisepad3",
+            Self::BbposWiseposE => "bbpos_wisepos_e",
+            Self::SimulatedWiseposE => "simulated_wisepos_e",
+            Self::StripeM2 => "stripe_m2",
+            Self::VerifoneP400 => "verifone_P400",
         }
     }
 }
 
-impl AsRef<str> for TerminalReaderReaderResourceReaderActionStatus {
+impl AsRef<str> for GetTerminalReadersParamsDeviceType {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for TerminalReaderReaderResourceReaderActionStatus {
+impl std::fmt::Display for GetTerminalReadersParamsDeviceType {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TerminalReaderReaderResourceReaderActionStatus {
+
+impl Default for GetTerminalReadersParamsDeviceType {
     fn default() -> Self {
-        Self::Failed
+        Self::BbposChipper2x
     }
 }
 
-/// An enum representing the possible values of an `TerminalReaderReaderResourceReaderAction`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum TerminalReaderReaderResourceReaderActionType {
-    ProcessPaymentIntent,
-    ProcessSetupIntent,
-    SetReaderDisplay,
+pub enum GetTerminalReadersParamsStatus {
+    Offline,
+    Online,
 }
 
-impl TerminalReaderReaderResourceReaderActionType {
+impl GetTerminalReadersParamsStatus {
     pub fn as_str(self) -> &'static str {
         match self {
-            TerminalReaderReaderResourceReaderActionType::ProcessPaymentIntent => {
-                "process_payment_intent"
-            }
-            TerminalReaderReaderResourceReaderActionType::ProcessSetupIntent => {
-                "process_setup_intent"
-            }
-            TerminalReaderReaderResourceReaderActionType::SetReaderDisplay => "set_reader_display",
+            Self::Offline => "offline",
+            Self::Online => "online",
         }
     }
 }
 
-impl AsRef<str> for TerminalReaderReaderResourceReaderActionType {
+impl AsRef<str> for GetTerminalReadersParamsStatus {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for TerminalReaderReaderResourceReaderActionType {
+impl std::fmt::Display for GetTerminalReadersParamsStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TerminalReaderReaderResourceReaderActionType {
+
+impl Default for GetTerminalReadersParamsStatus {
     fn default() -> Self {
-        Self::ProcessPaymentIntent
+        Self::Offline
     }
 }
+/// Configuration overrides.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersReaderProcessPaymentIntentParamsProcessConfig {
+    /// Override showing a tipping selection screen on this transaction.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub skip_tipping: Option<bool>,
 
-/// An enum representing the possible values of an `TerminalReaderReaderResourceSetReaderDisplayAction`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+    /// Tipping configuration for this transaction.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tipping: Option<PostTerminalReadersReaderProcessPaymentIntentParamsProcessConfigTipping>,
+}
+
+/// Cart.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersReaderSetReaderDisplayParamsCart {
+    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
+    ///
+    /// Must be a [supported currency](https://stripe.com/docs/currencies).
+    pub currency: crate::currency::Currency,
+
+    /// Array of line items that were purchased.
+    pub line_items: Vec<PostTerminalReadersReaderSetReaderDisplayParamsCartLineItems>,
+
+    /// The amount of tax in cents.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tax: Option<i64>,
+
+    /// Total balance of cart due in cents.
+    pub total: i64,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum TerminalReaderReaderResourceSetReaderDisplayActionType {
+pub enum PostTerminalReadersReaderSetReaderDisplayParamsType {
     Cart,
 }
 
-impl TerminalReaderReaderResourceSetReaderDisplayActionType {
+impl PostTerminalReadersReaderSetReaderDisplayParamsType {
     pub fn as_str(self) -> &'static str {
         match self {
-            TerminalReaderReaderResourceSetReaderDisplayActionType::Cart => "cart",
+            Self::Cart => "cart",
         }
     }
 }
 
-impl AsRef<str> for TerminalReaderReaderResourceSetReaderDisplayActionType {
+impl AsRef<str> for PostTerminalReadersReaderSetReaderDisplayParamsType {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for TerminalReaderReaderResourceSetReaderDisplayActionType {
+impl std::fmt::Display for PostTerminalReadersReaderSetReaderDisplayParamsType {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TerminalReaderReaderResourceSetReaderDisplayActionType {
+
+impl Default for PostTerminalReadersReaderSetReaderDisplayParamsType {
     fn default() -> Self {
         Self::Cart
     }
+}
+/// Simulated data for the card_present payment method.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTestHelpersTerminalReadersReaderPresentPaymentMethodParamsCardPresent {
+    /// Card Number.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub number: Option<String>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostTestHelpersTerminalReadersReaderPresentPaymentMethodParamsType {
+    CardPresent,
+}
+
+impl PostTestHelpersTerminalReadersReaderPresentPaymentMethodParamsType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::CardPresent => "card_present",
+        }
+    }
+}
+
+impl AsRef<str> for PostTestHelpersTerminalReadersReaderPresentPaymentMethodParamsType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostTestHelpersTerminalReadersReaderPresentPaymentMethodParamsType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostTestHelpersTerminalReadersReaderPresentPaymentMethodParamsType {
+    fn default() -> Self {
+        Self::CardPresent
+    }
+}
+/// Tipping configuration for this transaction.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersReaderProcessPaymentIntentParamsProcessConfigTipping {
+    /// Amount used to calculate tip suggestions on tipping selection screen for this transaction.
+    ///
+    /// Must be a positive integer in the smallest currency unit (e.g., 100 cents to represent $1.00 or 100 to represent ¥100, a zero-decimal currency).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount_eligible: Option<i64>,
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTerminalReadersReaderSetReaderDisplayParamsCartLineItems {
+    /// The price of the item in cents.
+    pub amount: i64,
+
+    /// The description or name of the item.
+    pub description: String,
+
+    /// The quantity of the line item being purchased.
+    pub quantity: u64,
+}
+
+pub fn post_terminal_readers_reader(
+    client: &crate::Client,
+    reader: String,
+    params: PostTerminalReadersReaderParams,
+) -> crate::Response<ReturnedPostTerminalReadersReader> {
+    client.post_form(&format!("/terminal/readers/{reader}", reader = reader), params)
+}
+
+pub fn get_terminal_readers_reader(
+    client: &crate::Client,
+    reader: String,
+    params: GetTerminalReadersReaderParams,
+) -> crate::Response<ReturnedGetTerminalReadersReader> {
+    client.get_query(&format!("/terminal/readers/{reader}", reader = reader), params)
+}
+
+pub fn post_terminal_readers(
+    client: &crate::Client,
+    params: PostTerminalReadersParams,
+) -> crate::Response<crate::generated::TerminalReader> {
+    client.post_form("/terminal/readers", params)
+}
+
+pub fn get_terminal_readers(
+    client: &crate::Client,
+    params: GetTerminalReadersParams,
+) -> crate::Response<crate::params::List<crate::generated::TerminalReader>> {
+    client.get_query("/terminal/readers", params)
+}
+
+pub fn delete_terminal_readers_reader(
+    client: &crate::Client,
+    reader: String,
+) -> crate::Response<crate::generated::DeletedTerminalReader> {
+    client.delete(&format!("/terminal/readers/{reader}", reader = reader))
+}
+
+pub fn post_terminal_readers_reader_process_payment_intent(
+    client: &crate::Client,
+    reader: String,
+    params: PostTerminalReadersReaderProcessPaymentIntentParams,
+) -> crate::Response<crate::generated::TerminalReader> {
+    client.post_form(
+        &format!("/terminal/readers/{reader}/process_payment_intent", reader = reader),
+        params,
+    )
+}
+
+pub fn post_terminal_readers_reader_process_setup_intent(
+    client: &crate::Client,
+    reader: String,
+    params: PostTerminalReadersReaderProcessSetupIntentParams,
+) -> crate::Response<crate::generated::TerminalReader> {
+    client.post_form(
+        &format!("/terminal/readers/{reader}/process_setup_intent", reader = reader),
+        params,
+    )
+}
+
+pub fn post_terminal_readers_reader_cancel_action(
+    client: &crate::Client,
+    reader: String,
+    params: PostTerminalReadersReaderCancelActionParams,
+) -> crate::Response<crate::generated::TerminalReader> {
+    client.post_form(&format!("/terminal/readers/{reader}/cancel_action", reader = reader), params)
+}
+
+pub fn post_terminal_readers_reader_set_reader_display(
+    client: &crate::Client,
+    reader: String,
+    params: PostTerminalReadersReaderSetReaderDisplayParams,
+) -> crate::Response<crate::generated::TerminalReader> {
+    client.post_form(
+        &format!("/terminal/readers/{reader}/set_reader_display", reader = reader),
+        params,
+    )
+}
+
+pub fn post_test_helpers_terminal_readers_reader_present_payment_method(
+    client: &crate::Client,
+    reader: String,
+    params: PostTestHelpersTerminalReadersReaderPresentPaymentMethodParams,
+) -> crate::Response<crate::generated::TerminalReader> {
+    client.post_form(
+        &format!("/test_helpers/terminal/readers/{reader}/present_payment_method", reader = reader),
+        params,
+    )
 }

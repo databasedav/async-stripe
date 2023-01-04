@@ -1,11 +1,12 @@
 use http_types::{Body, Method, Request, Url};
 use serde::{de::DeserializeOwned, Serialize};
 
+use crate::generated::webhook_endpoint::PostWebhookEndpointsParamsApiVersion;
 use crate::{
     client::{request_strategy::RequestStrategy, BaseClient, Response},
     config::err,
     params::AppInfo,
-    AccountId, ApiVersion, ApplicationId, Headers, StripeError,
+    AccountId, ApplicationId, Headers, StripeError,
 };
 
 static USER_AGENT: &str = concat!("Stripe/v1 RustBindings/", env!("CARGO_PKG_VERSION"));
@@ -33,7 +34,7 @@ impl Client {
             client: BaseClient::new(),
             secret_key: secret_key.into(),
             headers: Headers {
-                stripe_version: ApiVersion::V2020_08_27,
+                stripe_version: PostWebhookEndpointsParamsApiVersion::V2020_08_27,
                 user_agent: USER_AGENT.to_string(),
                 client_id: None,
                 stripe_account: None,

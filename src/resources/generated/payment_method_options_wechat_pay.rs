@@ -1,11 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "payment_method_options_wechat_pay".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct PaymentMethodOptionsWechatPay {
     /// The app ID registered with WeChat Pay.
     ///
@@ -24,8 +17,7 @@ pub struct PaymentMethodOptionsWechatPay {
     pub setup_future_usage: Option<PaymentMethodOptionsWechatPaySetupFutureUsage>,
 }
 
-/// An enum representing the possible values of an `PaymentMethodOptionsWechatPay`'s `client` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOptionsWechatPayClient {
     Android,
@@ -36,9 +28,9 @@ pub enum PaymentMethodOptionsWechatPayClient {
 impl PaymentMethodOptionsWechatPayClient {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentMethodOptionsWechatPayClient::Android => "android",
-            PaymentMethodOptionsWechatPayClient::Ios => "ios",
-            PaymentMethodOptionsWechatPayClient::Web => "web",
+            Self::Android => "android",
+            Self::Ios => "ios",
+            Self::Web => "web",
         }
     }
 }
@@ -54,14 +46,14 @@ impl std::fmt::Display for PaymentMethodOptionsWechatPayClient {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentMethodOptionsWechatPayClient {
+
+impl Default for PaymentMethodOptionsWechatPayClient {
     fn default() -> Self {
         Self::Android
     }
 }
 
-/// An enum representing the possible values of an `PaymentMethodOptionsWechatPay`'s `setup_future_usage` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOptionsWechatPaySetupFutureUsage {
     None,
@@ -70,7 +62,7 @@ pub enum PaymentMethodOptionsWechatPaySetupFutureUsage {
 impl PaymentMethodOptionsWechatPaySetupFutureUsage {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentMethodOptionsWechatPaySetupFutureUsage::None => "none",
+            Self::None => "none",
         }
     }
 }
@@ -86,7 +78,8 @@ impl std::fmt::Display for PaymentMethodOptionsWechatPaySetupFutureUsage {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentMethodOptionsWechatPaySetupFutureUsage {
+
+impl Default for PaymentMethodOptionsWechatPaySetupFutureUsage {
     fn default() -> Self {
         Self::None
     }

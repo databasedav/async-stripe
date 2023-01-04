@@ -1,16 +1,7 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::resources::Address;
-
-/// The resource representing a Stripe "billing_details".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct BillingDetails {
     /// Billing address.
-    pub address: Option<Address>,
+    pub address: Option<crate::generated::Address>,
 
     /// Email address.
     pub email: Option<String>,

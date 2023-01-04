@@ -1,155 +1,159 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::SkuId;
-use crate::params::{
-    Deleted, Expand, Expandable, IdOrCreate, List, Metadata, Object, Paginable, Timestamp,
-};
-use crate::resources::{CreateProduct, Currency, PackageDimensions, Product};
-
-/// The resource representing a Stripe "Sku".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// Stores representations of [stock keeping units](http://en.wikipedia.org/wiki/Stock_keeping_unit).
+/// SKUs describe specific product variations, taking into account any combination of: attributes,
+/// currency, and cost.
+///
+/// For example, a product may be a T-shirt, whereas a specific SKU represents the `size: large`, `color: red` version of that shirt.  Can also be used to manage inventory.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Sku {
-    /// Unique identifier for the object.
-    pub id: SkuId,
-
     /// Whether the SKU is available for purchase.
+    pub active: bool,
+
+    /// A dictionary of attributes and values for the attributes defined by the product.
+    ///
+    /// If, for example, a product's attributes are `["size", "gender"]`, a valid SKU has the following dictionary of attributes: `{"size": "Medium", "gender": "Unisex"}`.
+    pub attributes: String,
+
+    /// Time at which the object was created.
+    ///
+    /// Measured in seconds since the Unix epoch.
+    pub created: crate::params::Timestamp,
+
+    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
+    ///
+    /// Must be a [supported currency](https://stripe.com/docs/currencies).
+    pub currency: crate::currency::Currency,
+
+    /// Unique identifier for the object.
+    pub id: String,
+
+    /// The URL of an image for this SKU, meant to be displayable to the customer.
+    pub image: Option<String>,
+
+    pub inventory: crate::generated::SkuInventory,
+
+    /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
+    pub livemode: bool,
+
+    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
+    ///
+    /// This can be useful for storing additional information about the object in a structured format.
+    pub metadata: crate::params::Metadata,
+
+    /// The dimensions of this SKU for shipping purposes.
+    pub package_dimensions: Option<crate::generated::PackageDimensions>,
+
+    /// The cost of the item as a positive integer in the smallest currency unit (that is, 100 cents to charge $1.00, or 100 to charge ¥100, Japanese Yen being a zero-decimal currency).
+    pub price: i64,
+
+    /// The ID of the product this SKU is associated with.
+    ///
+    /// The product must be currently active.
+    pub product: Vec<crate::generated::Product>,
+
+    /// Time at which the object was last updated.
+    ///
+    /// Measured in seconds since the Unix epoch.
+    pub updated: crate::params::Timestamp,
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+#[serde(untagged, rename_all = "snake_case")]
+pub enum ReturnedGetSkusId {
+    Sku(crate::generated::Sku),
+    DeletedSku(crate::generated::DeletedSku),
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetSkusIdParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetSkusParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub active: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub attributes: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ids: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub in_stock: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub product: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostSkusIdParams {
+    /// Whether this SKU is available for purchase.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub active: Option<bool>,
 
     /// A dictionary of attributes and values for the attributes defined by the product.
     ///
-    /// If, for example, a product's attributes are `["size", "gender"]`, a valid SKU has the following dictionary of attributes: `{"size": "Medium", "gender": "Unisex"}`.
+    /// When specified, `attributes` will partially update the existing attributes dictionary on the product, with the postcondition that a value must be present for each attribute key on the product.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub attributes: Option<Metadata>,
-
-    /// Time at which the object was created.
-    ///
-    /// Measured in seconds since the Unix epoch.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<Timestamp>,
+    pub attributes: Option<String>,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency: Option<Currency>,
+    pub currency: Option<crate::currency::Currency>,
 
-    /// Always true for a deleted object.
-    #[serde(default)]
-    pub deleted: bool,
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
     /// The URL of an image for this SKU, meant to be displayable to the customer.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub image: Option<String>,
 
+    /// Description of the SKU's inventory.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub inventory: Option<SkuInventory>,
-
-    /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub livemode: Option<bool>,
+    pub inventory: Option<PostSkusIdParamsInventory>,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
     /// This can be useful for storing additional information about the object in a structured format.
-    #[serde(default)]
-    pub metadata: Metadata,
+    /// Individual keys can be unset by posting an empty value to them.
+    /// All keys can be unset by posting an empty value to `metadata`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<crate::params::Metadata>,
 
     /// The dimensions of this SKU for shipping purposes.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub package_dimensions: Option<PackageDimensions>,
+    pub package_dimensions: Option<PostSkusIdParamsPackageDimensions>,
 
     /// The cost of the item as a positive integer in the smallest currency unit (that is, 100 cents to charge $1.00, or 100 to charge ¥100, Japanese Yen being a zero-decimal currency).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub price: Option<i64>,
 
-    /// The ID of the product this SKU is associated with.
+    /// The ID of the product that this SKU should belong to.
     ///
-    /// The product must be currently active.
+    /// The product must exist, have the same set of attribute names as the SKU's current product, and be of type `good`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub product: Option<Expandable<Product>>,
-
-    /// Time at which the object was last updated.
-    ///
-    /// Measured in seconds since the Unix epoch.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated: Option<Timestamp>,
+    pub product: Option<String>,
 }
 
-impl Sku {
-    /// Returns a list of your SKUs.
-    ///
-    /// The SKUs are returned sorted by creation date, with the most recently created SKUs appearing first.
-    pub fn list(client: &Client, params: &ListSkus<'_>) -> Response<List<Sku>> {
-        client.get_query("/skus", &params)
-    }
-
-    /// Creates a new SKU associated with a product.
-    pub fn create(client: &Client, params: CreateSku<'_>) -> Response<Sku> {
-        client.post_form("/skus", &params)
-    }
-
-    /// Retrieves the details of an existing SKU.
-    ///
-    /// Supply the unique SKU identifier from either a SKU creation request or from the product, and Stripe will return the corresponding SKU information.
-    pub fn retrieve(client: &Client, id: &SkuId, expand: &[&str]) -> Response<Sku> {
-        client.get_query(&format!("/skus/{}", id), &Expand { expand })
-    }
-
-    /// Updates the specific SKU by setting the values of the parameters passed.
-    ///
-    /// Any parameters not provided will be left unchanged.  Note that a SKU’s `attributes` are not editable.
-    /// Instead, you would need to deactivate the existing SKU and create a new one with the new attribute values.
-    pub fn update(client: &Client, id: &SkuId, params: UpdateSku<'_>) -> Response<Sku> {
-        client.post_form(&format!("/skus/{}", id), &params)
-    }
-
-    /// Delete a SKU.
-    ///
-    /// Deleting a SKU is only possible until it has been used in an order.
-    pub fn delete(client: &Client, id: &SkuId) -> Response<Deleted<SkuId>> {
-        client.delete(&format!("/skus/{}", id))
-    }
-}
-
-impl Object for Sku {
-    type Id = SkuId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "sku"
-    }
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct SkuInventory {
-    /// The count of inventory available.
-    ///
-    /// Will be present if and only if `type` is `finite`.
-    pub quantity: Option<u64>,
-
-    /// Inventory type.
-    ///
-    /// Possible values are `finite`, `bucket` (not quantified), and `infinite`.
-    #[serde(rename = "type")]
-    pub type_: String,
-
-    /// An indicator of the inventory available.
-    ///
-    /// Possible values are `in_stock`, `limited`, and `out_of_stock`.
-    /// Will be present if and only if `type` is `bucket`.
-    pub value: Option<String>,
-}
-
-/// The parameters for `Sku::create`.
-#[derive(Clone, Debug, Serialize)]
-pub struct CreateSku<'a> {
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostSkusParams {
     /// Whether the SKU is available for purchase.
     ///
     /// Default to `true`.
@@ -160,31 +164,30 @@ pub struct CreateSku<'a> {
     ///
     /// If, for example, a product's attributes are `["size", "gender"]`, a valid SKU has the following dictionary of attributes: `{"size": "Medium", "gender": "Unisex"}`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub attributes: Option<Metadata>,
+    pub attributes: Option<String>,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
+    pub currency: crate::currency::Currency,
 
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
     /// The identifier for the SKU.
     ///
     /// Must be unique.
     /// If not provided, an identifier will be randomly generated.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub id: Option<&'a str>,
+    pub id: Option<String>,
 
     /// The URL of an image for this SKU, meant to be displayable to the customer.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub image: Option<&'a str>,
+    pub image: Option<String>,
 
     /// Description of the SKU's inventory.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub inventory: Option<SkuInventory>,
+    pub inventory: PostSkusParamsInventory,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
@@ -192,11 +195,11 @@ pub struct CreateSku<'a> {
     /// Individual keys can be unset by posting an empty value to them.
     /// All keys can be unset by posting an empty value to `metadata`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Metadata>,
+    pub metadata: Option<crate::params::Metadata>,
 
     /// The dimensions of this SKU for shipping purposes.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub package_dimensions: Option<PackageDimensions>,
+    pub package_dimensions: Option<PostSkusParamsPackageDimensions>,
 
     /// The cost of the item as a nonnegative integer in the smallest currency unit (that is, 100 cents to charge $1.00, or 100 to charge ¥100, Japanese Yen being a zero-decimal currency).
     pub price: i64,
@@ -204,177 +207,279 @@ pub struct CreateSku<'a> {
     /// The ID of the product this SKU is associated with.
     ///
     /// Must be a product with type `good`.
-    pub product: IdOrCreate<'a, CreateProduct<'a>>,
+    pub product: String,
 }
 
-impl<'a> CreateSku<'a> {
-    pub fn new(
-        currency: Currency,
-        inventory: Option<SkuInventory>,
-        price: i64,
-        product: IdOrCreate<'a, CreateProduct<'a>>,
-    ) -> Self {
-        CreateSku {
-            active: Default::default(),
-            attributes: Default::default(),
-            currency,
-            expand: Default::default(),
-            id: Default::default(),
-            image: Default::default(),
-            inventory,
-            metadata: Default::default(),
-            package_dimensions: Default::default(),
-            price,
-            product,
+/// Description of the SKU's inventory.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostSkusIdParamsInventory {
+    /// The count of inventory available.
+    ///
+    /// Required if `type` is `finite`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quantity: Option<u64>,
+
+    /// Inventory type.
+    ///
+    /// Possible values are `finite`, `bucket` (not quantified), and `infinite`.
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub type_: Option<PostSkusIdParamsInventoryType>,
+
+    /// An indicator of the inventory available.
+    ///
+    /// Possible values are `in_stock`, `limited`, and `out_of_stock`.
+    /// Will be present if and only if `type` is `bucket`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value: Option<PostSkusIdParamsInventoryValue>,
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostSkusIdParamsPackageDimensions {
+    /// Height, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub height: f64,
+
+    /// Length, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub length: f64,
+
+    /// Weight, in ounces.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub weight: f64,
+
+    /// Width, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub width: f64,
+}
+
+/// Description of the SKU's inventory.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostSkusParamsInventory {
+    /// The count of inventory available.
+    ///
+    /// Required if `type` is `finite`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quantity: Option<u64>,
+
+    /// Inventory type.
+    ///
+    /// Possible values are `finite`, `bucket` (not quantified), and `infinite`.
+    #[serde(rename = "type")]
+    pub type_: PostSkusParamsInventoryType,
+
+    /// An indicator of the inventory available.
+    ///
+    /// Possible values are `in_stock`, `limited`, and `out_of_stock`.
+    /// Will be present if and only if `type` is `bucket`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub value: Option<PostSkusParamsInventoryValue>,
+}
+
+/// The dimensions of this SKU for shipping purposes.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostSkusParamsPackageDimensions {
+    /// Height, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub height: f64,
+
+    /// Length, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub length: f64,
+
+    /// Weight, in ounces.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub weight: f64,
+
+    /// Width, in inches.
+    ///
+    /// Maximum precision is 2 decimal places.
+    pub width: f64,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostSkusIdParamsInventoryType {
+    Bucket,
+    Finite,
+    Infinite,
+}
+
+impl PostSkusIdParamsInventoryType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Bucket => "bucket",
+            Self::Finite => "finite",
+            Self::Infinite => "infinite",
         }
     }
 }
 
-/// The parameters for `Sku::list`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct ListSkus<'a> {
-    /// Only return SKUs that are active or inactive (e.g., pass `false` to list all inactive products).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub active: Option<bool>,
-
-    /// Only return SKUs that have the specified key-value pairs in this partially constructed dictionary.
-    ///
-    /// Can be specified only if `product` is also supplied.
-    /// For instance, if the associated product has attributes `["color", "size"]`, passing in `attributes[color]=red` returns all the SKUs for this product that have `color` set to `red`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub attributes: Option<Metadata>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `ending_before` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, starting with `obj_bar`, your subsequent call can include `ending_before=obj_bar` in order to fetch the previous page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ending_before: Option<SkuId>,
-
-    /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
-
-    /// Only return SKUs with the given IDs.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ids: Option<Vec<String>>,
-
-    /// Only return SKUs that are either in stock or out of stock (e.g., pass `false` to list all SKUs that are out of stock).
-    ///
-    /// If no value is provided, all SKUs are returned.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub in_stock: Option<bool>,
-
-    /// A limit on the number of objects to be returned.
-    ///
-    /// Limit can range between 1 and 100, and the default is 10.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub limit: Option<u64>,
-
-    /// The ID of the product whose SKUs will be retrieved.
-    ///
-    /// Must be a product with type `good`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub product: Option<IdOrCreate<'a, CreateProduct<'a>>>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `starting_after` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, ending with `obj_foo`, your subsequent call can include `starting_after=obj_foo` in order to fetch the next page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub starting_after: Option<SkuId>,
+impl AsRef<str> for PostSkusIdParamsInventoryType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
 }
 
-impl<'a> ListSkus<'a> {
-    pub fn new() -> Self {
-        ListSkus {
-            active: Default::default(),
-            attributes: Default::default(),
-            ending_before: Default::default(),
-            expand: Default::default(),
-            ids: Default::default(),
-            in_stock: Default::default(),
-            limit: Default::default(),
-            product: Default::default(),
-            starting_after: Default::default(),
+impl std::fmt::Display for PostSkusIdParamsInventoryType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostSkusIdParamsInventoryType {
+    fn default() -> Self {
+        Self::Bucket
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostSkusIdParamsInventoryValue {
+    InStock,
+    Limited,
+    OutOfStock,
+}
+
+impl PostSkusIdParamsInventoryValue {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::InStock => "in_stock",
+            Self::Limited => "limited",
+            Self::OutOfStock => "out_of_stock",
         }
     }
 }
 
-/// The parameters for `Sku::update`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct UpdateSku<'a> {
-    /// Whether this SKU is available for purchase.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub active: Option<bool>,
-
-    /// A dictionary of attributes and values for the attributes defined by the product.
-    ///
-    /// When specified, `attributes` will partially update the existing attributes dictionary on the product, with the postcondition that a value must be present for each attribute key on the product.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub attributes: Option<Metadata>,
-
-    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
-    ///
-    /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency: Option<Currency>,
-
-    /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
-
-    /// The URL of an image for this SKU, meant to be displayable to the customer.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub image: Option<&'a str>,
-
-    /// Description of the SKU's inventory.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub inventory: Option<SkuInventory>,
-
-    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
-    ///
-    /// This can be useful for storing additional information about the object in a structured format.
-    /// Individual keys can be unset by posting an empty value to them.
-    /// All keys can be unset by posting an empty value to `metadata`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Metadata>,
-
-    /// The dimensions of this SKU for shipping purposes.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub package_dimensions: Option<PackageDimensions>,
-
-    /// The cost of the item as a positive integer in the smallest currency unit (that is, 100 cents to charge $1.00, or 100 to charge ¥100, Japanese Yen being a zero-decimal currency).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub price: Option<i64>,
-
-    /// The ID of the product that this SKU should belong to.
-    ///
-    /// The product must exist, have the same set of attribute names as the SKU's current product, and be of type `good`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub product: Option<IdOrCreate<'a, CreateProduct<'a>>>,
+impl AsRef<str> for PostSkusIdParamsInventoryValue {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
 }
 
-impl<'a> UpdateSku<'a> {
-    pub fn new() -> Self {
-        UpdateSku {
-            active: Default::default(),
-            attributes: Default::default(),
-            currency: Default::default(),
-            expand: Default::default(),
-            image: Default::default(),
-            inventory: Default::default(),
-            metadata: Default::default(),
-            package_dimensions: Default::default(),
-            price: Default::default(),
-            product: Default::default(),
+impl std::fmt::Display for PostSkusIdParamsInventoryValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostSkusIdParamsInventoryValue {
+    fn default() -> Self {
+        Self::InStock
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostSkusParamsInventoryType {
+    Bucket,
+    Finite,
+    Infinite,
+}
+
+impl PostSkusParamsInventoryType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Bucket => "bucket",
+            Self::Finite => "finite",
+            Self::Infinite => "infinite",
         }
     }
 }
 
-impl Paginable for ListSkus<'_> {
-    type O = Sku;
-    fn set_last(&mut self, item: Self::O) {
-        self.starting_after = Some(item.id());
+impl AsRef<str> for PostSkusParamsInventoryType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
     }
+}
+
+impl std::fmt::Display for PostSkusParamsInventoryType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostSkusParamsInventoryType {
+    fn default() -> Self {
+        Self::Bucket
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostSkusParamsInventoryValue {
+    InStock,
+    Limited,
+    OutOfStock,
+}
+
+impl PostSkusParamsInventoryValue {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::InStock => "in_stock",
+            Self::Limited => "limited",
+            Self::OutOfStock => "out_of_stock",
+        }
+    }
+}
+
+impl AsRef<str> for PostSkusParamsInventoryValue {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostSkusParamsInventoryValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostSkusParamsInventoryValue {
+    fn default() -> Self {
+        Self::InStock
+    }
+}
+pub fn get_skus_id(
+    client: &crate::Client,
+    id: String,
+    params: GetSkusIdParams,
+) -> crate::Response<ReturnedGetSkusId> {
+    client.get_query(&format!("/skus/{id}", id = id), params)
+}
+
+pub fn get_skus(
+    client: &crate::Client,
+    params: GetSkusParams,
+) -> crate::Response<crate::params::List<crate::generated::Sku>> {
+    client.get_query("/skus", params)
+}
+
+pub fn post_skus_id(
+    client: &crate::Client,
+    id: String,
+    params: PostSkusIdParams,
+) -> crate::Response<crate::generated::Sku> {
+    client.post_form(&format!("/skus/{id}", id = id), params)
+}
+
+pub fn post_skus(
+    client: &crate::Client,
+    params: PostSkusParams,
+) -> crate::Response<crate::generated::Sku> {
+    client.post_form("/skus", params)
+}
+
+pub fn delete_skus_id(
+    client: &crate::Client,
+    id: String,
+) -> crate::Response<crate::generated::DeletedSku> {
+    client.delete(&format!("/skus/{id}", id = id))
 }

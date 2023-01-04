@@ -1,11 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "payment_method_options_p24".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct PaymentMethodOptionsP24 {
     /// Indicates that you intend to make future payments with this PaymentIntent's payment method.
     ///
@@ -16,8 +9,7 @@ pub struct PaymentMethodOptionsP24 {
     pub setup_future_usage: Option<PaymentMethodOptionsP24SetupFutureUsage>,
 }
 
-/// An enum representing the possible values of an `PaymentMethodOptionsP24`'s `setup_future_usage` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOptionsP24SetupFutureUsage {
     None,
@@ -26,7 +18,7 @@ pub enum PaymentMethodOptionsP24SetupFutureUsage {
 impl PaymentMethodOptionsP24SetupFutureUsage {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentMethodOptionsP24SetupFutureUsage::None => "none",
+            Self::None => "none",
         }
     }
 }
@@ -42,7 +34,8 @@ impl std::fmt::Display for PaymentMethodOptionsP24SetupFutureUsage {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentMethodOptionsP24SetupFutureUsage {
+
+impl Default for PaymentMethodOptionsP24SetupFutureUsage {
     fn default() -> Self {
         Self::None
     }

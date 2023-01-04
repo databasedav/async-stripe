@@ -1,32 +1,20 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use crate::ids::{TreasuryReceivedCreditId};
-use crate::params::{Expandable, Object, Timestamp};
-use crate::resources::{Currency, Payout, TreasuryCreditReversal, TreasuryOutboundPayment, TreasurySharedResourceInitiatingPaymentMethodDetailsInitiatingPaymentMethodDetails, TreasuryTransaction};
-
-use serde::{Deserialize, Serialize};
-
-
-/// The resource representing a Stripe "TreasuryReceivedCreditsResourceReceivedCredit".
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
+/// ReceivedCredits represent funds sent to a [FinancialAccount](https://stripe.com/docs/api#financial_accounts) (for example, via ACH or wire).
+///
+/// These money movements are not initiated from the FinancialAccount.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct TreasuryReceivedCredit {
-    /// Unique identifier for the object.
-pub id: TreasuryReceivedCreditId,
-
     /// Amount (in cents) transferred.
 pub amount: i64,
 
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-pub created: Timestamp,
+pub created: crate::params::Timestamp,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-pub currency: Currency,
+pub currency: crate::currency::Currency,
 
     /// An arbitrary string attached to the object.
     ///
@@ -44,9 +32,12 @@ pub financial_account: Option<String>,
     /// A [hosted transaction receipt](https://stripe.com/docs/treasury/moving-money/regulatory-receipts) URL that is provided when money movement is considered regulated under Stripe's money transmission licenses.
 pub hosted_regulatory_receipt_url: Option<String>,
 
-pub initiating_payment_method_details: TreasurySharedResourceInitiatingPaymentMethodDetailsInitiatingPaymentMethodDetails,
+    /// Unique identifier for the object.
+pub id: String,
 
-pub linked_flows: TreasuryReceivedCreditsResourceLinkedFlows,
+pub initiating_payment_method_details: crate::generated::TreasurySharedResourceInitiatingPaymentMethodDetailsInitiatingPaymentMethodDetails,
+
+pub linked_flows: crate::generated::TreasuryReceivedCreditsResourceLinkedFlows,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
 pub livemode: bool,
@@ -55,7 +46,7 @@ pub livemode: bool,
 pub network: TreasuryReceivedCreditNetwork,
 
     /// Details describing when a ReceivedCredit may be reversed.
-pub reversal_details: Option<TreasuryReceivedCreditsResourceReversalDetails>,
+pub reversal_details: Option<crate::generated::TreasuryReceivedCreditsResourceReversalDetails>,
 
     /// Status of the ReceivedCredit.
     ///
@@ -64,90 +55,84 @@ pub reversal_details: Option<TreasuryReceivedCreditsResourceReversalDetails>,
 pub status: TreasuryReceivedCreditStatus,
 
     /// The Transaction associated with this object.
-pub transaction: Option<Expandable<TreasuryTransaction>>,
+pub transaction: Option<Vec<crate::generated::TreasuryTransaction>>,
 }
 
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct GetTreasuryReceivedCreditsParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
 
-impl Object for TreasuryReceivedCredit {
-    type Id = TreasuryReceivedCreditId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "treasury.received_credit"
-    }
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    pub financial_account: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub linked_flows: Option<GetTreasuryReceivedCreditsParamsLinkedFlows>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<GetTreasuryReceivedCreditsParamsStatus>,
 }
 
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct TreasuryReceivedCreditsResourceLinkedFlows {
-    /// The CreditReversal created as a result of this ReceivedCredit being reversed.
-pub credit_reversal: Option<String>,
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetTreasuryReceivedCreditsIdParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+}
 
-    /// Set if the ReceivedCredit was created due to an [Issuing Authorization](https://stripe.com/docs/api#issuing_authorizations) object.
-pub issuing_authorization: Option<String>,
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTestHelpersTreasuryReceivedCreditsParams {
+    /// Amount (in cents) to be transferred.
+    pub amount: i64,
 
-    /// Set if the ReceivedCredit is also viewable as an [Issuing transaction](https://stripe.com/docs/api#issuing_transactions) object.
-pub issuing_transaction: Option<String>,
-
-    /// ID of the source flow.
+    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
-    /// Set if `network` is `stripe` and the source flow is visible to the user.
-    /// Examples of source flows include OutboundPayments, payouts, or CreditReversals.
-pub source_flow: Option<String>,
+    /// Must be a [supported currency](https://stripe.com/docs/currencies).
+    pub currency: crate::currency::Currency,
 
-    /// The expandable object of the source flow.
-pub source_flow_details: Option<TreasuryReceivedCreditsResourceSourceFlowsDetails>,
+    /// An arbitrary string attached to the object.
+    ///
+    /// Often useful for displaying to users.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
 
-    /// The type of flow that originated the ReceivedCredit (for example, `outbound_payment`).
-pub source_flow_type: Option<String>,
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// The FinancialAccount to send funds to.
+    pub financial_account: String,
+
+    /// Initiating payment method details for the object.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub initiating_payment_method_details:
+        Option<PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetails>,
+
+    /// The rails used for the object.
+    pub network: PostTestHelpersTreasuryReceivedCreditsParamsNetwork,
 }
 
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct TreasuryReceivedCreditsResourceReversalDetails {
-    /// Time before which a ReceivedCredit can be reversed.
-pub deadline: Option<Timestamp>,
-
-    /// Set if a ReceivedCredit cannot be reversed.
-pub restricted_reason: Option<TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct TreasuryReceivedCreditsResourceSourceFlowsDetails {
-#[serde(skip_serializing_if = "Option::is_none")]
-pub credit_reversal: Option<TreasuryCreditReversal>,
-
-#[serde(skip_serializing_if = "Option::is_none")]
-pub outbound_payment: Option<TreasuryOutboundPayment>,
-
-#[serde(skip_serializing_if = "Option::is_none")]
-pub payout: Option<Payout>,
-
-    /// The type of the source flow that originated the ReceivedCredit.
-#[serde(rename = "type")]
-pub type_: TreasuryReceivedCreditsResourceSourceFlowsDetailsType,
-}
-
-
-
-
-
-
-/// An enum representing the possible values of an `TreasuryReceivedCredit`'s `failure_code` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TreasuryReceivedCreditFailureCode {
-AccountClosed,
-AccountFrozen,
-Other,
-
+    AccountClosed,
+    AccountFrozen,
+    Other,
 }
 
 impl TreasuryReceivedCreditFailureCode {
     pub fn as_str(self) -> &'static str {
         match self {
-TreasuryReceivedCreditFailureCode::AccountClosed => "account_closed",
-TreasuryReceivedCreditFailureCode::AccountFrozen => "account_frozen",
-TreasuryReceivedCreditFailureCode::Other => "other",
+            Self::AccountClosed => "account_closed",
+            Self::AccountFrozen => "account_frozen",
+            Self::Other => "other",
         }
     }
 }
@@ -163,30 +148,29 @@ impl std::fmt::Display for TreasuryReceivedCreditFailureCode {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TreasuryReceivedCreditFailureCode {
+
+impl Default for TreasuryReceivedCreditFailureCode {
     fn default() -> Self {
         Self::AccountClosed
     }
 }
 
-/// An enum representing the possible values of an `TreasuryReceivedCredit`'s `network` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TreasuryReceivedCreditNetwork {
-Ach,
-Card,
-Stripe,
-UsDomesticWire,
-
+    Ach,
+    Card,
+    Stripe,
+    UsDomesticWire,
 }
 
 impl TreasuryReceivedCreditNetwork {
     pub fn as_str(self) -> &'static str {
         match self {
-TreasuryReceivedCreditNetwork::Ach => "ach",
-TreasuryReceivedCreditNetwork::Card => "card",
-TreasuryReceivedCreditNetwork::Stripe => "stripe",
-TreasuryReceivedCreditNetwork::UsDomesticWire => "us_domestic_wire",
+            Self::Ach => "ach",
+            Self::Card => "card",
+            Self::Stripe => "stripe",
+            Self::UsDomesticWire => "us_domestic_wire",
         }
     }
 }
@@ -202,26 +186,25 @@ impl std::fmt::Display for TreasuryReceivedCreditNetwork {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TreasuryReceivedCreditNetwork {
+
+impl Default for TreasuryReceivedCreditNetwork {
     fn default() -> Self {
         Self::Ach
     }
 }
 
-/// An enum representing the possible values of an `TreasuryReceivedCredit`'s `status` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TreasuryReceivedCreditStatus {
-Failed,
-Succeeded,
-
+    Failed,
+    Succeeded,
 }
 
 impl TreasuryReceivedCreditStatus {
     pub fn as_str(self) -> &'static str {
         match self {
-TreasuryReceivedCreditStatus::Failed => "failed",
-TreasuryReceivedCreditStatus::Succeeded => "succeeded",
+            Self::Failed => "failed",
+            Self::Succeeded => "succeeded",
         }
     }
 }
@@ -237,88 +220,204 @@ impl std::fmt::Display for TreasuryReceivedCreditStatus {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TreasuryReceivedCreditStatus {
+
+impl Default for TreasuryReceivedCreditStatus {
     fn default() -> Self {
         Self::Failed
     }
 }
-
-/// An enum representing the possible values of an `TreasuryReceivedCreditsResourceReversalDetails`'s `restricted_reason` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason {
-AlreadyReversed,
-DeadlinePassed,
-NetworkRestricted,
-Other,
-SourceFlowRestricted,
-
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct GetTreasuryReceivedCreditsParamsLinkedFlows {
+    /// The source flow type.
+    pub source_flow_type: GetTreasuryReceivedCreditsParamsLinkedFlowsSourceFlowType,
 }
 
-impl TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason {
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum GetTreasuryReceivedCreditsParamsStatus {
+    Failed,
+    Succeeded,
+}
+
+impl GetTreasuryReceivedCreditsParamsStatus {
     pub fn as_str(self) -> &'static str {
         match self {
-TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason::AlreadyReversed => "already_reversed",
-TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason::DeadlinePassed => "deadline_passed",
-TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason::NetworkRestricted => "network_restricted",
-TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason::Other => "other",
-TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason::SourceFlowRestricted => "source_flow_restricted",
+            Self::Failed => "failed",
+            Self::Succeeded => "succeeded",
         }
     }
 }
 
-impl AsRef<str> for TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason {
+impl AsRef<str> for GetTreasuryReceivedCreditsParamsStatus {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason {
+impl std::fmt::Display for GetTreasuryReceivedCreditsParamsStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TreasuryReceivedCreditsResourceReversalDetailsRestrictedReason {
+
+impl Default for GetTreasuryReceivedCreditsParamsStatus {
     fn default() -> Self {
-        Self::AlreadyReversed
+        Self::Failed
     }
 }
+/// Initiating payment method details for the object.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetails {
+    /// The source type.
+    #[serde(rename = "type")]
+    pub type_: PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetailsType,
 
-/// An enum representing the possible values of an `TreasuryReceivedCreditsResourceSourceFlowsDetails`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum TreasuryReceivedCreditsResourceSourceFlowsDetailsType {
-CreditReversal,
-Other,
-OutboundPayment,
-Payout,
-
+    /// Optional fields for `us_bank_account`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub us_bank_account: Option<
+        PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetailsUsBankAccount,
+    >,
 }
 
-impl TreasuryReceivedCreditsResourceSourceFlowsDetailsType {
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostTestHelpersTreasuryReceivedCreditsParamsNetwork {
+    Ach,
+    UsDomesticWire,
+}
+
+impl PostTestHelpersTreasuryReceivedCreditsParamsNetwork {
     pub fn as_str(self) -> &'static str {
         match self {
-TreasuryReceivedCreditsResourceSourceFlowsDetailsType::CreditReversal => "credit_reversal",
-TreasuryReceivedCreditsResourceSourceFlowsDetailsType::Other => "other",
-TreasuryReceivedCreditsResourceSourceFlowsDetailsType::OutboundPayment => "outbound_payment",
-TreasuryReceivedCreditsResourceSourceFlowsDetailsType::Payout => "payout",
+            Self::Ach => "ach",
+            Self::UsDomesticWire => "us_domestic_wire",
         }
     }
 }
 
-impl AsRef<str> for TreasuryReceivedCreditsResourceSourceFlowsDetailsType {
+impl AsRef<str> for PostTestHelpersTreasuryReceivedCreditsParamsNetwork {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for TreasuryReceivedCreditsResourceSourceFlowsDetailsType {
+impl std::fmt::Display for PostTestHelpersTreasuryReceivedCreditsParamsNetwork {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TreasuryReceivedCreditsResourceSourceFlowsDetailsType {
+
+impl Default for PostTestHelpersTreasuryReceivedCreditsParamsNetwork {
+    fn default() -> Self {
+        Self::Ach
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum GetTreasuryReceivedCreditsParamsLinkedFlowsSourceFlowType {
+    CreditReversal,
+    Other,
+    OutboundPayment,
+    Payout,
+}
+
+impl GetTreasuryReceivedCreditsParamsLinkedFlowsSourceFlowType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::CreditReversal => "credit_reversal",
+            Self::Other => "other",
+            Self::OutboundPayment => "outbound_payment",
+            Self::Payout => "payout",
+        }
+    }
+}
+
+impl AsRef<str> for GetTreasuryReceivedCreditsParamsLinkedFlowsSourceFlowType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for GetTreasuryReceivedCreditsParamsLinkedFlowsSourceFlowType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for GetTreasuryReceivedCreditsParamsLinkedFlowsSourceFlowType {
     fn default() -> Self {
         Self::CreditReversal
     }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetailsType {
+    UsBankAccount,
+}
+
+impl PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetailsType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::UsBankAccount => "us_bank_account",
+        }
+    }
+}
+
+impl AsRef<str> for PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetailsType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display
+    for PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetailsType
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetailsType {
+    fn default() -> Self {
+        Self::UsBankAccount
+    }
+}
+/// Optional fields for `us_bank_account`.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTestHelpersTreasuryReceivedCreditsParamsInitiatingPaymentMethodDetailsUsBankAccount {
+    /// The bank account holder's name.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_holder_name: Option<String>,
+
+    /// The bank account number.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub account_number: Option<String>,
+
+    /// The bank account's routing number.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub routing_number: Option<String>,
+}
+
+pub fn get_treasury_received_credits(
+    client: &crate::Client,
+    params: GetTreasuryReceivedCreditsParams,
+) -> crate::Response<crate::params::List<crate::generated::TreasuryReceivedCredit>> {
+    client.get_query("/treasury/received_credits", params)
+}
+
+pub fn get_treasury_received_credits_id(
+    client: &crate::Client,
+    id: String,
+    params: GetTreasuryReceivedCreditsIdParams,
+) -> crate::Response<crate::generated::TreasuryReceivedCredit> {
+    client.get_query(&format!("/treasury/received_credits/{id}", id = id), params)
+}
+
+pub fn post_test_helpers_treasury_received_credits(
+    client: &crate::Client,
+    params: PostTestHelpersTreasuryReceivedCreditsParams,
+) -> crate::Response<crate::generated::TreasuryReceivedCredit> {
+    client.post_form("/test_helpers/treasury/received_credits", params)
 }

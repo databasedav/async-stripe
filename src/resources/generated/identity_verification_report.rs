@@ -1,609 +1,84 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use crate::ids::{IdentityVerificationReportId};
-use crate::params::{Object, Timestamp};
-use crate::resources::{Address};
-
-use serde::{Deserialize, Serialize};
-
-
-/// The resource representing a Stripe "GelatoVerificationReport".
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
+/// A VerificationReport is the result of an attempt to collect and verify data from a user.
+/// The collection of verification checks performed is determined from the `type` and `options`
+/// parameters used.
+///
+/// You can find the result of each verification check performed in the appropriate sub-resource: `document`, `id_number`, `selfie`.  Each VerificationReport contains a copy of any data collected by the user as well as reference IDs which can be used to access collected images through the [FileUpload](https://stripe.com/docs/api/files) API.
+/// To configure and create VerificationReports, use the [VerificationSession](https://stripe.com/docs/api/identity/verification_sessions) API.  Related guides: [Accessing verification results](https://stripe.com/docs/identity/verification-sessions#results).
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct IdentityVerificationReport {
-    /// Unique identifier for the object.
-pub id: IdentityVerificationReportId,
-
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
-#[serde(skip_serializing_if = "Option::is_none")]
-pub document: Option<GelatoDocumentReport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub document: Option<crate::generated::GelatoDocumentReport>,
 
-#[serde(skip_serializing_if = "Option::is_none")]
-pub id_number: Option<GelatoIdNumberReport>,
+    /// Unique identifier for the object.
+    pub id: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub id_number: Option<crate::generated::GelatoIdNumberReport>,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
-pub livemode: bool,
+    pub livemode: bool,
 
-pub options: GelatoVerificationReportOptions,
+    pub options: crate::generated::GelatoVerificationReportOptions,
 
-#[serde(skip_serializing_if = "Option::is_none")]
-pub selfie: Option<GelatoSelfieReport>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selfie: Option<crate::generated::GelatoSelfieReport>,
 
     /// Type of report.
-#[serde(rename = "type")]
-pub type_: IdentityVerificationReportType,
+    #[serde(rename = "type")]
+    pub type_: IdentityVerificationReportType,
 
     /// ID of the VerificationSession that created this report.
-pub verification_session: Option<String>,
+    pub verification_session: Option<String>,
 }
 
-
-impl Object for IdentityVerificationReport {
-    type Id = IdentityVerificationReportId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "identity.verification_report"
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetIdentityVerificationReportsReportParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoDocumentReport {
-    /// Address as it appears in the document.
-pub address: Option<Address>,
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetIdentityVerificationReportsParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created: Option<crate::params::RangeQueryTs>,
 
-    /// Date of birth as it appears in the document.
-pub dob: Option<GelatoDataDocumentReportDateOfBirth>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
 
-    /// Details on the verification error.
-    ///
-    /// Present when status is `unverified`.
-pub error: Option<GelatoDocumentReportError>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
-    /// Expiration date of the document.
-pub expiration_date: Option<GelatoDataDocumentReportExpirationDate>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
 
-    /// Array of [File](https://stripe.com/docs/api/files) ids containing images for this document.
-pub files: Option<Vec<String>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
 
-    /// First name as it appears in the document.
-pub first_name: Option<String>,
+    #[serde(rename = "type")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub type_: Option<GetIdentityVerificationReportsParamsType>,
 
-    /// Issued date of the document.
-pub issued_date: Option<GelatoDataDocumentReportIssuedDate>,
-
-    /// Issuing country of the document.
-pub issuing_country: Option<String>,
-
-    /// Last name as it appears in the document.
-pub last_name: Option<String>,
-
-    /// Document ID number.
-pub number: Option<String>,
-
-    /// Status of this `document` check.
-pub status: GelatoDocumentReportStatus,
-
-    /// Type of the document.
-#[serde(rename = "type")]
-pub type_: Option<GelatoDocumentReportType>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub verification_session: Option<String>,
 }
 
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoDataDocumentReportDateOfBirth {
-    /// Numerical day between 1 and 31.
-pub day: Option<i64>,
-
-    /// Numerical month between 1 and 12.
-pub month: Option<i64>,
-
-    /// The four-digit year.
-pub year: Option<i64>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoDataDocumentReportExpirationDate {
-    /// Numerical day between 1 and 31.
-pub day: Option<i64>,
-
-    /// Numerical month between 1 and 12.
-pub month: Option<i64>,
-
-    /// The four-digit year.
-pub year: Option<i64>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoDataDocumentReportIssuedDate {
-    /// Numerical day between 1 and 31.
-pub day: Option<i64>,
-
-    /// Numerical month between 1 and 12.
-pub month: Option<i64>,
-
-    /// The four-digit year.
-pub year: Option<i64>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoDocumentReportError {
-    /// A short machine-readable string giving the reason for the verification failure.
-pub code: Option<GelatoDocumentReportErrorCode>,
-
-    /// A human-readable message giving the reason for the failure.
-    ///
-    /// These messages can be shown to your users.
-pub reason: Option<String>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoIdNumberReport {
-    /// Date of birth.
-pub dob: Option<GelatoDataIdNumberReportDate>,
-
-    /// Details on the verification error.
-    ///
-    /// Present when status is `unverified`.
-pub error: Option<GelatoIdNumberReportError>,
-
-    /// First name.
-pub first_name: Option<String>,
-
-    /// ID number.
-pub id_number: Option<String>,
-
-    /// Type of ID number.
-pub id_number_type: Option<GelatoIdNumberReportIdNumberType>,
-
-    /// Last name.
-pub last_name: Option<String>,
-
-    /// Status of this `id_number` check.
-pub status: GelatoIdNumberReportStatus,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoDataIdNumberReportDate {
-    /// Numerical day between 1 and 31.
-pub day: Option<i64>,
-
-    /// Numerical month between 1 and 12.
-pub month: Option<i64>,
-
-    /// The four-digit year.
-pub year: Option<i64>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoIdNumberReportError {
-    /// A short machine-readable string giving the reason for the verification failure.
-pub code: Option<GelatoIdNumberReportErrorCode>,
-
-    /// A human-readable message giving the reason for the failure.
-    ///
-    /// These messages can be shown to your users.
-pub reason: Option<String>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoSelfieReport {
-    /// ID of the [File](https://stripe.com/docs/api/files) holding the image of the identity document used in this check.
-pub document: Option<String>,
-
-    /// Details on the verification error.
-    ///
-    /// Present when status is `unverified`.
-pub error: Option<GelatoSelfieReportError>,
-
-    /// ID of the [File](https://stripe.com/docs/api/files) holding the image of the selfie used in this check.
-pub selfie: Option<String>,
-
-    /// Status of this `selfie` check.
-pub status: GelatoSelfieReportStatus,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoSelfieReportError {
-    /// A short machine-readable string giving the reason for the verification failure.
-pub code: Option<GelatoSelfieReportErrorCode>,
-
-    /// A human-readable message giving the reason for the failure.
-    ///
-    /// These messages can be shown to your users.
-pub reason: Option<String>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoVerificationReportOptions {
-#[serde(skip_serializing_if = "Option::is_none")]
-pub document: Option<GelatoReportDocumentOptions>,
-
-#[serde(skip_serializing_if = "Option::is_none")]
-pub id_number: Option<GelatoReportIdNumberOptions>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoReportDocumentOptions {
-    /// Array of strings of allowed identity document types.
-    ///
-    /// If the provided identity document isn’t one of the allowed types, the verification check will fail with a document_type_not_allowed error code.
-#[serde(skip_serializing_if = "Option::is_none")]
-pub allowed_types: Option<Vec<GelatoReportDocumentOptionsAllowedTypes>>,
-
-    /// Collect an ID number and perform an [ID number check](https://stripe.com/docs/identity/verification-checks?type=id-number) with the document’s extracted name and date of birth.
-#[serde(skip_serializing_if = "Option::is_none")]
-pub require_id_number: Option<bool>,
-
-    /// Disable image uploads, identity document images have to be captured using the device’s camera.
-#[serde(skip_serializing_if = "Option::is_none")]
-pub require_live_capture: Option<bool>,
-
-    /// Capture a face image and perform a [selfie check](https://stripe.com/docs/identity/verification-checks?type=selfie) comparing a photo ID and a picture of your user’s face.
-    ///
-    /// [Learn more](https://stripe.com/docs/identity/selfie).
-#[serde(skip_serializing_if = "Option::is_none")]
-pub require_matching_selfie: Option<bool>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct GelatoReportIdNumberOptions {
-
-}
-
-
-
-
-
-
-/// An enum representing the possible values of an `GelatoDocumentReportError`'s `code` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum GelatoDocumentReportErrorCode {
-DocumentExpired,
-DocumentTypeNotSupported,
-DocumentUnverifiedOther,
-
-}
-
-impl GelatoDocumentReportErrorCode {
-    pub fn as_str(self) -> &'static str {
-        match self {
-GelatoDocumentReportErrorCode::DocumentExpired => "document_expired",
-GelatoDocumentReportErrorCode::DocumentTypeNotSupported => "document_type_not_supported",
-GelatoDocumentReportErrorCode::DocumentUnverifiedOther => "document_unverified_other",
-        }
-    }
-}
-
-impl AsRef<str> for GelatoDocumentReportErrorCode {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for GelatoDocumentReportErrorCode {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for GelatoDocumentReportErrorCode {
-    fn default() -> Self {
-        Self::DocumentExpired
-    }
-}
-
-/// An enum representing the possible values of an `GelatoDocumentReport`'s `status` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum GelatoDocumentReportStatus {
-Unverified,
-Verified,
-
-}
-
-impl GelatoDocumentReportStatus {
-    pub fn as_str(self) -> &'static str {
-        match self {
-GelatoDocumentReportStatus::Unverified => "unverified",
-GelatoDocumentReportStatus::Verified => "verified",
-        }
-    }
-}
-
-impl AsRef<str> for GelatoDocumentReportStatus {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for GelatoDocumentReportStatus {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for GelatoDocumentReportStatus {
-    fn default() -> Self {
-        Self::Unverified
-    }
-}
-
-/// An enum representing the possible values of an `GelatoDocumentReport`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum GelatoDocumentReportType {
-DrivingLicense,
-IdCard,
-Passport,
-
-}
-
-impl GelatoDocumentReportType {
-    pub fn as_str(self) -> &'static str {
-        match self {
-GelatoDocumentReportType::DrivingLicense => "driving_license",
-GelatoDocumentReportType::IdCard => "id_card",
-GelatoDocumentReportType::Passport => "passport",
-        }
-    }
-}
-
-impl AsRef<str> for GelatoDocumentReportType {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for GelatoDocumentReportType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for GelatoDocumentReportType {
-    fn default() -> Self {
-        Self::DrivingLicense
-    }
-}
-
-/// An enum representing the possible values of an `GelatoIdNumberReportError`'s `code` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum GelatoIdNumberReportErrorCode {
-IdNumberInsufficientDocumentData,
-IdNumberMismatch,
-IdNumberUnverifiedOther,
-
-}
-
-impl GelatoIdNumberReportErrorCode {
-    pub fn as_str(self) -> &'static str {
-        match self {
-GelatoIdNumberReportErrorCode::IdNumberInsufficientDocumentData => "id_number_insufficient_document_data",
-GelatoIdNumberReportErrorCode::IdNumberMismatch => "id_number_mismatch",
-GelatoIdNumberReportErrorCode::IdNumberUnverifiedOther => "id_number_unverified_other",
-        }
-    }
-}
-
-impl AsRef<str> for GelatoIdNumberReportErrorCode {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for GelatoIdNumberReportErrorCode {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for GelatoIdNumberReportErrorCode {
-    fn default() -> Self {
-        Self::IdNumberInsufficientDocumentData
-    }
-}
-
-/// An enum representing the possible values of an `GelatoIdNumberReport`'s `id_number_type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum GelatoIdNumberReportIdNumberType {
-BrCpf,
-SgNric,
-UsSsn,
-
-}
-
-impl GelatoIdNumberReportIdNumberType {
-    pub fn as_str(self) -> &'static str {
-        match self {
-GelatoIdNumberReportIdNumberType::BrCpf => "br_cpf",
-GelatoIdNumberReportIdNumberType::SgNric => "sg_nric",
-GelatoIdNumberReportIdNumberType::UsSsn => "us_ssn",
-        }
-    }
-}
-
-impl AsRef<str> for GelatoIdNumberReportIdNumberType {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for GelatoIdNumberReportIdNumberType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for GelatoIdNumberReportIdNumberType {
-    fn default() -> Self {
-        Self::BrCpf
-    }
-}
-
-/// An enum representing the possible values of an `GelatoIdNumberReport`'s `status` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum GelatoIdNumberReportStatus {
-Unverified,
-Verified,
-
-}
-
-impl GelatoIdNumberReportStatus {
-    pub fn as_str(self) -> &'static str {
-        match self {
-GelatoIdNumberReportStatus::Unverified => "unverified",
-GelatoIdNumberReportStatus::Verified => "verified",
-        }
-    }
-}
-
-impl AsRef<str> for GelatoIdNumberReportStatus {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for GelatoIdNumberReportStatus {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for GelatoIdNumberReportStatus {
-    fn default() -> Self {
-        Self::Unverified
-    }
-}
-
-/// An enum representing the possible values of an `GelatoReportDocumentOptions`'s `allowed_types` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum GelatoReportDocumentOptionsAllowedTypes {
-DrivingLicense,
-IdCard,
-Passport,
-
-}
-
-impl GelatoReportDocumentOptionsAllowedTypes {
-    pub fn as_str(self) -> &'static str {
-        match self {
-GelatoReportDocumentOptionsAllowedTypes::DrivingLicense => "driving_license",
-GelatoReportDocumentOptionsAllowedTypes::IdCard => "id_card",
-GelatoReportDocumentOptionsAllowedTypes::Passport => "passport",
-        }
-    }
-}
-
-impl AsRef<str> for GelatoReportDocumentOptionsAllowedTypes {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for GelatoReportDocumentOptionsAllowedTypes {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for GelatoReportDocumentOptionsAllowedTypes {
-    fn default() -> Self {
-        Self::DrivingLicense
-    }
-}
-
-/// An enum representing the possible values of an `GelatoSelfieReportError`'s `code` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum GelatoSelfieReportErrorCode {
-SelfieDocumentMissingPhoto,
-SelfieFaceMismatch,
-SelfieManipulated,
-SelfieUnverifiedOther,
-
-}
-
-impl GelatoSelfieReportErrorCode {
-    pub fn as_str(self) -> &'static str {
-        match self {
-GelatoSelfieReportErrorCode::SelfieDocumentMissingPhoto => "selfie_document_missing_photo",
-GelatoSelfieReportErrorCode::SelfieFaceMismatch => "selfie_face_mismatch",
-GelatoSelfieReportErrorCode::SelfieManipulated => "selfie_manipulated",
-GelatoSelfieReportErrorCode::SelfieUnverifiedOther => "selfie_unverified_other",
-        }
-    }
-}
-
-impl AsRef<str> for GelatoSelfieReportErrorCode {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for GelatoSelfieReportErrorCode {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for GelatoSelfieReportErrorCode {
-    fn default() -> Self {
-        Self::SelfieDocumentMissingPhoto
-    }
-}
-
-/// An enum representing the possible values of an `GelatoSelfieReport`'s `status` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum GelatoSelfieReportStatus {
-Unverified,
-Verified,
-
-}
-
-impl GelatoSelfieReportStatus {
-    pub fn as_str(self) -> &'static str {
-        match self {
-GelatoSelfieReportStatus::Unverified => "unverified",
-GelatoSelfieReportStatus::Verified => "verified",
-        }
-    }
-}
-
-impl AsRef<str> for GelatoSelfieReportStatus {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for GelatoSelfieReportStatus {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for GelatoSelfieReportStatus {
-    fn default() -> Self {
-        Self::Unverified
-    }
-}
-
-/// An enum representing the possible values of an `IdentityVerificationReport`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum IdentityVerificationReportType {
-Document,
-IdNumber,
-
+    Document,
+    IdNumber,
 }
 
 impl IdentityVerificationReportType {
     pub fn as_str(self) -> &'static str {
         match self {
-IdentityVerificationReportType::Document => "document",
-IdentityVerificationReportType::IdNumber => "id_number",
+            Self::Document => "document",
+            Self::IdNumber => "id_number",
         }
     }
 }
@@ -619,8 +94,57 @@ impl std::fmt::Display for IdentityVerificationReportType {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for IdentityVerificationReportType {
+
+impl Default for IdentityVerificationReportType {
     fn default() -> Self {
         Self::Document
     }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum GetIdentityVerificationReportsParamsType {
+    Document,
+    IdNumber,
+}
+
+impl GetIdentityVerificationReportsParamsType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Document => "document",
+            Self::IdNumber => "id_number",
+        }
+    }
+}
+
+impl AsRef<str> for GetIdentityVerificationReportsParamsType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for GetIdentityVerificationReportsParamsType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for GetIdentityVerificationReportsParamsType {
+    fn default() -> Self {
+        Self::Document
+    }
+}
+pub fn get_identity_verification_reports_report(
+    client: &crate::Client,
+    report: String,
+    params: GetIdentityVerificationReportsReportParams,
+) -> crate::Response<crate::generated::IdentityVerificationReport> {
+    client.get_query(&format!("/identity/verification_reports/{report}", report = report), params)
+}
+
+pub fn get_identity_verification_reports(
+    client: &crate::Client,
+    params: GetIdentityVerificationReportsParams,
+) -> crate::Response<crate::params::List<crate::generated::IdentityVerificationReport>> {
+    client.get_query("/identity/verification_reports", params)
 }

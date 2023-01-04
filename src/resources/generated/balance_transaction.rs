@@ -1,39 +1,24 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::{BalanceTransactionId, PayoutId, SourceId};
-use crate::params::{Expand, Expandable, List, Object, Paginable, RangeQuery, Timestamp};
-use crate::resources::{
-    BalanceTransactionSourceUnion, BalanceTransactionStatus, Currency, FeeType,
-};
-
-/// The resource representing a Stripe "BalanceTransaction".
+/// Balance transactions represent funds moving through your Stripe account.
+/// They're created for every type of transaction that comes into or flows out of your Stripe account balance.
 ///
-/// For more details see <https://stripe.com/docs/api/balance_transactions/object>
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// Related guide: [Balance Transaction Types](https://stripe.com/docs/reports/balance-transaction-types).
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct BalanceTransaction {
-    /// Unique identifier for the object.
-    pub id: BalanceTransactionId,
-
     /// Gross amount of the transaction, in %s.
     pub amount: i64,
 
     /// The date the transaction's net funds will become available in the Stripe balance.
-    pub available_on: Timestamp,
+    pub available_on: crate::params::Timestamp,
 
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-    pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
+    pub currency: crate::currency::Currency,
 
     /// An arbitrary string attached to the object.
     ///
@@ -53,7 +38,10 @@ pub struct BalanceTransaction {
     pub fee: i64,
 
     /// Detailed breakdown of fees (in %s) paid for this transaction.
-    pub fee_details: Vec<Fee>,
+    pub fee_details: Vec<crate::generated::Fee>,
+
+    /// Unique identifier for the object.
+    pub id: String,
 
     /// Net amount of the transaction, in %s.
     pub net: i64,
@@ -62,12 +50,12 @@ pub struct BalanceTransaction {
     pub reporting_category: String,
 
     /// The Stripe object to which this transaction is related.
-    pub source: Option<Expandable<BalanceTransactionSourceUnion>>,
+    pub source: Option<Vec<crate::generated::BalanceTransactionSource>>,
 
     /// If the transaction's net funds are available in the Stripe balance yet.
     ///
     /// Either `available` or `pending`.
-    pub status: BalanceTransactionStatus,
+    pub status: String,
 
     /// Transaction type: `adjustment`, `advance`, `advance_funding`, `anticipation_repayment`, `application_fee`, `application_fee_refund`, `charge`, `connect_collection_transfer`, `contribution`, `issuing_authorization_hold`, `issuing_authorization_release`, `issuing_dispute`, `issuing_transaction`, `payment`, `payment_failure_refund`, `payment_refund`, `payout`, `payout_cancel`, `payout_failure`, `refund`, `refund_failure`, `reserve_transaction`, `reserved_funds`, `stripe_fee`, `stripe_fx_fee`, `tax_fee`, `topup`, `topup_reversal`, `transfer`, `transfer_cancel`, `transfer_failure`, or `transfer_refund`.
     ///
@@ -77,145 +65,47 @@ pub struct BalanceTransaction {
     pub type_: BalanceTransactionType,
 }
 
-impl BalanceTransaction {
-    /// Returns a list of transactions that have contributed to the Stripe account balance (e.g., charges, transfers, and so forth).
-    ///
-    /// The transactions are returned in sorted order, with the most recent transactions appearing first.  Note that this endpoint was previously called “Balance history” and used the path `/v1/balance/history`.
-    pub fn list(
-        client: &Client,
-        params: &ListBalanceTransactions<'_>,
-    ) -> Response<List<BalanceTransaction>> {
-        client.get_query("/balance_transactions", &params)
-    }
-
-    /// Retrieves the balance transaction with the given ID.
-    ///
-    /// Note that this endpoint previously used the path `/v1/balance/history/:id`.
-    pub fn retrieve(
-        client: &Client,
-        id: &BalanceTransactionId,
-        expand: &[&str],
-    ) -> Response<BalanceTransaction> {
-        client.get_query(&format!("/balance_transactions/{}", id), &Expand { expand })
-    }
-}
-
-impl Object for BalanceTransaction {
-    type Id = BalanceTransactionId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "balance_transaction"
-    }
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct Fee {
-    /// Amount of the fee, in cents.
-    pub amount: i64,
-
-    /// ID of the Connect application that earned the fee.
-    pub application: Option<String>,
-
-    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
-    ///
-    /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
-
-    /// An arbitrary string attached to the object.
-    ///
-    /// Often useful for displaying to users.
-    pub description: Option<String>,
-
-    /// Type of the fee, one of: `application_fee`, `stripe_fee` or `tax`.
-    #[serde(rename = "type")]
-    pub type_: FeeType,
-}
-
-/// The parameters for `BalanceTransaction::list`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct ListBalanceTransactions<'a> {
-    /// This parameter is deprecated and we recommend listing by created and filtering in memory instead.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetBalanceTransactionsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub available_on: Option<RangeQuery<Timestamp>>,
+    pub available_on: Option<crate::params::RangeQueryTs>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<RangeQuery<Timestamp>>,
+    pub created: Option<crate::params::RangeQueryTs>,
 
-    /// Only return transactions in a certain currency.
-    ///
-    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
-    /// Must be a [supported currency](https://stripe.com/docs/currencies).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency: Option<Currency>,
+    pub currency: Option<crate::currency::Currency>,
 
-    /// A cursor for use in pagination.
-    ///
-    /// `ending_before` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, starting with `obj_bar`, your subsequent call can include `ending_before=obj_bar` in order to fetch the previous page of the list.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ending_before: Option<BalanceTransactionId>,
+    pub ending_before: Option<String>,
 
-    /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
-
-    /// A limit on the number of objects to be returned.
-    ///
-    /// Limit can range between 1 and 100, and the default is 10.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub limit: Option<u64>,
+    pub expand: Option<Vec<String>>,
 
-    /// For automatic Stripe payouts only, only returns transactions that were paid out on the specified payout ID.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payout: Option<PayoutId>,
+    pub limit: Option<i64>,
 
-    /// Only returns the original transaction.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub source: Option<SourceId>,
+    pub payout: Option<String>,
 
-    /// A cursor for use in pagination.
-    ///
-    /// `starting_after` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, ending with `obj_foo`, your subsequent call can include `starting_after=obj_foo` in order to fetch the next page of the list.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub starting_after: Option<BalanceTransactionId>,
+    pub source: Option<String>,
 
-    /// Only returns transactions of the given type.
-    ///
-    /// One of: `adjustment`, `advance`, `advance_funding`, `anticipation_repayment`, `application_fee`, `application_fee_refund`, `charge`, `connect_collection_transfer`, `contribution`, `issuing_authorization_hold`, `issuing_authorization_release`, `issuing_dispute`, `issuing_transaction`, `payment`, `payment_failure_refund`, `payment_refund`, `payout`, `payout_cancel`, `payout_failure`, `refund`, `refund_failure`, `reserve_transaction`, `reserved_funds`, `stripe_fee`, `stripe_fx_fee`, `tax_fee`, `topup`, `topup_reversal`, `transfer`, `transfer_cancel`, `transfer_failure`, or `transfer_refund`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
+
     #[serde(rename = "type")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub type_: Option<&'a str>,
+    pub type_: Option<String>,
 }
 
-impl<'a> ListBalanceTransactions<'a> {
-    pub fn new() -> Self {
-        ListBalanceTransactions {
-            available_on: Default::default(),
-            created: Default::default(),
-            currency: Default::default(),
-            ending_before: Default::default(),
-            expand: Default::default(),
-            limit: Default::default(),
-            payout: Default::default(),
-            source: Default::default(),
-            starting_after: Default::default(),
-            type_: Default::default(),
-        }
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetBalanceTransactionsIdParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-impl Paginable for ListBalanceTransactions<'_> {
-    type O = BalanceTransaction;
-    fn set_last(&mut self, item: Self::O) {
-        self.starting_after = Some(item.id());
-    }
-}
-
-/// An enum representing the possible values of an `BalanceTransaction`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum BalanceTransactionType {
     Adjustment,
@@ -255,38 +145,38 @@ pub enum BalanceTransactionType {
 impl BalanceTransactionType {
     pub fn as_str(self) -> &'static str {
         match self {
-            BalanceTransactionType::Adjustment => "adjustment",
-            BalanceTransactionType::Advance => "advance",
-            BalanceTransactionType::AdvanceFunding => "advance_funding",
-            BalanceTransactionType::AnticipationRepayment => "anticipation_repayment",
-            BalanceTransactionType::ApplicationFee => "application_fee",
-            BalanceTransactionType::ApplicationFeeRefund => "application_fee_refund",
-            BalanceTransactionType::Charge => "charge",
-            BalanceTransactionType::ConnectCollectionTransfer => "connect_collection_transfer",
-            BalanceTransactionType::Contribution => "contribution",
-            BalanceTransactionType::IssuingAuthorizationHold => "issuing_authorization_hold",
-            BalanceTransactionType::IssuingAuthorizationRelease => "issuing_authorization_release",
-            BalanceTransactionType::IssuingDispute => "issuing_dispute",
-            BalanceTransactionType::IssuingTransaction => "issuing_transaction",
-            BalanceTransactionType::Payment => "payment",
-            BalanceTransactionType::PaymentFailureRefund => "payment_failure_refund",
-            BalanceTransactionType::PaymentRefund => "payment_refund",
-            BalanceTransactionType::Payout => "payout",
-            BalanceTransactionType::PayoutCancel => "payout_cancel",
-            BalanceTransactionType::PayoutFailure => "payout_failure",
-            BalanceTransactionType::Refund => "refund",
-            BalanceTransactionType::RefundFailure => "refund_failure",
-            BalanceTransactionType::ReserveTransaction => "reserve_transaction",
-            BalanceTransactionType::ReservedFunds => "reserved_funds",
-            BalanceTransactionType::StripeFee => "stripe_fee",
-            BalanceTransactionType::StripeFxFee => "stripe_fx_fee",
-            BalanceTransactionType::TaxFee => "tax_fee",
-            BalanceTransactionType::Topup => "topup",
-            BalanceTransactionType::TopupReversal => "topup_reversal",
-            BalanceTransactionType::Transfer => "transfer",
-            BalanceTransactionType::TransferCancel => "transfer_cancel",
-            BalanceTransactionType::TransferFailure => "transfer_failure",
-            BalanceTransactionType::TransferRefund => "transfer_refund",
+            Self::Adjustment => "adjustment",
+            Self::Advance => "advance",
+            Self::AdvanceFunding => "advance_funding",
+            Self::AnticipationRepayment => "anticipation_repayment",
+            Self::ApplicationFee => "application_fee",
+            Self::ApplicationFeeRefund => "application_fee_refund",
+            Self::Charge => "charge",
+            Self::ConnectCollectionTransfer => "connect_collection_transfer",
+            Self::Contribution => "contribution",
+            Self::IssuingAuthorizationHold => "issuing_authorization_hold",
+            Self::IssuingAuthorizationRelease => "issuing_authorization_release",
+            Self::IssuingDispute => "issuing_dispute",
+            Self::IssuingTransaction => "issuing_transaction",
+            Self::Payment => "payment",
+            Self::PaymentFailureRefund => "payment_failure_refund",
+            Self::PaymentRefund => "payment_refund",
+            Self::Payout => "payout",
+            Self::PayoutCancel => "payout_cancel",
+            Self::PayoutFailure => "payout_failure",
+            Self::Refund => "refund",
+            Self::RefundFailure => "refund_failure",
+            Self::ReserveTransaction => "reserve_transaction",
+            Self::ReservedFunds => "reserved_funds",
+            Self::StripeFee => "stripe_fee",
+            Self::StripeFxFee => "stripe_fx_fee",
+            Self::TaxFee => "tax_fee",
+            Self::Topup => "topup",
+            Self::TopupReversal => "topup_reversal",
+            Self::Transfer => "transfer",
+            Self::TransferCancel => "transfer_cancel",
+            Self::TransferFailure => "transfer_failure",
+            Self::TransferRefund => "transfer_refund",
         }
     }
 }
@@ -302,8 +192,23 @@ impl std::fmt::Display for BalanceTransactionType {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for BalanceTransactionType {
+
+impl Default for BalanceTransactionType {
     fn default() -> Self {
         Self::Adjustment
     }
+}
+pub fn get_balance_transactions(
+    client: &crate::Client,
+    params: GetBalanceTransactionsParams,
+) -> crate::Response<crate::params::List<crate::generated::BalanceTransaction>> {
+    client.get_query("/balance_transactions", params)
+}
+
+pub fn get_balance_transactions_id(
+    client: &crate::Client,
+    id: String,
+    params: GetBalanceTransactionsIdParams,
+) -> crate::Response<crate::generated::BalanceTransaction> {
+    client.get_query(&format!("/balance_transactions/{id}", id = id), params)
 }

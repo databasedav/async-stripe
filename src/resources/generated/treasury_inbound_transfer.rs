@@ -1,324 +1,197 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use crate::ids::{TreasuryInboundTransferId};
-use crate::params::{Expandable, Metadata, Object, Timestamp};
-use crate::resources::{Currency, TreasurySharedResourceBillingDetails, TreasuryTransaction};
-
-use serde::{Deserialize, Serialize};
-
-
-/// The resource representing a Stripe "TreasuryInboundTransfersResourceInboundTransfer".
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
+/// Use [InboundTransfers](https://stripe.com/docs/treasury/moving-money/financial-accounts/into/inbound-transfers) to add funds to your [FinancialAccount](https://stripe.com/docs/api#financial_accounts) via a PaymentMethod that is owned by you.
+///
+/// The funds will be transferred via an ACH debit.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct TreasuryInboundTransfer {
-    /// Unique identifier for the object.
-pub id: TreasuryInboundTransferId,
-
     /// Amount (in cents) transferred.
-pub amount: i64,
+    pub amount: i64,
 
     /// Returns `true` if the InboundTransfer is able to be canceled.
-pub cancelable: bool,
+    pub cancelable: bool,
 
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-pub currency: Currency,
+    pub currency: crate::currency::Currency,
 
     /// An arbitrary string attached to the object.
     ///
     /// Often useful for displaying to users.
-pub description: Option<String>,
+    pub description: Option<String>,
 
     /// Details about this InboundTransfer's failure.
     ///
     /// Only set when status is `failed`.
-pub failure_details: Option<TreasuryInboundTransfersResourceFailureDetails>,
+    pub failure_details: Option<crate::generated::TreasuryInboundTransfersResourceFailureDetails>,
 
     /// The FinancialAccount that received the funds.
-pub financial_account: String,
+    pub financial_account: String,
 
     /// A [hosted transaction receipt](https://stripe.com/docs/treasury/moving-money/regulatory-receipts) URL that is provided when money movement is considered regulated under Stripe's money transmission licenses.
-pub hosted_regulatory_receipt_url: Option<String>,
+    pub hosted_regulatory_receipt_url: Option<String>,
 
-pub linked_flows: TreasuryInboundTransfersResourceInboundTransferResourceLinkedFlows,
+    /// Unique identifier for the object.
+    pub id: String,
+
+    pub linked_flows:
+        crate::generated::TreasuryInboundTransfersResourceInboundTransferResourceLinkedFlows,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
-pub livemode: bool,
+    pub livemode: bool,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
     /// This can be useful for storing additional information about the object in a structured format.
-pub metadata: Metadata,
+    pub metadata: crate::params::Metadata,
 
     /// The origin payment method to be debited for an InboundTransfer.
-pub origin_payment_method: String,
+    pub origin_payment_method: String,
 
     /// Details about the PaymentMethod for an InboundTransfer.
-pub origin_payment_method_details: Option<InboundTransfers>,
+    pub origin_payment_method_details: Option<crate::generated::InboundTransfers>,
 
     /// Returns `true` if the funds for an InboundTransfer were returned after the InboundTransfer went to the `succeeded` state.
-pub returned: Option<bool>,
+    pub returned: Option<bool>,
 
     /// Statement descriptor shown when funds are debited from the source.
     ///
     /// Not all payment networks support `statement_descriptor`.
-pub statement_descriptor: String,
+    pub statement_descriptor: String,
 
     /// Status of the InboundTransfer: `processing`, `succeeded`, `failed`, and `canceled`.
     ///
     /// An InboundTransfer is `processing` if it is created and pending.
     /// The status changes to `succeeded` once the funds have been "confirmed" and a `transaction` is created and posted.
     /// The status changes to `failed` if the transfer fails.
-pub status: TreasuryInboundTransferStatus,
+    pub status: TreasuryInboundTransferStatus,
 
-pub status_transitions: TreasuryInboundTransfersResourceInboundTransferResourceStatusTransitions,
+    pub status_transitions:
+        crate::generated::TreasuryInboundTransfersResourceInboundTransferResourceStatusTransitions,
 
     /// The Transaction associated with this object.
-pub transaction: Option<Expandable<TreasuryTransaction>>,
+    pub transaction: Option<Vec<crate::generated::TreasuryTransaction>>,
 }
 
-
-impl Object for TreasuryInboundTransfer {
-    type Id = TreasuryInboundTransferId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "treasury.inbound_transfer"
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTreasuryInboundTransfersInboundTransferCancelParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct InboundTransfers {
-pub billing_details: TreasurySharedResourceBillingDetails,
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostTreasuryInboundTransfersParams {
+    /// Amount (in cents) to be transferred.
+    pub amount: i64,
 
-    /// The type of the payment method used in the InboundTransfer.
-#[serde(rename = "type")]
-pub type_: InboundTransfersType,
-
-#[serde(skip_serializing_if = "Option::is_none")]
-pub us_bank_account: Option<InboundTransfersPaymentMethodDetailsUsBankAccount>,
-}
-
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct InboundTransfersPaymentMethodDetailsUsBankAccount {
-    /// Account holder type: individual or company.
-pub account_holder_type: Option<InboundTransfersPaymentMethodDetailsUsBankAccountAccountHolderType>,
-
-    /// Account type: checkings or savings.
+    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
-    /// Defaults to checking if omitted.
-pub account_type: Option<InboundTransfersPaymentMethodDetailsUsBankAccountAccountType>,
+    /// Must be a [supported currency](https://stripe.com/docs/currencies).
+    pub currency: crate::currency::Currency,
 
-    /// Name of the bank associated with the bank account.
-pub bank_name: Option<String>,
-
-    /// Uniquely identifies this particular bank account.
+    /// An arbitrary string attached to the object.
     ///
-    /// You can use this attribute to check whether two bank accounts are the same.
-pub fingerprint: Option<String>,
+    /// Often useful for displaying to users.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
 
-    /// Last four digits of the bank account number.
-pub last4: Option<String>,
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
-    /// The US bank account network used to debit funds.
-pub network: InboundTransfersPaymentMethodDetailsUsBankAccountNetwork,
+    /// The FinancialAccount to send funds to.
+    pub financial_account: String,
 
-    /// Routing number of the bank account.
-pub routing_number: Option<String>,
+    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
+    ///
+    /// This can be useful for storing additional information about the object in a structured format.
+    /// Individual keys can be unset by posting an empty value to them.
+    /// All keys can be unset by posting an empty value to `metadata`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<crate::params::Metadata>,
+
+    /// The origin payment method to be debited for the InboundTransfer.
+    pub origin_payment_method: String,
+
+    /// The complete description that appears on your customers' statements.
+    ///
+    /// Maximum 10 characters.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub statement_descriptor: Option<String>,
 }
 
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct TreasuryInboundTransfersResourceFailureDetails {
-    /// Reason for the failure.
-pub code: TreasuryInboundTransfersResourceFailureDetailsCode,
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetTreasuryInboundTransfersIdParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct TreasuryInboundTransfersResourceInboundTransferResourceLinkedFlows {
-    /// If funds for this flow were returned after the flow went to the `succeeded` state, this field contains a reference to the ReceivedDebit return.
-pub received_debit: Option<String>,
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct GetTreasuryInboundTransfersParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    pub financial_account: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<GetTreasuryInboundTransfersParamsStatus>,
 }
 
-#[derive(Clone,Debug,Default,Deserialize,Serialize)]
-pub struct TreasuryInboundTransfersResourceInboundTransferResourceStatusTransitions {
-    /// Timestamp describing when an InboundTransfer changed status to `canceled`.
-#[serde(skip_serializing_if = "Option::is_none")]
-pub canceled_at: Option<Timestamp>,
-
-    /// Timestamp describing when an InboundTransfer changed status to `failed`.
-pub failed_at: Option<Timestamp>,
-
-    /// Timestamp describing when an InboundTransfer changed status to `succeeded`.
-pub succeeded_at: Option<Timestamp>,
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTestHelpersTreasuryInboundTransfersIdSucceedParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTestHelpersTreasuryInboundTransfersIdFailParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
-
-
-
-
-/// An enum representing the possible values of an `InboundTransfersPaymentMethodDetailsUsBankAccount`'s `account_holder_type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum InboundTransfersPaymentMethodDetailsUsBankAccountAccountHolderType {
-Company,
-Individual,
-
+    /// Details about a failed InboundTransfer.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub failure_details: Option<PostTestHelpersTreasuryInboundTransfersIdFailParamsFailureDetails>,
 }
 
-impl InboundTransfersPaymentMethodDetailsUsBankAccountAccountHolderType {
-    pub fn as_str(self) -> &'static str {
-        match self {
-InboundTransfersPaymentMethodDetailsUsBankAccountAccountHolderType::Company => "company",
-InboundTransfersPaymentMethodDetailsUsBankAccountAccountHolderType::Individual => "individual",
-        }
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTestHelpersTreasuryInboundTransfersIdReturnParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-impl AsRef<str> for InboundTransfersPaymentMethodDetailsUsBankAccountAccountHolderType {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for InboundTransfersPaymentMethodDetailsUsBankAccountAccountHolderType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for InboundTransfersPaymentMethodDetailsUsBankAccountAccountHolderType {
-    fn default() -> Self {
-        Self::Company
-    }
-}
-
-/// An enum representing the possible values of an `InboundTransfersPaymentMethodDetailsUsBankAccount`'s `account_type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum InboundTransfersPaymentMethodDetailsUsBankAccountAccountType {
-Checking,
-Savings,
-
-}
-
-impl InboundTransfersPaymentMethodDetailsUsBankAccountAccountType {
-    pub fn as_str(self) -> &'static str {
-        match self {
-InboundTransfersPaymentMethodDetailsUsBankAccountAccountType::Checking => "checking",
-InboundTransfersPaymentMethodDetailsUsBankAccountAccountType::Savings => "savings",
-        }
-    }
-}
-
-impl AsRef<str> for InboundTransfersPaymentMethodDetailsUsBankAccountAccountType {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for InboundTransfersPaymentMethodDetailsUsBankAccountAccountType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for InboundTransfersPaymentMethodDetailsUsBankAccountAccountType {
-    fn default() -> Self {
-        Self::Checking
-    }
-}
-
-/// An enum representing the possible values of an `InboundTransfersPaymentMethodDetailsUsBankAccount`'s `network` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum InboundTransfersPaymentMethodDetailsUsBankAccountNetwork {
-Ach,
-
-}
-
-impl InboundTransfersPaymentMethodDetailsUsBankAccountNetwork {
-    pub fn as_str(self) -> &'static str {
-        match self {
-InboundTransfersPaymentMethodDetailsUsBankAccountNetwork::Ach => "ach",
-        }
-    }
-}
-
-impl AsRef<str> for InboundTransfersPaymentMethodDetailsUsBankAccountNetwork {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for InboundTransfersPaymentMethodDetailsUsBankAccountNetwork {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for InboundTransfersPaymentMethodDetailsUsBankAccountNetwork {
-    fn default() -> Self {
-        Self::Ach
-    }
-}
-
-/// An enum representing the possible values of an `InboundTransfers`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum InboundTransfersType {
-UsBankAccount,
-
-}
-
-impl InboundTransfersType {
-    pub fn as_str(self) -> &'static str {
-        match self {
-InboundTransfersType::UsBankAccount => "us_bank_account",
-        }
-    }
-}
-
-impl AsRef<str> for InboundTransfersType {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for InboundTransfersType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for InboundTransfersType {
-    fn default() -> Self {
-        Self::UsBankAccount
-    }
-}
-
-/// An enum representing the possible values of an `TreasuryInboundTransfer`'s `status` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum TreasuryInboundTransferStatus {
-Canceled,
-Failed,
-Processing,
-Succeeded,
-
+    Canceled,
+    Failed,
+    Processing,
+    Succeeded,
 }
 
 impl TreasuryInboundTransferStatus {
     pub fn as_str(self) -> &'static str {
         match self {
-TreasuryInboundTransferStatus::Canceled => "canceled",
-TreasuryInboundTransferStatus::Failed => "failed",
-TreasuryInboundTransferStatus::Processing => "processing",
-TreasuryInboundTransferStatus::Succeeded => "succeeded",
+            Self::Canceled => "canceled",
+            Self::Failed => "failed",
+            Self::Processing => "processing",
+            Self::Succeeded => "succeeded",
         }
     }
 }
@@ -334,65 +207,176 @@ impl std::fmt::Display for TreasuryInboundTransferStatus {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TreasuryInboundTransferStatus {
+
+impl Default for TreasuryInboundTransferStatus {
     fn default() -> Self {
         Self::Canceled
     }
 }
 
-/// An enum representing the possible values of an `TreasuryInboundTransfersResourceFailureDetails`'s `code` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum TreasuryInboundTransfersResourceFailureDetailsCode {
-AccountClosed,
-AccountFrozen,
-BankAccountRestricted,
-BankOwnershipChanged,
-DebitNotAuthorized,
-IncorrectAccountHolderAddress,
-IncorrectAccountHolderName,
-IncorrectAccountHolderTaxId,
-InsufficientFunds,
-InvalidAccountNumber,
-InvalidCurrency,
-NoAccount,
-Other,
-
+pub enum GetTreasuryInboundTransfersParamsStatus {
+    Canceled,
+    Failed,
+    Processing,
+    Succeeded,
 }
 
-impl TreasuryInboundTransfersResourceFailureDetailsCode {
+impl GetTreasuryInboundTransfersParamsStatus {
     pub fn as_str(self) -> &'static str {
         match self {
-TreasuryInboundTransfersResourceFailureDetailsCode::AccountClosed => "account_closed",
-TreasuryInboundTransfersResourceFailureDetailsCode::AccountFrozen => "account_frozen",
-TreasuryInboundTransfersResourceFailureDetailsCode::BankAccountRestricted => "bank_account_restricted",
-TreasuryInboundTransfersResourceFailureDetailsCode::BankOwnershipChanged => "bank_ownership_changed",
-TreasuryInboundTransfersResourceFailureDetailsCode::DebitNotAuthorized => "debit_not_authorized",
-TreasuryInboundTransfersResourceFailureDetailsCode::IncorrectAccountHolderAddress => "incorrect_account_holder_address",
-TreasuryInboundTransfersResourceFailureDetailsCode::IncorrectAccountHolderName => "incorrect_account_holder_name",
-TreasuryInboundTransfersResourceFailureDetailsCode::IncorrectAccountHolderTaxId => "incorrect_account_holder_tax_id",
-TreasuryInboundTransfersResourceFailureDetailsCode::InsufficientFunds => "insufficient_funds",
-TreasuryInboundTransfersResourceFailureDetailsCode::InvalidAccountNumber => "invalid_account_number",
-TreasuryInboundTransfersResourceFailureDetailsCode::InvalidCurrency => "invalid_currency",
-TreasuryInboundTransfersResourceFailureDetailsCode::NoAccount => "no_account",
-TreasuryInboundTransfersResourceFailureDetailsCode::Other => "other",
+            Self::Canceled => "canceled",
+            Self::Failed => "failed",
+            Self::Processing => "processing",
+            Self::Succeeded => "succeeded",
         }
     }
 }
 
-impl AsRef<str> for TreasuryInboundTransfersResourceFailureDetailsCode {
+impl AsRef<str> for GetTreasuryInboundTransfersParamsStatus {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for TreasuryInboundTransfersResourceFailureDetailsCode {
+impl std::fmt::Display for GetTreasuryInboundTransfersParamsStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for TreasuryInboundTransfersResourceFailureDetailsCode {
+
+impl Default for GetTreasuryInboundTransfersParamsStatus {
+    fn default() -> Self {
+        Self::Canceled
+    }
+}
+/// Details about a failed InboundTransfer.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostTestHelpersTreasuryInboundTransfersIdFailParamsFailureDetails {
+    /// Reason for the failure.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub code: Option<PostTestHelpersTreasuryInboundTransfersIdFailParamsFailureDetailsCode>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostTestHelpersTreasuryInboundTransfersIdFailParamsFailureDetailsCode {
+    AccountClosed,
+    AccountFrozen,
+    BankAccountRestricted,
+    BankOwnershipChanged,
+    DebitNotAuthorized,
+    IncorrectAccountHolderAddress,
+    IncorrectAccountHolderName,
+    IncorrectAccountHolderTaxId,
+    InsufficientFunds,
+    InvalidAccountNumber,
+    InvalidCurrency,
+    NoAccount,
+    Other,
+}
+
+impl PostTestHelpersTreasuryInboundTransfersIdFailParamsFailureDetailsCode {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::AccountClosed => "account_closed",
+            Self::AccountFrozen => "account_frozen",
+            Self::BankAccountRestricted => "bank_account_restricted",
+            Self::BankOwnershipChanged => "bank_ownership_changed",
+            Self::DebitNotAuthorized => "debit_not_authorized",
+            Self::IncorrectAccountHolderAddress => "incorrect_account_holder_address",
+            Self::IncorrectAccountHolderName => "incorrect_account_holder_name",
+            Self::IncorrectAccountHolderTaxId => "incorrect_account_holder_tax_id",
+            Self::InsufficientFunds => "insufficient_funds",
+            Self::InvalidAccountNumber => "invalid_account_number",
+            Self::InvalidCurrency => "invalid_currency",
+            Self::NoAccount => "no_account",
+            Self::Other => "other",
+        }
+    }
+}
+
+impl AsRef<str> for PostTestHelpersTreasuryInboundTransfersIdFailParamsFailureDetailsCode {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostTestHelpersTreasuryInboundTransfersIdFailParamsFailureDetailsCode {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostTestHelpersTreasuryInboundTransfersIdFailParamsFailureDetailsCode {
     fn default() -> Self {
         Self::AccountClosed
     }
+}
+pub fn post_treasury_inbound_transfers_inbound_transfer_cancel(
+    client: &crate::Client,
+    inbound_transfer: String,
+    params: PostTreasuryInboundTransfersInboundTransferCancelParams,
+) -> crate::Response<crate::generated::TreasuryInboundTransfer> {
+    client.post_form(
+        &format!(
+            "/treasury/inbound_transfers/{inbound_transfer}/cancel",
+            inbound_transfer = inbound_transfer
+        ),
+        params,
+    )
+}
+
+pub fn post_treasury_inbound_transfers(
+    client: &crate::Client,
+    params: PostTreasuryInboundTransfersParams,
+) -> crate::Response<crate::generated::TreasuryInboundTransfer> {
+    client.post_form("/treasury/inbound_transfers", params)
+}
+
+pub fn get_treasury_inbound_transfers_id(
+    client: &crate::Client,
+    id: String,
+    params: GetTreasuryInboundTransfersIdParams,
+) -> crate::Response<crate::generated::TreasuryInboundTransfer> {
+    client.get_query(&format!("/treasury/inbound_transfers/{id}", id = id), params)
+}
+
+pub fn get_treasury_inbound_transfers(
+    client: &crate::Client,
+    params: GetTreasuryInboundTransfersParams,
+) -> crate::Response<crate::params::List<crate::generated::TreasuryInboundTransfer>> {
+    client.get_query("/treasury/inbound_transfers", params)
+}
+
+pub fn post_test_helpers_treasury_inbound_transfers_id_succeed(
+    client: &crate::Client,
+    id: String,
+    params: PostTestHelpersTreasuryInboundTransfersIdSucceedParams,
+) -> crate::Response<crate::generated::TreasuryInboundTransfer> {
+    client.post_form(
+        &format!("/test_helpers/treasury/inbound_transfers/{id}/succeed", id = id),
+        params,
+    )
+}
+
+pub fn post_test_helpers_treasury_inbound_transfers_id_fail(
+    client: &crate::Client,
+    id: String,
+    params: PostTestHelpersTreasuryInboundTransfersIdFailParams,
+) -> crate::Response<crate::generated::TreasuryInboundTransfer> {
+    client
+        .post_form(&format!("/test_helpers/treasury/inbound_transfers/{id}/fail", id = id), params)
+}
+
+pub fn post_test_helpers_treasury_inbound_transfers_id_return(
+    client: &crate::Client,
+    id: String,
+    params: PostTestHelpersTreasuryInboundTransfersIdReturnParams,
+) -> crate::Response<crate::generated::TreasuryInboundTransfer> {
+    client.post_form(
+        &format!("/test_helpers/treasury/inbound_transfers/{id}/return", id = id),
+        params,
+    )
 }

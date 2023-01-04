@@ -1,11 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "payment_method_options_customer_balance_eu_bank_account".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct PaymentMethodOptionsCustomerBalanceEuBankAccount {
     /// The desired country code of the bank account information.
     ///
@@ -13,8 +6,7 @@ pub struct PaymentMethodOptionsCustomerBalanceEuBankAccount {
     pub country: PaymentMethodOptionsCustomerBalanceEuBankAccountCountry,
 }
 
-/// An enum representing the possible values of an `PaymentMethodOptionsCustomerBalanceEuBankAccount`'s `country` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOptionsCustomerBalanceEuBankAccountCountry {
     #[serde(rename = "DE")]
@@ -32,11 +24,11 @@ pub enum PaymentMethodOptionsCustomerBalanceEuBankAccountCountry {
 impl PaymentMethodOptionsCustomerBalanceEuBankAccountCountry {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentMethodOptionsCustomerBalanceEuBankAccountCountry::De => "DE",
-            PaymentMethodOptionsCustomerBalanceEuBankAccountCountry::Es => "ES",
-            PaymentMethodOptionsCustomerBalanceEuBankAccountCountry::Fr => "FR",
-            PaymentMethodOptionsCustomerBalanceEuBankAccountCountry::Ie => "IE",
-            PaymentMethodOptionsCustomerBalanceEuBankAccountCountry::Nl => "NL",
+            Self::De => "DE",
+            Self::Es => "ES",
+            Self::Fr => "FR",
+            Self::Ie => "IE",
+            Self::Nl => "NL",
         }
     }
 }
@@ -52,7 +44,8 @@ impl std::fmt::Display for PaymentMethodOptionsCustomerBalanceEuBankAccountCount
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentMethodOptionsCustomerBalanceEuBankAccountCountry {
+
+impl Default for PaymentMethodOptionsCustomerBalanceEuBankAccountCountry {
     fn default() -> Self {
         Self::De
     }

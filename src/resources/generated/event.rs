@@ -1,22 +1,17 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::EventId;
-use crate::params::{Expand, List, Object, Paginable, RangeQuery, Timestamp};
-use crate::resources::NotificationEventData;
-
-/// The resource representing a Stripe "NotificationEvent".
+/// Events are our way of letting you know when something interesting happens in
+/// your account.
 ///
-/// For more details see <https://stripe.com/docs/api/events/object>
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// When an interesting event occurs, we create a new `Event` object.
+/// For example, when a charge succeeds, we create a `charge.succeeded` event; and when an invoice payment attempt fails, we create an `invoice.payment_failed` event.
+/// Note that many API requests may cause multiple events to be created.
+/// For example, if you create a new subscription for a customer, you will receive both a `customer.subscription.created` event and a `charge.succeeded` event.  Events occur when the state of another API resource changes.
+/// The state of that resource at the time of the change is embedded in the event's data field.
+/// For example, a `charge.succeeded` event will contain a charge, and an `invoice.payment_failed` event will contain an invoice.  As with other API resources, you can use endpoints to retrieve an [individual event](https://stripe.com/docs/api#retrieve_event) or a [list of events](https://stripe.com/docs/api#list_events) from the API.
+/// We also have a separate [webhooks](http://en.wikipedia.org/wiki/Webhook) system for sending the `Event` objects directly to an endpoint on your server.
+/// Webhooks are managed in your [account settings](https://dashboard.stripe.com/account/webhooks), and our [Using Webhooks](https://stripe.com/docs/webhooks) guide will help you get set up.  When using [Connect](https://stripe.com/docs/connect), you can also receive notifications of events that occur in connected accounts.
+/// For these events, there will be an additional `account` attribute in the received `Event` object.  **NOTE:** Right now, access to events through the [Retrieve Event API](https://stripe.com/docs/api#retrieve_event) is guaranteed only for 30 days.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct Event {
-    /// Unique identifier for the object.
-    pub id: EventId,
-
     /// The connected account that originated the event.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub account: Option<String>,
@@ -29,9 +24,12 @@ pub struct Event {
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-    pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
-    pub data: NotificationEventData,
+    pub data: crate::generated::NotificationEventData,
+
+    /// Unique identifier for the object.
+    pub id: String,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
     pub livemode: bool,
@@ -40,122 +38,58 @@ pub struct Event {
     pub pending_webhooks: i64,
 
     /// Information on the API request that instigated the event.
-    pub request: Option<NotificationEventRequest>,
+    pub request: Option<crate::generated::NotificationEventRequest>,
 
     /// Description of the event (e.g., `invoice.created` or `charge.refunded`).
     #[serde(rename = "type")]
     pub type_: String,
 }
 
-impl Event {
-    /// List events, going back up to 30 days.
-    ///
-    /// Each event data is rendered according to Stripe API version at its creation time, specified in [event object](https://stripe.com/docs/api/events/object) `api_version` attribute (not according to your current Stripe API version or `Stripe-Version` header).
-    pub fn list(client: &Client, params: &ListEvents<'_>) -> Response<List<Event>> {
-        client.get_query("/events", &params)
-    }
-
-    /// Retrieves the details of an event.
-    ///
-    /// Supply the unique identifier of the event, which you might have received in a webhook.
-    pub fn retrieve(client: &Client, id: &EventId, expand: &[&str]) -> Response<Event> {
-        client.get_query(&format!("/events/{}", id), &Expand { expand })
-    }
-}
-
-impl Object for Event {
-    type Id = EventId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "event"
-    }
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct NotificationEventRequest {
-    /// ID of the API request that caused the event.
-    ///
-    /// If null, the event was automatic (e.g., Stripe's automatic subscription handling).
-    /// Request logs are available in the [dashboard](https://dashboard.stripe.com/logs), but currently not in the API.
-    pub id: Option<String>,
-
-    /// The idempotency key transmitted during the request, if any.
-    ///
-    /// *Note: This property is populated only for events on or after May 23, 2017*.
-    pub idempotency_key: Option<String>,
-}
-
-/// The parameters for `Event::list`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct ListEvents<'a> {
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetEventsParams {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub created: Option<RangeQuery<Timestamp>>,
+    pub created: Option<crate::params::RangeQueryTs>,
 
-    /// Filter events by whether all webhooks were successfully delivered.
-    ///
-    /// If false, events which are still pending or have failed all delivery attempts to a webhook endpoint will be returned.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub delivery_success: Option<bool>,
 
-    /// A cursor for use in pagination.
-    ///
-    /// `ending_before` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, starting with `obj_bar`, your subsequent call can include `ending_before=obj_bar` in order to fetch the previous page of the list.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub ending_before: Option<EventId>,
+    pub ending_before: Option<String>,
 
-    /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
-
-    /// A limit on the number of objects to be returned.
-    ///
-    /// Limit can range between 1 and 100, and the default is 10.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub limit: Option<u64>,
+    pub expand: Option<Vec<String>>,
 
-    /// A cursor for use in pagination.
-    ///
-    /// `starting_after` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, ending with `obj_foo`, your subsequent call can include `starting_after=obj_foo` in order to fetch the next page of the list.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub starting_after: Option<EventId>,
+    pub limit: Option<i64>,
 
-    /// A string containing a specific event name, or group of events using * as a wildcard.
-    ///
-    /// The list will be filtered to include only events with a matching event property.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
+
     #[serde(rename = "type")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub type_: Option<&'a str>,
+    pub type_: Option<String>,
 
-    /// An array of up to 20 strings containing specific event names.
-    ///
-    /// The list will be filtered to include only events with a matching event property.
-    /// You may pass either `type` or `types`, but not both.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub types: Option<Vec<String>>,
 }
 
-impl<'a> ListEvents<'a> {
-    pub fn new() -> Self {
-        ListEvents {
-            created: Default::default(),
-            delivery_success: Default::default(),
-            ending_before: Default::default(),
-            expand: Default::default(),
-            limit: Default::default(),
-            starting_after: Default::default(),
-            type_: Default::default(),
-            types: Default::default(),
-        }
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetEventsIdParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-impl Paginable for ListEvents<'_> {
-    type O = Event;
-    fn set_last(&mut self, item: Self::O) {
-        self.starting_after = Some(item.id());
-    }
+pub fn get_events(
+    client: &crate::Client,
+    params: GetEventsParams,
+) -> crate::Response<crate::params::List<crate::generated::Event>> {
+    client.get_query("/events", params)
+}
+
+pub fn get_events_id(
+    client: &crate::Client,
+    id: String,
+    params: GetEventsIdParams,
+) -> crate::Response<crate::generated::Event> {
+    client.get_query(&format!("/events/{id}", id = id), params)
 }

@@ -1,23 +1,9 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::ids::IssuingAuthorizationId;
-use crate::params::{Expandable, Metadata, Object, Timestamp};
-use crate::resources::{
-    BalanceTransaction, Currency, IssuingAuthorizationAmountDetails, IssuingAuthorizationCheck,
-    IssuingAuthorizationMethod, IssuingAuthorizationReason, IssuingCard, IssuingCardholder,
-    IssuingTransaction, MerchantData,
-};
-
-/// The resource representing a Stripe "IssuingAuthorization".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// When an [issued card](https://stripe.com/docs/issuing) is used to make a purchase, an Issuing `Authorization`
+/// object is created.
+///
+/// [Authorizations](https://stripe.com/docs/issuing/purchases/authorizations) must be approved for the purchase to be completed successfully.  Related guide: [Issued Card Authorizations](https://stripe.com/docs/issuing/purchases/authorizations).
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct IssuingAuthorization {
-    /// Unique identifier for the object.
-    pub id: IssuingAuthorizationId,
-
     /// The total amount that was authorized or rejected.
     ///
     /// This amount is in the card's currency and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
@@ -26,31 +12,34 @@ pub struct IssuingAuthorization {
     /// Detailed breakdown of amount components.
     ///
     /// These amounts are denominated in `currency` and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    pub amount_details: Option<IssuingAuthorizationAmountDetails>,
+    pub amount_details: Option<crate::generated::IssuingAuthorizationAmountDetails>,
 
     /// Whether the authorization has been approved.
     pub approved: bool,
 
     /// How the card details were provided.
-    pub authorization_method: IssuingAuthorizationMethod,
+    pub authorization_method: IssuingAuthorizationAuthorizationMethod,
 
     /// List of balance transactions associated with this authorization.
-    pub balance_transactions: Vec<BalanceTransaction>,
+    pub balance_transactions: Vec<crate::generated::BalanceTransaction>,
 
-    pub card: IssuingCard,
+    pub card: crate::generated::IssuingCard,
 
     /// The cardholder to whom this authorization belongs.
-    pub cardholder: Option<Expandable<IssuingCardholder>>,
+    pub cardholder: Option<Vec<crate::generated::IssuingCardholder>>,
 
     /// Time at which the object was created.
     ///
     /// Measured in seconds since the Unix epoch.
-    pub created: Timestamp,
+    pub created: crate::params::Timestamp,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
+    pub currency: crate::currency::Currency,
+
+    /// Unique identifier for the object.
+    pub id: String,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
     pub livemode: bool,
@@ -64,40 +53,40 @@ pub struct IssuingAuthorization {
     ///
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub merchant_currency: Currency,
+    pub merchant_currency: crate::currency::Currency,
 
-    pub merchant_data: MerchantData,
+    pub merchant_data: crate::generated::IssuingAuthorizationMerchantData,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
     /// This can be useful for storing additional information about the object in a structured format.
-    pub metadata: Metadata,
+    pub metadata: crate::params::Metadata,
 
     /// Details about the authorization, such as identifiers, set by the card network.
-    pub network_data: Option<IssuingAuthorizationNetworkData>,
+    pub network_data: Option<crate::generated::IssuingAuthorizationNetworkData>,
 
     /// The pending authorization request.
     ///
     /// This field will only be non-null during an `issuing_authorization.request` webhook.
-    pub pending_request: Option<IssuingAuthorizationPendingRequest>,
+    pub pending_request: Option<crate::generated::IssuingAuthorizationPendingRequest>,
 
     /// History of every time `pending_request` was approved/denied, either by you directly or by Stripe (e.g.
     ///
     /// based on your `spending_controls`).
     /// If the merchant changes the authorization by performing an [incremental authorization](https://stripe.com/docs/issuing/purchases/authorizations), you can look at this field to see the previous requests for the authorization.
-    pub request_history: Vec<IssuingAuthorizationRequest>,
+    pub request_history: Vec<crate::generated::IssuingAuthorizationRequest>,
 
     /// The current status of the authorization in its lifecycle.
     pub status: IssuingAuthorizationStatus,
 
     /// List of [transactions](https://stripe.com/docs/api/issuing/transactions) associated with this authorization.
-    pub transactions: Vec<IssuingTransaction>,
+    pub transactions: Vec<crate::generated::IssuingTransaction>,
 
     /// [Treasury](https://stripe.com/docs/api/treasury) details related to this authorization if it was created on a [FinancialAccount](https://stripe.com/docs/api/treasury/financial_accounts).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub treasury: Option<IssuingAuthorizationTreasury>,
+    pub treasury: Option<crate::generated::IssuingAuthorizationTreasury>,
 
-    pub verification_data: IssuingAuthorizationVerificationData,
+    pub verification_data: crate::generated::IssuingAuthorizationVerificationData,
 
     /// The digital wallet used for this authorization.
     ///
@@ -105,124 +94,131 @@ pub struct IssuingAuthorization {
     pub wallet: Option<String>,
 }
 
-impl Object for IssuingAuthorization {
-    type Id = IssuingAuthorizationId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetIssuingAuthorizationsParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub card: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cardholder: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub created: Option<crate::params::RangeQueryTs>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub status: Option<GetIssuingAuthorizationsParamsStatus>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetIssuingAuthorizationsAuthorizationParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostIssuingAuthorizationsAuthorizationParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
+    ///
+    /// This can be useful for storing additional information about the object in a structured format.
+    /// Individual keys can be unset by posting an empty value to them.
+    /// All keys can be unset by posting an empty value to `metadata`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<crate::params::Metadata>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostIssuingAuthorizationsAuthorizationApproveParams {
+    /// If the authorization's `pending_request.is_amount_controllable` property is `true`, you may provide this value to control how much to hold for the authorization.
+    ///
+    /// Must be positive (use [`decline`](https://stripe.com/docs/api/issuing/authorizations/decline) to decline an authorization request).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount: Option<i64>,
+
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
+    ///
+    /// This can be useful for storing additional information about the object in a structured format.
+    /// Individual keys can be unset by posting an empty value to them.
+    /// All keys can be unset by posting an empty value to `metadata`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<crate::params::Metadata>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostIssuingAuthorizationsAuthorizationDeclineParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
+    ///
+    /// This can be useful for storing additional information about the object in a structured format.
+    /// Individual keys can be unset by posting an empty value to them.
+    /// All keys can be unset by posting an empty value to `metadata`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<crate::params::Metadata>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum IssuingAuthorizationAuthorizationMethod {
+    Chip,
+    Contactless,
+    KeyedIn,
+    Online,
+    Swipe,
+}
+
+impl IssuingAuthorizationAuthorizationMethod {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Chip => "chip",
+            Self::Contactless => "contactless",
+            Self::KeyedIn => "keyed_in",
+            Self::Online => "online",
+            Self::Swipe => "swipe",
+        }
     }
-    fn object(&self) -> &'static str {
-        "issuing.authorization"
+}
+
+impl AsRef<str> for IssuingAuthorizationAuthorizationMethod {
+    fn as_ref(&self) -> &str {
+        self.as_str()
     }
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct IssuingAuthorizationNetworkData {
-    /// ID from the network that identifies the acquiring financial institution.
-    ///
-    /// For Visa and Mastercard credit transactions this is as 6 digit code.
-    /// For Maestro debit transactions this is a 9 digit code.
-    /// Uncommonly, acquiring institution ID is not provided.
-    /// When this occurs, the value will be null.
-    pub acquiring_institution_id: Option<String>,
+impl std::fmt::Display for IssuingAuthorizationAuthorizationMethod {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct IssuingAuthorizationPendingRequest {
-    /// The additional amount Stripe will hold if the authorization is approved, in the card's [currency](https://stripe.com/docs/api#issuing_authorization_object-pending-request-currency) and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    pub amount: i64,
-
-    /// Detailed breakdown of amount components.
-    ///
-    /// These amounts are denominated in `currency` and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    pub amount_details: Option<IssuingAuthorizationAmountDetails>,
-
-    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
-    ///
-    /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
-
-    /// If set `true`, you may provide [amount](https://stripe.com/docs/api/issuing/authorizations/approve#approve_issuing_authorization-amount) to control how much to hold for the authorization.
-    pub is_amount_controllable: bool,
-
-    /// The amount the merchant is requesting to be authorized in the `merchant_currency`.
-    ///
-    /// The amount is in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    pub merchant_amount: i64,
-
-    /// The local currency the merchant is requesting to authorize.
-    pub merchant_currency: Currency,
+impl Default for IssuingAuthorizationAuthorizationMethod {
+    fn default() -> Self {
+        Self::Chip
+    }
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct IssuingAuthorizationRequest {
-    /// The `pending_request.amount` at the time of the request, presented in your card's currency and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    ///
-    /// Stripe held this amount from your account to fund the authorization if the request was approved.
-    pub amount: i64,
-
-    /// Detailed breakdown of amount components.
-    ///
-    /// These amounts are denominated in `currency` and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    pub amount_details: Option<IssuingAuthorizationAmountDetails>,
-
-    /// Whether this request was approved.
-    pub approved: bool,
-
-    /// Time at which the object was created.
-    ///
-    /// Measured in seconds since the Unix epoch.
-    pub created: Timestamp,
-
-    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
-    ///
-    /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
-
-    /// The `pending_request.merchant_amount` at the time of the request, presented in the `merchant_currency` and in the [smallest currency unit](https://stripe.com/docs/currencies#zero-decimal).
-    pub merchant_amount: i64,
-
-    /// The currency that was collected by the merchant and presented to the cardholder for the authorization.
-    ///
-    /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
-    /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub merchant_currency: Currency,
-
-    /// The reason for the approval or decline.
-    pub reason: IssuingAuthorizationReason,
-
-    /// If approve/decline decision is directly responsed to the webhook with json payload and if the response is invalid (e.g., parsing errors), we surface the detailed message via this field.
-    pub reason_message: Option<String>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct IssuingAuthorizationTreasury {
-    /// The array of [ReceivedCredits](https://stripe.com/docs/api/treasury/received_credits) associated with this authorization.
-    pub received_credits: Vec<String>,
-
-    /// The array of [ReceivedDebits](https://stripe.com/docs/api/treasury/received_debits) associated with this authorization.
-    pub received_debits: Vec<String>,
-
-    /// The Treasury [Transaction](https://stripe.com/docs/api/treasury/transactions) associated with this authorization.
-    pub transaction: Option<String>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct IssuingAuthorizationVerificationData {
-    /// Whether the cardholder provided an address first line and if it matched the cardholder’s `billing.address.line1`.
-    pub address_line1_check: IssuingAuthorizationCheck,
-
-    /// Whether the cardholder provided a postal code and if it matched the cardholder’s `billing.address.postal_code`.
-    pub address_postal_code_check: IssuingAuthorizationCheck,
-
-    /// Whether the cardholder provided a CVC and if it matched Stripe’s record.
-    pub cvc_check: IssuingAuthorizationCheck,
-
-    /// Whether the cardholder provided an expiry date and if it matched Stripe’s record.
-    pub expiry_check: IssuingAuthorizationCheck,
-}
-
-/// An enum representing the possible values of an `IssuingAuthorization`'s `status` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum IssuingAuthorizationStatus {
     Closed,
@@ -233,9 +229,9 @@ pub enum IssuingAuthorizationStatus {
 impl IssuingAuthorizationStatus {
     pub fn as_str(self) -> &'static str {
         match self {
-            IssuingAuthorizationStatus::Closed => "closed",
-            IssuingAuthorizationStatus::Pending => "pending",
-            IssuingAuthorizationStatus::Reversed => "reversed",
+            Self::Closed => "closed",
+            Self::Pending => "pending",
+            Self::Reversed => "reversed",
         }
     }
 }
@@ -251,8 +247,95 @@ impl std::fmt::Display for IssuingAuthorizationStatus {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for IssuingAuthorizationStatus {
+
+impl Default for IssuingAuthorizationStatus {
     fn default() -> Self {
         Self::Closed
     }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum GetIssuingAuthorizationsParamsStatus {
+    Closed,
+    Pending,
+    Reversed,
+}
+
+impl GetIssuingAuthorizationsParamsStatus {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Closed => "closed",
+            Self::Pending => "pending",
+            Self::Reversed => "reversed",
+        }
+    }
+}
+
+impl AsRef<str> for GetIssuingAuthorizationsParamsStatus {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for GetIssuingAuthorizationsParamsStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for GetIssuingAuthorizationsParamsStatus {
+    fn default() -> Self {
+        Self::Closed
+    }
+}
+pub fn get_issuing_authorizations(
+    client: &crate::Client,
+    params: GetIssuingAuthorizationsParams,
+) -> crate::Response<crate::params::List<crate::generated::IssuingAuthorization>> {
+    client.get_query("/issuing/authorizations", params)
+}
+
+pub fn get_issuing_authorizations_authorization(
+    client: &crate::Client,
+    authorization: String,
+    params: GetIssuingAuthorizationsAuthorizationParams,
+) -> crate::Response<crate::generated::IssuingAuthorization> {
+    client.get_query(
+        &format!("/issuing/authorizations/{authorization}", authorization = authorization),
+        params,
+    )
+}
+
+pub fn post_issuing_authorizations_authorization(
+    client: &crate::Client,
+    authorization: String,
+    params: PostIssuingAuthorizationsAuthorizationParams,
+) -> crate::Response<crate::generated::IssuingAuthorization> {
+    client.post_form(
+        &format!("/issuing/authorizations/{authorization}", authorization = authorization),
+        params,
+    )
+}
+
+pub fn post_issuing_authorizations_authorization_approve(
+    client: &crate::Client,
+    authorization: String,
+    params: PostIssuingAuthorizationsAuthorizationApproveParams,
+) -> crate::Response<crate::generated::IssuingAuthorization> {
+    client.post_form(
+        &format!("/issuing/authorizations/{authorization}/approve", authorization = authorization),
+        params,
+    )
+}
+
+pub fn post_issuing_authorizations_authorization_decline(
+    client: &crate::Client,
+    authorization: String,
+    params: PostIssuingAuthorizationsAuthorizationDeclineParams,
+) -> crate::Response<crate::generated::IssuingAuthorization> {
+    client.post_form(
+        &format!("/issuing/authorizations/{authorization}/decline", authorization = authorization),
+        params,
+    )
 }

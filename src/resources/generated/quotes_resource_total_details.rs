@@ -1,13 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::resources::{Discount, TaxRate};
-
-/// The resource representing a Stripe "QuotesResourceTotalDetails".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct QuotesResourceTotalDetails {
     /// This is the sum of all the discounts.
     pub amount_discount: i64,
@@ -19,30 +10,5 @@ pub struct QuotesResourceTotalDetails {
     pub amount_tax: i64,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub breakdown: Option<QuotesResourceTotalDetailsResourceBreakdown>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct QuotesResourceTotalDetailsResourceBreakdown {
-    /// The aggregated discounts.
-    pub discounts: Vec<LineItemsDiscountAmount>,
-
-    /// The aggregated tax amounts by rate.
-    pub taxes: Vec<LineItemsTaxAmount>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct LineItemsDiscountAmount {
-    /// The amount discounted.
-    pub amount: i64,
-
-    pub discount: Discount,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct LineItemsTaxAmount {
-    /// Amount of tax applied for this rate.
-    pub amount: i64,
-
-    pub rate: TaxRate,
+    pub breakdown: Option<crate::generated::QuotesResourceTotalDetailsResourceBreakdown>,
 }

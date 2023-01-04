@@ -1,13 +1,8 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::params::Object;
-
-/// The resource representing a Stripe "cash_balance".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// A customer's `Cash balance` represents real funds.
+///
+/// Customers can add funds to their cash balance by sending a bank transfer.
+/// These funds can be used for payment and can eventually be paid out to your bank account.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct CashBalance {
     /// A hash of all cash balances available to this customer.
     ///
@@ -21,53 +16,83 @@ pub struct CashBalance {
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
     pub livemode: bool,
 
-    pub settings: CustomerBalanceCustomerBalanceSettings,
+    pub settings: crate::generated::CustomerBalanceCustomerBalanceSettings,
 }
 
-impl Object for CashBalance {
-    type Id = ();
-    fn id(&self) -> Self::Id {}
-    fn object(&self) -> &'static str {
-        "cash_balance"
-    }
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetCustomersCustomerCashBalanceParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CustomerBalanceCustomerBalanceSettings {
-    /// The configuration for how funds that land in the customer cash balance are reconciled.
-    pub reconciliation_mode: CustomerBalanceCustomerBalanceSettingsReconciliationMode,
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostCustomersCustomerCashBalanceParams {
+    /// Specifies which fields in the response should be expanded.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    /// A hash of settings for this cash balance.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub settings: Option<PostCustomersCustomerCashBalanceParamsSettings>,
 }
 
-/// An enum representing the possible values of an `CustomerBalanceCustomerBalanceSettings`'s `reconciliation_mode` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+/// A hash of settings for this cash balance.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostCustomersCustomerCashBalanceParamsSettings {
+    /// Controls how funds transferred by the customer are applied to payment intents and invoices.
+    ///
+    /// Valid options are `automatic` or `manual`.
+    /// For more information about these reconciliation modes, see [Reconciliation](https://stripe.com/docs/payments/customer-balance/reconciliation).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reconciliation_mode:
+        Option<PostCustomersCustomerCashBalanceParamsSettingsReconciliationMode>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum CustomerBalanceCustomerBalanceSettingsReconciliationMode {
+pub enum PostCustomersCustomerCashBalanceParamsSettingsReconciliationMode {
     Automatic,
     Manual,
 }
 
-impl CustomerBalanceCustomerBalanceSettingsReconciliationMode {
+impl PostCustomersCustomerCashBalanceParamsSettingsReconciliationMode {
     pub fn as_str(self) -> &'static str {
         match self {
-            CustomerBalanceCustomerBalanceSettingsReconciliationMode::Automatic => "automatic",
-            CustomerBalanceCustomerBalanceSettingsReconciliationMode::Manual => "manual",
+            Self::Automatic => "automatic",
+            Self::Manual => "manual",
         }
     }
 }
 
-impl AsRef<str> for CustomerBalanceCustomerBalanceSettingsReconciliationMode {
+impl AsRef<str> for PostCustomersCustomerCashBalanceParamsSettingsReconciliationMode {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for CustomerBalanceCustomerBalanceSettingsReconciliationMode {
+impl std::fmt::Display for PostCustomersCustomerCashBalanceParamsSettingsReconciliationMode {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for CustomerBalanceCustomerBalanceSettingsReconciliationMode {
+
+impl Default for PostCustomersCustomerCashBalanceParamsSettingsReconciliationMode {
     fn default() -> Self {
         Self::Automatic
     }
+}
+pub fn get_customers_customer_cash_balance(
+    client: &crate::Client,
+    customer: String,
+    params: GetCustomersCustomerCashBalanceParams,
+) -> crate::Response<crate::generated::CashBalance> {
+    client.get_query(&format!("/customers/{customer}/cash_balance", customer = customer), params)
+}
+
+pub fn post_customers_customer_cash_balance(
+    client: &crate::Client,
+    customer: String,
+    params: PostCustomersCustomerCashBalanceParams,
+) -> crate::Response<crate::generated::CashBalance> {
+    client.post_form(&format!("/customers/{customer}/cash_balance", customer = customer), params)
 }

@@ -28,13 +28,19 @@ impl UrlFinder {
         }
     }
 
+    /// Create a stub `UrlFinder` which does not require a network request. Only meant to
+    /// be used for testing since no `doc_url`'s will be found.
+    pub fn stub() -> Self {
+        Self { html: String::new() }
+    }
+
     pub fn url_for_object(&self, object: &str) -> Option<String> {
         let object_name = object.replace('.', "_").to_snake_case();
         let doc_url = format!("/{}s/object", object_name);
         if self.html.contains(&doc_url) {
             Some(format!("https://stripe.com/docs/api{}", doc_url))
         } else {
-            log::warn!("{} not in html", doc_url);
+            // log::warn!("{} not in html", doc_url);
             None
         }
     }

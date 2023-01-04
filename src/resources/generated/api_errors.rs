@@ -1,13 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::resources::{PaymentIntent, PaymentMethod, PaymentSource, SetupIntent};
-
-/// The resource representing a Stripe "APIErrors".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct ApiErrors {
     /// For card errors, the ID of the failed charge.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -38,10 +29,10 @@ pub struct ApiErrors {
     pub param: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_intent: Option<PaymentIntent>,
+    pub payment_intent: Option<crate::generated::PaymentIntent>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_method: Option<PaymentMethod>,
+    pub payment_method: Option<crate::generated::PaymentMethod>,
 
     /// If the error is specific to the type of payment method, the payment method type that had a problem.
     ///
@@ -54,10 +45,10 @@ pub struct ApiErrors {
     pub request_log_url: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub setup_intent: Option<SetupIntent>,
+    pub setup_intent: Option<crate::generated::SetupIntent>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub source: Option<PaymentSource>,
+    pub source: Option<crate::generated::PaymentSource>,
 
     /// The type of error returned.
     ///
@@ -66,8 +57,7 @@ pub struct ApiErrors {
     pub type_: ApiErrorsType,
 }
 
-/// An enum representing the possible values of an `ApiErrors`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ApiErrorsType {
     ApiError,
@@ -79,10 +69,10 @@ pub enum ApiErrorsType {
 impl ApiErrorsType {
     pub fn as_str(self) -> &'static str {
         match self {
-            ApiErrorsType::ApiError => "api_error",
-            ApiErrorsType::CardError => "card_error",
-            ApiErrorsType::IdempotencyError => "idempotency_error",
-            ApiErrorsType::InvalidRequestError => "invalid_request_error",
+            Self::ApiError => "api_error",
+            Self::CardError => "card_error",
+            Self::IdempotencyError => "idempotency_error",
+            Self::InvalidRequestError => "invalid_request_error",
         }
     }
 }
@@ -98,7 +88,8 @@ impl std::fmt::Display for ApiErrorsType {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for ApiErrorsType {
+
+impl Default for ApiErrorsType {
     fn default() -> Self {
         Self::ApiError
     }

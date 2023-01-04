@@ -1,28 +1,15 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-use crate::client::{Client, Response};
-use crate::ids::PaymentLinkId;
-use crate::params::{Expand, Expandable, List, Metadata, Object, Paginable};
-use crate::resources::{Account, CheckoutSessionItem, Currency, ShippingRate};
-
-/// The resource representing a Stripe "PaymentLink".
+/// A payment link is a shareable URL that will take your customers to a hosted payment page.
 ///
-/// For more details see <https://stripe.com/docs/api/payment_links/object>
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+/// A payment link can be shared and used multiple times.  When a customer opens a payment link it will open a new [checkout session](https://stripe.com/docs/api/checkout/sessions) to render the payment page.
+/// You can use [checkout session events](https://stripe.com/docs/api/events/types#event_types-checkout.session.completed) to track payments through payment links.  Related guide: [Payment Links API](https://stripe.com/docs/payments/payment-links/api).
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct PaymentLink {
-    /// Unique identifier for the object.
-    pub id: PaymentLinkId,
-
     /// Whether the payment link's `url` is active.
     ///
     /// If `false`, customers visiting the URL will be shown a page saying that the link has been deactivated.
     pub active: bool,
 
-    pub after_completion: PaymentLinksResourceAfterCompletion,
+    pub after_completion: crate::generated::PaymentLinksResourceAfterCompletion,
 
     /// Whether user redeemable promotion codes are enabled.
     pub allow_promotion_codes: bool,
@@ -33,25 +20,28 @@ pub struct PaymentLink {
     /// This represents the percentage of the subscription invoice subtotal that will be transferred to the application owner's Stripe account.
     pub application_fee_percent: Option<f64>,
 
-    pub automatic_tax: PaymentLinksResourceAutomaticTax,
+    pub automatic_tax: crate::generated::PaymentLinksResourceAutomaticTax,
 
     /// Configuration for collecting the customer's billing address.
     pub billing_address_collection: PaymentLinkBillingAddressCollection,
 
     /// When set, provides configuration to gather active consent from customers.
-    pub consent_collection: Option<PaymentLinksResourceConsentCollection>,
+    pub consent_collection: Option<crate::generated::PaymentLinksResourceConsentCollection>,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies).
-    pub currency: Currency,
+    pub currency: crate::currency::Currency,
 
     /// Configuration for Customer creation during checkout.
     pub customer_creation: PaymentLinkCustomerCreation,
 
+    /// Unique identifier for the object.
+    pub id: String,
+
     /// The line items representing what is being sold.
     #[serde(default)]
-    pub line_items: List<CheckoutSessionItem>,
+    pub line_items: crate::params::List<crate::generated::Item>,
 
     /// Has the value `true` if the object exists in live mode or the value `false` if the object exists in test mode.
     pub livemode: bool,
@@ -59,15 +49,15 @@ pub struct PaymentLink {
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
     /// This can be useful for storing additional information about the object in a structured format.
-    pub metadata: Metadata,
+    pub metadata: crate::params::Metadata,
 
     /// The account on behalf of which to charge.
     ///
     /// See the [Connect documentation](https://support.stripe.com/questions/sending-invoices-on-behalf-of-connected-accounts) for details.
-    pub on_behalf_of: Option<Expandable<Account>>,
+    pub on_behalf_of: Option<Vec<crate::generated::Account>>,
 
     /// Indicates the parameters to be passed to PaymentIntent creation during checkout.
-    pub payment_intent_data: Option<PaymentLinksResourcePaymentIntentData>,
+    pub payment_intent_data: Option<crate::generated::PaymentLinksResourcePaymentIntentData>,
 
     /// Configuration for collecting a payment method during checkout.
     pub payment_method_collection: PaymentLinkPaymentMethodCollection,
@@ -77,13 +67,14 @@ pub struct PaymentLink {
     /// When `null`, Stripe will dynamically show relevant payment methods you've enabled in your [payment method settings](https://dashboard.stripe.com/settings/payment_methods).
     pub payment_method_types: Option<Vec<PaymentLinkPaymentMethodTypes>>,
 
-    pub phone_number_collection: PaymentLinksResourcePhoneNumberCollection,
+    pub phone_number_collection: crate::generated::PaymentLinksResourcePhoneNumberCollection,
 
     /// Configuration for collecting the customer's shipping address.
-    pub shipping_address_collection: Option<PaymentLinksResourceShippingAddressCollection>,
+    pub shipping_address_collection:
+        Option<crate::generated::PaymentLinksResourceShippingAddressCollection>,
 
     /// The shipping rate options applied to the session.
-    pub shipping_options: Vec<PaymentLinksResourceShippingOption>,
+    pub shipping_options: Vec<crate::generated::PaymentLinksResourceShippingOption>,
 
     /// Indicates the type of transaction being performed which customizes relevant text on the page, such as the submit button.
     pub submit_type: PaymentLinkSubmitType,
@@ -91,161 +82,61 @@ pub struct PaymentLink {
     /// When creating a subscription, the specified configuration data will be used.
     ///
     /// There must be at least one line item with a recurring price to use `subscription_data`.
-    pub subscription_data: Option<PaymentLinksResourceSubscriptionData>,
+    pub subscription_data: Option<crate::generated::PaymentLinksResourceSubscriptionData>,
 
-    pub tax_id_collection: PaymentLinksResourceTaxIdCollection,
+    pub tax_id_collection: crate::generated::PaymentLinksResourceTaxIdCollection,
 
     /// The account (if any) the payments will be attributed to for tax reporting, and where funds from each payment will be transferred to.
-    pub transfer_data: Option<PaymentLinksResourceTransferData>,
+    pub transfer_data: Option<crate::generated::PaymentLinksResourceTransferData>,
 
     /// The public URL that can be shared with customers.
     pub url: String,
 }
 
-impl PaymentLink {
-    /// Returns a list of your payment links.
-    pub fn list(client: &Client, params: &ListPaymentLinks<'_>) -> Response<List<PaymentLink>> {
-        client.get_query("/payment_links", &params)
-    }
-
-    /// Creates a payment link.
-    pub fn create(client: &Client, params: CreatePaymentLink<'_>) -> Response<PaymentLink> {
-        client.post_form("/payment_links", &params)
-    }
-
-    /// Retrieve a payment link.
-    pub fn retrieve(client: &Client, id: &PaymentLinkId, expand: &[&str]) -> Response<PaymentLink> {
-        client.get_query(&format!("/payment_links/{}", id), &Expand { expand })
-    }
-
-    /// Updates a payment link.
-    pub fn update(
-        client: &Client,
-        id: &PaymentLinkId,
-        params: UpdatePaymentLink<'_>,
-    ) -> Response<PaymentLink> {
-        client.post_form(&format!("/payment_links/{}", id), &params)
-    }
-}
-
-impl Object for PaymentLink {
-    type Id = PaymentLinkId;
-    fn id(&self) -> Self::Id {
-        self.id.clone()
-    }
-    fn object(&self) -> &'static str {
-        "payment_link"
-    }
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceAfterCompletion {
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetPaymentLinksParams {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub hosted_confirmation: Option<PaymentLinksResourceCompletionBehaviorConfirmationPage>,
+    pub active: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub redirect: Option<PaymentLinksResourceCompletionBehaviorRedirect>,
+    pub ending_before: Option<String>,
 
-    /// The specified behavior after the purchase is complete.
-    #[serde(rename = "type")]
-    pub type_: PaymentLinksResourceAfterCompletionType,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceAutomaticTax {
-    /// If `true`, tax will be calculated automatically using the customer's location.
-    pub enabled: bool,
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetPaymentLinksPaymentLinkParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceCompletionBehaviorConfirmationPage {
-    /// The custom message that is displayed to the customer after the purchase is complete.
-    pub custom_message: Option<String>,
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct GetPaymentLinksPaymentLinkLineItemsParams {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ending_before: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub starting_after: Option<String>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceCompletionBehaviorRedirect {
-    /// The URL the customer will be redirected to after the purchase is complete.
-    pub url: String,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceConsentCollection {
-    /// If set to `auto`, enables the collection of customer consent for promotional communications.
-    pub promotions: Option<PaymentLinksResourceConsentCollectionPromotions>,
-
-    /// If set to `required`, it requires cutomers to accept the terms of service before being able to pay.
-    ///
-    /// If set to `none`, customers won't be shown a checkbox to accept the terms of service.
-    pub terms_of_service: Option<PaymentLinksResourceConsentCollectionTermsOfService>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourcePaymentIntentData {
-    /// Indicates when the funds will be captured from the customer's account.
-    pub capture_method: Option<PaymentLinksResourcePaymentIntentDataCaptureMethod>,
-
-    /// Indicates that you intend to make future payments with the payment method collected during checkout.
-    pub setup_future_usage: Option<PaymentLinksResourcePaymentIntentDataSetupFutureUsage>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourcePhoneNumberCollection {
-    /// If `true`, a phone number will be collected during checkout.
-    pub enabled: bool,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceShippingAddressCollection {
-    /// An array of two-letter ISO country codes representing which countries Checkout should provide as options for shipping locations.
-    ///
-    /// Unsupported country codes: `AS, CX, CC, CU, HM, IR, KP, MH, FM, NF, MP, PW, SD, SY, UM, VI`.
-    pub allowed_countries: Vec<PaymentLinksResourceShippingAddressCollectionAllowedCountries>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceShippingOption {
-    /// A non-negative integer in cents representing how much to charge.
-    pub shipping_amount: i64,
-
-    /// The ID of the Shipping Rate to use for this shipping option.
-    pub shipping_rate: Expandable<ShippingRate>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceSubscriptionData {
-    /// The subscription's description, meant to be displayable to the customer.
-    ///
-    /// Use this field to optionally store an explanation of the subscription.
-    pub description: Option<String>,
-
-    /// Integer representing the number of trial period days before the customer is charged for the first time.
-    pub trial_period_days: Option<u32>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceTaxIdCollection {
-    /// Indicates whether tax ID collection is enabled for the session.
-    pub enabled: bool,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct PaymentLinksResourceTransferData {
-    /// The amount in %s that will be transferred to the destination account.
-    ///
-    /// By default, the entire amount is transferred to the destination.
-    pub amount: Option<i64>,
-
-    /// The connected account receiving the transfer.
-    pub destination: Expandable<Account>,
-}
-
-/// The parameters for `PaymentLink::create`.
-#[derive(Clone, Debug, Serialize)]
-pub struct CreatePaymentLink<'a> {
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParams {
     /// Behavior after the purchase is complete.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub after_completion: Option<CreatePaymentLinkAfterCompletion>,
+    pub after_completion: Option<PostPaymentLinksParamsAfterCompletion>,
 
     /// Enables user redeemable promotion codes.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -266,35 +157,35 @@ pub struct CreatePaymentLink<'a> {
 
     /// Configuration for automatic tax collection.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub automatic_tax: Option<CreatePaymentLinkAutomaticTax>,
+    pub automatic_tax: Option<PostPaymentLinksParamsAutomaticTax>,
 
     /// Configuration for collecting the customer's billing address.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub billing_address_collection: Option<PaymentLinkBillingAddressCollection>,
+    pub billing_address_collection: Option<PostPaymentLinksParamsBillingAddressCollection>,
 
     /// Configure fields to gather active consent from customers.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub consent_collection: Option<CreatePaymentLinkConsentCollection>,
+    pub consent_collection: Option<PostPaymentLinksParamsConsentCollection>,
 
     /// Three-letter [ISO currency code](https://www.iso.org/iso-4217-currency-codes.html), in lowercase.
     ///
     /// Must be a [supported currency](https://stripe.com/docs/currencies) and supported by each line item's price.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub currency: Option<Currency>,
+    pub currency: Option<crate::currency::Currency>,
 
     /// Configures whether [checkout sessions](https://stripe.com/docs/api/checkout/sessions) created by this payment link create a [Customer](https://stripe.com/docs/api/customers).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub customer_creation: Option<PaymentLinkCustomerCreation>,
+    pub customer_creation: Option<PostPaymentLinksParamsCustomerCreation>,
 
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
     /// The line items representing what is being sold.
     ///
     /// Each line item represents an item being sold.
     /// Up to 20 line items are supported.
-    pub line_items: Vec<CreatePaymentLinkLineItems>,
+    pub line_items: Vec<PostPaymentLinksParamsLineItems>,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
@@ -303,140 +194,65 @@ pub struct CreatePaymentLink<'a> {
     /// All keys can be unset by posting an empty value to `metadata`.
     /// Metadata associated with this Payment Link will automatically be copied to [checkout sessions](https://stripe.com/docs/api/checkout/sessions) created by this payment link.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Metadata>,
+    pub metadata: Option<crate::params::Metadata>,
 
     /// The account on behalf of which to charge.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub on_behalf_of: Option<&'a str>,
+    pub on_behalf_of: Option<String>,
 
     /// A subset of parameters to be passed to PaymentIntent creation for Checkout Sessions in `payment` mode.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_intent_data: Option<CreatePaymentLinkPaymentIntentData>,
+    pub payment_intent_data: Option<PostPaymentLinksParamsPaymentIntentData>,
 
     /// Specify whether Checkout should collect a payment method.
     ///
     /// When set to `if_required`, Checkout will not collect a payment method when the total due for the session is 0.This may occur if the Checkout Session includes a free trial or a discount.  Can only be set in `subscription` mode.  If you'd like information on how to collect a payment method outside of Checkout, read the guide on [configuring subscriptions with a free trial](https://stripe.com/docs/payments/checkout/free-trials).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_method_collection: Option<PaymentLinkPaymentMethodCollection>,
+    pub payment_method_collection: Option<PostPaymentLinksParamsPaymentMethodCollection>,
 
     /// The list of payment method types that customers can use.
     ///
     /// If no value is passed, Stripe will dynamically show relevant payment methods from your [payment method settings](https://dashboard.stripe.com/settings/payment_methods) (20+ payment methods [supported](https://stripe.com/docs/payments/payment-methods/integration-options#payment-method-product-support)).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_method_types: Option<Vec<CreatePaymentLinkPaymentMethodTypes>>,
+    pub payment_method_types: Option<Vec<PostPaymentLinksParamsPaymentMethodTypes>>,
 
     /// Controls phone number collection settings during checkout.
     ///
     /// We recommend that you review your privacy policy and check with your legal contacts.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub phone_number_collection: Option<CreatePaymentLinkPhoneNumberCollection>,
+    pub phone_number_collection: Option<PostPaymentLinksParamsPhoneNumberCollection>,
 
     /// Configuration for collecting the customer's shipping address.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub shipping_address_collection: Option<CreatePaymentLinkShippingAddressCollection>,
+    pub shipping_address_collection: Option<PostPaymentLinksParamsShippingAddressCollection>,
 
     /// The shipping rate options to apply to [checkout sessions](https://stripe.com/docs/api/checkout/sessions) created by this payment link.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub shipping_options: Option<Vec<CreatePaymentLinkShippingOptions>>,
+    pub shipping_options: Option<Vec<PostPaymentLinksParamsShippingOptions>>,
 
     /// Describes the type of transaction being performed in order to customize relevant text on the page, such as the submit button.
     ///
     /// Changing this value will also affect the hostname in the [url](https://stripe.com/docs/api/payment_links/payment_links/object#url) property (example: `donate.stripe.com`).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub submit_type: Option<PaymentLinkSubmitType>,
+    pub submit_type: Option<PostPaymentLinksParamsSubmitType>,
 
     /// When creating a subscription, the specified configuration data will be used.
     ///
     /// There must be at least one line item with a recurring price to use `subscription_data`.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub subscription_data: Option<CreatePaymentLinkSubscriptionData>,
+    pub subscription_data: Option<PostPaymentLinksParamsSubscriptionData>,
 
     /// Controls tax ID collection during checkout.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tax_id_collection: Option<CreatePaymentLinkTaxIdCollection>,
+    pub tax_id_collection: Option<PostPaymentLinksParamsTaxIdCollection>,
 
     /// The account (if any) the payments will be attributed to for tax reporting, and where funds from each payment will be transferred to.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub transfer_data: Option<CreatePaymentLinkTransferData>,
+    pub transfer_data: Option<PostPaymentLinksParamsTransferData>,
 }
 
-impl<'a> CreatePaymentLink<'a> {
-    pub fn new(line_items: Vec<CreatePaymentLinkLineItems>) -> Self {
-        CreatePaymentLink {
-            after_completion: Default::default(),
-            allow_promotion_codes: Default::default(),
-            application_fee_amount: Default::default(),
-            application_fee_percent: Default::default(),
-            automatic_tax: Default::default(),
-            billing_address_collection: Default::default(),
-            consent_collection: Default::default(),
-            currency: Default::default(),
-            customer_creation: Default::default(),
-            expand: Default::default(),
-            line_items,
-            metadata: Default::default(),
-            on_behalf_of: Default::default(),
-            payment_intent_data: Default::default(),
-            payment_method_collection: Default::default(),
-            payment_method_types: Default::default(),
-            phone_number_collection: Default::default(),
-            shipping_address_collection: Default::default(),
-            shipping_options: Default::default(),
-            submit_type: Default::default(),
-            subscription_data: Default::default(),
-            tax_id_collection: Default::default(),
-            transfer_data: Default::default(),
-        }
-    }
-}
-
-/// The parameters for `PaymentLink::list`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct ListPaymentLinks<'a> {
-    /// Only return payment links that are active or inactive (e.g., pass `false` to list all inactive payment links).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub active: Option<bool>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `ending_before` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, starting with `obj_bar`, your subsequent call can include `ending_before=obj_bar` in order to fetch the previous page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ending_before: Option<PaymentLinkId>,
-
-    /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
-
-    /// A limit on the number of objects to be returned.
-    ///
-    /// Limit can range between 1 and 100, and the default is 10.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub limit: Option<u64>,
-
-    /// A cursor for use in pagination.
-    ///
-    /// `starting_after` is an object ID that defines your place in the list.
-    /// For instance, if you make a list request and receive 100 objects, ending with `obj_foo`, your subsequent call can include `starting_after=obj_foo` in order to fetch the next page of the list.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub starting_after: Option<PaymentLinkId>,
-}
-
-impl<'a> ListPaymentLinks<'a> {
-    pub fn new() -> Self {
-        ListPaymentLinks {
-            active: Default::default(),
-            ending_before: Default::default(),
-            expand: Default::default(),
-            limit: Default::default(),
-            starting_after: Default::default(),
-        }
-    }
-}
-
-/// The parameters for `PaymentLink::update`.
-#[derive(Clone, Debug, Serialize, Default)]
-pub struct UpdatePaymentLink<'a> {
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksPaymentLinkParams {
     /// Whether the payment link's `url` is active.
     ///
     /// If `false`, customers visiting the URL will be shown a page saying that the link has been deactivated.
@@ -445,7 +261,7 @@ pub struct UpdatePaymentLink<'a> {
 
     /// Behavior after the purchase is complete.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub after_completion: Option<UpdatePaymentLinkAfterCompletion>,
+    pub after_completion: Option<PostPaymentLinksPaymentLinkParamsAfterCompletion>,
 
     /// Enables user redeemable promotion codes.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -453,26 +269,27 @@ pub struct UpdatePaymentLink<'a> {
 
     /// Configuration for automatic tax collection.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub automatic_tax: Option<UpdatePaymentLinkAutomaticTax>,
+    pub automatic_tax: Option<PostPaymentLinksPaymentLinkParamsAutomaticTax>,
 
     /// Configuration for collecting the customer's billing address.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub billing_address_collection: Option<PaymentLinkBillingAddressCollection>,
+    pub billing_address_collection:
+        Option<PostPaymentLinksPaymentLinkParamsBillingAddressCollection>,
 
     /// Configures whether [checkout sessions](https://stripe.com/docs/api/checkout/sessions) created by this payment link create a [Customer](https://stripe.com/docs/api/customers).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub customer_creation: Option<PaymentLinkCustomerCreation>,
+    pub customer_creation: Option<PostPaymentLinksPaymentLinkParamsCustomerCreation>,
 
     /// Specifies which fields in the response should be expanded.
-    #[serde(skip_serializing_if = "Expand::is_empty")]
-    pub expand: &'a [&'a str],
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expand: Option<Vec<String>>,
 
     /// The line items representing what is being sold.
     ///
     /// Each line item represents an item being sold.
     /// Up to 20 line items are supported.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub line_items: Option<Vec<UpdatePaymentLinkLineItems>>,
+    pub line_items: Option<Vec<PostPaymentLinksPaymentLinkParamsLineItems>>,
 
     /// Set of [key-value pairs](https://stripe.com/docs/api/metadata) that you can attach to an object.
     ///
@@ -481,1290 +298,27 @@ pub struct UpdatePaymentLink<'a> {
     /// All keys can be unset by posting an empty value to `metadata`.
     /// Metadata associated with this Payment Link will automatically be copied to [checkout sessions](https://stripe.com/docs/api/checkout/sessions) created by this payment link.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<Metadata>,
+    pub metadata: Option<crate::params::Metadata>,
 
     /// Specify whether Checkout should collect a payment method.
     ///
     /// When set to `if_required`, Checkout will not collect a payment method when the total due for the session is 0.This may occur if the Checkout Session includes a free trial or a discount.  Can only be set in `subscription` mode.  If you'd like information on how to collect a payment method outside of Checkout, read the guide on [configuring subscriptions with a free trial](https://stripe.com/docs/payments/checkout/free-trials).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_method_collection: Option<PaymentLinkPaymentMethodCollection>,
+    pub payment_method_collection: Option<PostPaymentLinksPaymentLinkParamsPaymentMethodCollection>,
 
     /// The list of payment method types that customers can use.
     ///
     /// Pass an empty string to enable automatic payment methods that use your [payment method settings](https://dashboard.stripe.com/settings/payment_methods).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payment_method_types: Option<Vec<UpdatePaymentLinkPaymentMethodTypes>>,
+    pub payment_method_types: Option<Vec<PostPaymentLinksPaymentLinkParamsPaymentMethodTypes>>,
 
     /// Configuration for collecting the customer's shipping address.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub shipping_address_collection: Option<UpdatePaymentLinkShippingAddressCollection>,
+    pub shipping_address_collection:
+        Option<PostPaymentLinksPaymentLinkParamsShippingAddressCollection>,
 }
 
-impl<'a> UpdatePaymentLink<'a> {
-    pub fn new() -> Self {
-        UpdatePaymentLink {
-            active: Default::default(),
-            after_completion: Default::default(),
-            allow_promotion_codes: Default::default(),
-            automatic_tax: Default::default(),
-            billing_address_collection: Default::default(),
-            customer_creation: Default::default(),
-            expand: Default::default(),
-            line_items: Default::default(),
-            metadata: Default::default(),
-            payment_method_collection: Default::default(),
-            payment_method_types: Default::default(),
-            shipping_address_collection: Default::default(),
-        }
-    }
-}
-
-impl Paginable for ListPaymentLinks<'_> {
-    type O = PaymentLink;
-    fn set_last(&mut self, item: Self::O) {
-        self.starting_after = Some(item.id());
-    }
-}
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkAfterCompletion {
-    /// Configuration when `type=hosted_confirmation`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub hosted_confirmation: Option<CreatePaymentLinkAfterCompletionHostedConfirmation>,
-
-    /// Configuration when `type=redirect`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub redirect: Option<CreatePaymentLinkAfterCompletionRedirect>,
-
-    /// The specified behavior after the purchase is complete.
-    ///
-    /// Either `redirect` or `hosted_confirmation`.
-    #[serde(rename = "type")]
-    pub type_: CreatePaymentLinkAfterCompletionType,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkAutomaticTax {
-    /// If `true`, tax will be calculated automatically using the customer's location.
-    pub enabled: bool,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkConsentCollection {
-    /// If set to `auto`, enables the collection of customer consent for promotional communications.
-    ///
-    /// The Checkout Session will determine whether to display an option to opt into promotional communication from the merchant depending on the customer's locale.
-    /// Only available to US merchants.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub promotions: Option<CreatePaymentLinkConsentCollectionPromotions>,
-
-    /// If set to `required`, it requires customers to check a terms of service checkbox before being able to pay.
-    /// There must be a valid terms of service URL set in your [Dashboard settings](https://dashboard.stripe.com/settings/public).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub terms_of_service: Option<CreatePaymentLinkConsentCollectionTermsOfService>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkLineItems {
-    /// When set, provides configuration for this item’s quantity to be adjusted by the customer during checkout.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub adjustable_quantity: Option<CreatePaymentLinkLineItemsAdjustableQuantity>,
-
-    /// The ID of the [Price](https://stripe.com/docs/api/prices) or [Plan](https://stripe.com/docs/api/plans) object.
-    pub price: String,
-
-    /// The quantity of the line item being purchased.
-    pub quantity: u64,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkPaymentIntentData {
-    /// Controls when the funds will be captured from the customer's account.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub capture_method: Option<CreatePaymentLinkPaymentIntentDataCaptureMethod>,
-
-    /// Indicates that you intend to [make future payments](https://stripe.com/docs/payments/payment-intents#future-usage) with the payment method collected by this Checkout Session.
-    ///
-    /// When setting this to `on_session`, Checkout will show a notice to the customer that their payment details will be saved.
-    ///
-    /// When setting this to `off_session`, Checkout will show a notice to the customer that their payment details will be saved and used for future payments.
-    ///
-    /// If a Customer has been provided or Checkout creates a new Customer,Checkout will attach the payment method to the Customer.
-    ///
-    /// If Checkout does not create a Customer, the payment method is not attached to a Customer.
-    ///
-    /// To reuse the payment method, you can retrieve it from the Checkout Session's PaymentIntent.  When processing card payments, Checkout also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as SCA.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub setup_future_usage: Option<CreatePaymentLinkPaymentIntentDataSetupFutureUsage>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkPhoneNumberCollection {
-    /// Set to `true` to enable phone number collection.
-    pub enabled: bool,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkShippingAddressCollection {
-    /// An array of two-letter ISO country codes representing which countries Checkout should provide as options for
-    /// shipping locations.
-    ///
-    /// Unsupported country codes: `AS, CX, CC, CU, HM, IR, KP, MH, FM, NF, MP, PW, SD, SY, UM, VI`.
-    pub allowed_countries: Vec<CreatePaymentLinkShippingAddressCollectionAllowedCountries>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkShippingOptions {
-    /// The ID of the Shipping Rate to use for this shipping option.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub shipping_rate: Option<String>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkSubscriptionData {
-    /// The subscription's description, meant to be displayable to the customer.
-    ///
-    /// Use this field to optionally store an explanation of the subscription.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-
-    /// Integer representing the number of trial period days before the customer is charged for the first time.
-    ///
-    /// Has to be at least 1.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub trial_period_days: Option<u32>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkTaxIdCollection {
-    /// Set to `true` to enable tax ID collection.
-    pub enabled: bool,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkTransferData {
-    /// The amount that will be transferred automatically when a charge succeeds.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub amount: Option<i64>,
-
-    /// If specified, successful charges will be attributed to the destination
-    /// account for tax reporting, and the funds from charges will be transferred
-    /// to the destination account.
-    ///
-    /// The ID of the resulting transfer will be returned on the successful charge's `transfer` field.
-    pub destination: String,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct UpdatePaymentLinkAfterCompletion {
-    /// Configuration when `type=hosted_confirmation`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub hosted_confirmation: Option<UpdatePaymentLinkAfterCompletionHostedConfirmation>,
-
-    /// Configuration when `type=redirect`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub redirect: Option<UpdatePaymentLinkAfterCompletionRedirect>,
-
-    /// The specified behavior after the purchase is complete.
-    ///
-    /// Either `redirect` or `hosted_confirmation`.
-    #[serde(rename = "type")]
-    pub type_: UpdatePaymentLinkAfterCompletionType,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct UpdatePaymentLinkAutomaticTax {
-    /// If `true`, tax will be calculated automatically using the customer's location.
-    pub enabled: bool,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct UpdatePaymentLinkLineItems {
-    /// When set, provides configuration for this item’s quantity to be adjusted by the customer during checkout.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub adjustable_quantity: Option<UpdatePaymentLinkLineItemsAdjustableQuantity>,
-
-    /// The ID of an existing line item on the payment link.
-    pub id: String,
-
-    /// The quantity of the line item being purchased.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub quantity: Option<u64>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct UpdatePaymentLinkShippingAddressCollection {
-    /// An array of two-letter ISO country codes representing which countries Checkout should provide as options for
-    /// shipping locations.
-    ///
-    /// Unsupported country codes: `AS, CX, CC, CU, HM, IR, KP, MH, FM, NF, MP, PW, SD, SY, UM, VI`.
-    pub allowed_countries: Vec<UpdatePaymentLinkShippingAddressCollectionAllowedCountries>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkAfterCompletionHostedConfirmation {
-    /// A custom message to display to the customer after the purchase is complete.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom_message: Option<String>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkAfterCompletionRedirect {
-    /// The URL the customer will be redirected to after the purchase is complete.
-    ///
-    /// You can embed `{CHECKOUT_SESSION_ID}` into the URL to have the `id` of the completed [checkout session](https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-id) included.
-    pub url: String,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct CreatePaymentLinkLineItemsAdjustableQuantity {
-    /// Set to true if the quantity can be adjusted to any non-negative Integer.
-    pub enabled: bool,
-
-    /// The maximum quantity the customer can purchase.
-    ///
-    /// By default this value is 99.
-    /// You can specify a value up to 99.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub maximum: Option<i64>,
-
-    /// The minimum quantity the customer can purchase.
-    ///
-    /// By default this value is 0.
-    /// You can specify a value up to 98.
-    /// If there is only one item in the cart then that item's quantity cannot go down to 0.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub minimum: Option<i64>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct UpdatePaymentLinkAfterCompletionHostedConfirmation {
-    /// A custom message to display to the customer after the purchase is complete.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub custom_message: Option<String>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct UpdatePaymentLinkAfterCompletionRedirect {
-    /// The URL the customer will be redirected to after the purchase is complete.
-    ///
-    /// You can embed `{CHECKOUT_SESSION_ID}` into the URL to have the `id` of the completed [checkout session](https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-id) included.
-    pub url: String,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct UpdatePaymentLinkLineItemsAdjustableQuantity {
-    /// Set to true if the quantity can be adjusted to any non-negative Integer.
-    pub enabled: bool,
-
-    /// The maximum quantity the customer can purchase.
-    ///
-    /// By default this value is 99.
-    /// You can specify a value up to 99.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub maximum: Option<i64>,
-
-    /// The minimum quantity the customer can purchase.
-    ///
-    /// By default this value is 0.
-    /// You can specify a value up to 98.
-    /// If there is only one item in the cart then that item's quantity cannot go down to 0.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub minimum: Option<i64>,
-}
-
-/// An enum representing the possible values of an `CreatePaymentLinkAfterCompletion`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum CreatePaymentLinkAfterCompletionType {
-    HostedConfirmation,
-    Redirect,
-}
-
-impl CreatePaymentLinkAfterCompletionType {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            CreatePaymentLinkAfterCompletionType::HostedConfirmation => "hosted_confirmation",
-            CreatePaymentLinkAfterCompletionType::Redirect => "redirect",
-        }
-    }
-}
-
-impl AsRef<str> for CreatePaymentLinkAfterCompletionType {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for CreatePaymentLinkAfterCompletionType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for CreatePaymentLinkAfterCompletionType {
-    fn default() -> Self {
-        Self::HostedConfirmation
-    }
-}
-
-/// An enum representing the possible values of an `CreatePaymentLinkConsentCollection`'s `promotions` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum CreatePaymentLinkConsentCollectionPromotions {
-    Auto,
-    None,
-}
-
-impl CreatePaymentLinkConsentCollectionPromotions {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            CreatePaymentLinkConsentCollectionPromotions::Auto => "auto",
-            CreatePaymentLinkConsentCollectionPromotions::None => "none",
-        }
-    }
-}
-
-impl AsRef<str> for CreatePaymentLinkConsentCollectionPromotions {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for CreatePaymentLinkConsentCollectionPromotions {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for CreatePaymentLinkConsentCollectionPromotions {
-    fn default() -> Self {
-        Self::Auto
-    }
-}
-
-/// An enum representing the possible values of an `CreatePaymentLinkConsentCollection`'s `terms_of_service` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum CreatePaymentLinkConsentCollectionTermsOfService {
-    None,
-    Required,
-}
-
-impl CreatePaymentLinkConsentCollectionTermsOfService {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            CreatePaymentLinkConsentCollectionTermsOfService::None => "none",
-            CreatePaymentLinkConsentCollectionTermsOfService::Required => "required",
-        }
-    }
-}
-
-impl AsRef<str> for CreatePaymentLinkConsentCollectionTermsOfService {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for CreatePaymentLinkConsentCollectionTermsOfService {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for CreatePaymentLinkConsentCollectionTermsOfService {
-    fn default() -> Self {
-        Self::None
-    }
-}
-
-/// An enum representing the possible values of an `CreatePaymentLinkPaymentIntentData`'s `capture_method` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum CreatePaymentLinkPaymentIntentDataCaptureMethod {
-    Automatic,
-    Manual,
-}
-
-impl CreatePaymentLinkPaymentIntentDataCaptureMethod {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            CreatePaymentLinkPaymentIntentDataCaptureMethod::Automatic => "automatic",
-            CreatePaymentLinkPaymentIntentDataCaptureMethod::Manual => "manual",
-        }
-    }
-}
-
-impl AsRef<str> for CreatePaymentLinkPaymentIntentDataCaptureMethod {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for CreatePaymentLinkPaymentIntentDataCaptureMethod {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for CreatePaymentLinkPaymentIntentDataCaptureMethod {
-    fn default() -> Self {
-        Self::Automatic
-    }
-}
-
-/// An enum representing the possible values of an `CreatePaymentLinkPaymentIntentData`'s `setup_future_usage` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum CreatePaymentLinkPaymentIntentDataSetupFutureUsage {
-    OffSession,
-    OnSession,
-}
-
-impl CreatePaymentLinkPaymentIntentDataSetupFutureUsage {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            CreatePaymentLinkPaymentIntentDataSetupFutureUsage::OffSession => "off_session",
-            CreatePaymentLinkPaymentIntentDataSetupFutureUsage::OnSession => "on_session",
-        }
-    }
-}
-
-impl AsRef<str> for CreatePaymentLinkPaymentIntentDataSetupFutureUsage {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for CreatePaymentLinkPaymentIntentDataSetupFutureUsage {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for CreatePaymentLinkPaymentIntentDataSetupFutureUsage {
-    fn default() -> Self {
-        Self::OffSession
-    }
-}
-
-/// An enum representing the possible values of an `CreatePaymentLink`'s `payment_method_types` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum CreatePaymentLinkPaymentMethodTypes {
-    Affirm,
-    AfterpayClearpay,
-    Alipay,
-    AuBecsDebit,
-    BacsDebit,
-    Bancontact,
-    Blik,
-    Boleto,
-    Card,
-    Eps,
-    Fpx,
-    Giropay,
-    Grabpay,
-    Ideal,
-    Klarna,
-    Konbini,
-    Oxxo,
-    P24,
-    Paynow,
-    Pix,
-    Promptpay,
-    SepaDebit,
-    Sofort,
-    UsBankAccount,
-    WechatPay,
-}
-
-impl CreatePaymentLinkPaymentMethodTypes {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            CreatePaymentLinkPaymentMethodTypes::Affirm => "affirm",
-            CreatePaymentLinkPaymentMethodTypes::AfterpayClearpay => "afterpay_clearpay",
-            CreatePaymentLinkPaymentMethodTypes::Alipay => "alipay",
-            CreatePaymentLinkPaymentMethodTypes::AuBecsDebit => "au_becs_debit",
-            CreatePaymentLinkPaymentMethodTypes::BacsDebit => "bacs_debit",
-            CreatePaymentLinkPaymentMethodTypes::Bancontact => "bancontact",
-            CreatePaymentLinkPaymentMethodTypes::Blik => "blik",
-            CreatePaymentLinkPaymentMethodTypes::Boleto => "boleto",
-            CreatePaymentLinkPaymentMethodTypes::Card => "card",
-            CreatePaymentLinkPaymentMethodTypes::Eps => "eps",
-            CreatePaymentLinkPaymentMethodTypes::Fpx => "fpx",
-            CreatePaymentLinkPaymentMethodTypes::Giropay => "giropay",
-            CreatePaymentLinkPaymentMethodTypes::Grabpay => "grabpay",
-            CreatePaymentLinkPaymentMethodTypes::Ideal => "ideal",
-            CreatePaymentLinkPaymentMethodTypes::Klarna => "klarna",
-            CreatePaymentLinkPaymentMethodTypes::Konbini => "konbini",
-            CreatePaymentLinkPaymentMethodTypes::Oxxo => "oxxo",
-            CreatePaymentLinkPaymentMethodTypes::P24 => "p24",
-            CreatePaymentLinkPaymentMethodTypes::Paynow => "paynow",
-            CreatePaymentLinkPaymentMethodTypes::Pix => "pix",
-            CreatePaymentLinkPaymentMethodTypes::Promptpay => "promptpay",
-            CreatePaymentLinkPaymentMethodTypes::SepaDebit => "sepa_debit",
-            CreatePaymentLinkPaymentMethodTypes::Sofort => "sofort",
-            CreatePaymentLinkPaymentMethodTypes::UsBankAccount => "us_bank_account",
-            CreatePaymentLinkPaymentMethodTypes::WechatPay => "wechat_pay",
-        }
-    }
-}
-
-impl AsRef<str> for CreatePaymentLinkPaymentMethodTypes {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for CreatePaymentLinkPaymentMethodTypes {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for CreatePaymentLinkPaymentMethodTypes {
-    fn default() -> Self {
-        Self::Affirm
-    }
-}
-
-/// An enum representing the possible values of an `CreatePaymentLinkShippingAddressCollection`'s `allowed_countries` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum CreatePaymentLinkShippingAddressCollectionAllowedCountries {
-    #[serde(rename = "AC")]
-    Ac,
-    #[serde(rename = "AD")]
-    Ad,
-    #[serde(rename = "AE")]
-    Ae,
-    #[serde(rename = "AF")]
-    Af,
-    #[serde(rename = "AG")]
-    Ag,
-    #[serde(rename = "AI")]
-    Ai,
-    #[serde(rename = "AL")]
-    Al,
-    #[serde(rename = "AM")]
-    Am,
-    #[serde(rename = "AO")]
-    Ao,
-    #[serde(rename = "AQ")]
-    Aq,
-    #[serde(rename = "AR")]
-    Ar,
-    #[serde(rename = "AT")]
-    At,
-    #[serde(rename = "AU")]
-    Au,
-    #[serde(rename = "AW")]
-    Aw,
-    #[serde(rename = "AX")]
-    Ax,
-    #[serde(rename = "AZ")]
-    Az,
-    #[serde(rename = "BA")]
-    Ba,
-    #[serde(rename = "BB")]
-    Bb,
-    #[serde(rename = "BD")]
-    Bd,
-    #[serde(rename = "BE")]
-    Be,
-    #[serde(rename = "BF")]
-    Bf,
-    #[serde(rename = "BG")]
-    Bg,
-    #[serde(rename = "BH")]
-    Bh,
-    #[serde(rename = "BI")]
-    Bi,
-    #[serde(rename = "BJ")]
-    Bj,
-    #[serde(rename = "BL")]
-    Bl,
-    #[serde(rename = "BM")]
-    Bm,
-    #[serde(rename = "BN")]
-    Bn,
-    #[serde(rename = "BO")]
-    Bo,
-    #[serde(rename = "BQ")]
-    Bq,
-    #[serde(rename = "BR")]
-    Br,
-    #[serde(rename = "BS")]
-    Bs,
-    #[serde(rename = "BT")]
-    Bt,
-    #[serde(rename = "BV")]
-    Bv,
-    #[serde(rename = "BW")]
-    Bw,
-    #[serde(rename = "BY")]
-    By,
-    #[serde(rename = "BZ")]
-    Bz,
-    #[serde(rename = "CA")]
-    Ca,
-    #[serde(rename = "CD")]
-    Cd,
-    #[serde(rename = "CF")]
-    Cf,
-    #[serde(rename = "CG")]
-    Cg,
-    #[serde(rename = "CH")]
-    Ch,
-    #[serde(rename = "CI")]
-    Ci,
-    #[serde(rename = "CK")]
-    Ck,
-    #[serde(rename = "CL")]
-    Cl,
-    #[serde(rename = "CM")]
-    Cm,
-    #[serde(rename = "CN")]
-    Cn,
-    #[serde(rename = "CO")]
-    Co,
-    #[serde(rename = "CR")]
-    Cr,
-    #[serde(rename = "CV")]
-    Cv,
-    #[serde(rename = "CW")]
-    Cw,
-    #[serde(rename = "CY")]
-    Cy,
-    #[serde(rename = "CZ")]
-    Cz,
-    #[serde(rename = "DE")]
-    De,
-    #[serde(rename = "DJ")]
-    Dj,
-    #[serde(rename = "DK")]
-    Dk,
-    #[serde(rename = "DM")]
-    Dm,
-    #[serde(rename = "DO")]
-    Do,
-    #[serde(rename = "DZ")]
-    Dz,
-    #[serde(rename = "EC")]
-    Ec,
-    #[serde(rename = "EE")]
-    Ee,
-    #[serde(rename = "EG")]
-    Eg,
-    #[serde(rename = "EH")]
-    Eh,
-    #[serde(rename = "ER")]
-    Er,
-    #[serde(rename = "ES")]
-    Es,
-    #[serde(rename = "ET")]
-    Et,
-    #[serde(rename = "FI")]
-    Fi,
-    #[serde(rename = "FJ")]
-    Fj,
-    #[serde(rename = "FK")]
-    Fk,
-    #[serde(rename = "FO")]
-    Fo,
-    #[serde(rename = "FR")]
-    Fr,
-    #[serde(rename = "GA")]
-    Ga,
-    #[serde(rename = "GB")]
-    Gb,
-    #[serde(rename = "GD")]
-    Gd,
-    #[serde(rename = "GE")]
-    Ge,
-    #[serde(rename = "GF")]
-    Gf,
-    #[serde(rename = "GG")]
-    Gg,
-    #[serde(rename = "GH")]
-    Gh,
-    #[serde(rename = "GI")]
-    Gi,
-    #[serde(rename = "GL")]
-    Gl,
-    #[serde(rename = "GM")]
-    Gm,
-    #[serde(rename = "GN")]
-    Gn,
-    #[serde(rename = "GP")]
-    Gp,
-    #[serde(rename = "GQ")]
-    Gq,
-    #[serde(rename = "GR")]
-    Gr,
-    #[serde(rename = "GS")]
-    Gs,
-    #[serde(rename = "GT")]
-    Gt,
-    #[serde(rename = "GU")]
-    Gu,
-    #[serde(rename = "GW")]
-    Gw,
-    #[serde(rename = "GY")]
-    Gy,
-    #[serde(rename = "HK")]
-    Hk,
-    #[serde(rename = "HN")]
-    Hn,
-    #[serde(rename = "HR")]
-    Hr,
-    #[serde(rename = "HT")]
-    Ht,
-    #[serde(rename = "HU")]
-    Hu,
-    #[serde(rename = "ID")]
-    Id,
-    #[serde(rename = "IE")]
-    Ie,
-    #[serde(rename = "IL")]
-    Il,
-    #[serde(rename = "IM")]
-    Im,
-    #[serde(rename = "IN")]
-    In,
-    #[serde(rename = "IO")]
-    Io,
-    #[serde(rename = "IQ")]
-    Iq,
-    #[serde(rename = "IS")]
-    Is,
-    #[serde(rename = "IT")]
-    It,
-    #[serde(rename = "JE")]
-    Je,
-    #[serde(rename = "JM")]
-    Jm,
-    #[serde(rename = "JO")]
-    Jo,
-    #[serde(rename = "JP")]
-    Jp,
-    #[serde(rename = "KE")]
-    Ke,
-    #[serde(rename = "KG")]
-    Kg,
-    #[serde(rename = "KH")]
-    Kh,
-    #[serde(rename = "KI")]
-    Ki,
-    #[serde(rename = "KM")]
-    Km,
-    #[serde(rename = "KN")]
-    Kn,
-    #[serde(rename = "KR")]
-    Kr,
-    #[serde(rename = "KW")]
-    Kw,
-    #[serde(rename = "KY")]
-    Ky,
-    #[serde(rename = "KZ")]
-    Kz,
-    #[serde(rename = "LA")]
-    La,
-    #[serde(rename = "LB")]
-    Lb,
-    #[serde(rename = "LC")]
-    Lc,
-    #[serde(rename = "LI")]
-    Li,
-    #[serde(rename = "LK")]
-    Lk,
-    #[serde(rename = "LR")]
-    Lr,
-    #[serde(rename = "LS")]
-    Ls,
-    #[serde(rename = "LT")]
-    Lt,
-    #[serde(rename = "LU")]
-    Lu,
-    #[serde(rename = "LV")]
-    Lv,
-    #[serde(rename = "LY")]
-    Ly,
-    #[serde(rename = "MA")]
-    Ma,
-    #[serde(rename = "MC")]
-    Mc,
-    #[serde(rename = "MD")]
-    Md,
-    #[serde(rename = "ME")]
-    Me,
-    #[serde(rename = "MF")]
-    Mf,
-    #[serde(rename = "MG")]
-    Mg,
-    #[serde(rename = "MK")]
-    Mk,
-    #[serde(rename = "ML")]
-    Ml,
-    #[serde(rename = "MM")]
-    Mm,
-    #[serde(rename = "MN")]
-    Mn,
-    #[serde(rename = "MO")]
-    Mo,
-    #[serde(rename = "MQ")]
-    Mq,
-    #[serde(rename = "MR")]
-    Mr,
-    #[serde(rename = "MS")]
-    Ms,
-    #[serde(rename = "MT")]
-    Mt,
-    #[serde(rename = "MU")]
-    Mu,
-    #[serde(rename = "MV")]
-    Mv,
-    #[serde(rename = "MW")]
-    Mw,
-    #[serde(rename = "MX")]
-    Mx,
-    #[serde(rename = "MY")]
-    My,
-    #[serde(rename = "MZ")]
-    Mz,
-    #[serde(rename = "NA")]
-    Na,
-    #[serde(rename = "NC")]
-    Nc,
-    #[serde(rename = "NE")]
-    Ne,
-    #[serde(rename = "NG")]
-    Ng,
-    #[serde(rename = "NI")]
-    Ni,
-    #[serde(rename = "NL")]
-    Nl,
-    #[serde(rename = "NO")]
-    No,
-    #[serde(rename = "NP")]
-    Np,
-    #[serde(rename = "NR")]
-    Nr,
-    #[serde(rename = "NU")]
-    Nu,
-    #[serde(rename = "NZ")]
-    Nz,
-    #[serde(rename = "OM")]
-    Om,
-    #[serde(rename = "PA")]
-    Pa,
-    #[serde(rename = "PE")]
-    Pe,
-    #[serde(rename = "PF")]
-    Pf,
-    #[serde(rename = "PG")]
-    Pg,
-    #[serde(rename = "PH")]
-    Ph,
-    #[serde(rename = "PK")]
-    Pk,
-    #[serde(rename = "PL")]
-    Pl,
-    #[serde(rename = "PM")]
-    Pm,
-    #[serde(rename = "PN")]
-    Pn,
-    #[serde(rename = "PR")]
-    Pr,
-    #[serde(rename = "PS")]
-    Ps,
-    #[serde(rename = "PT")]
-    Pt,
-    #[serde(rename = "PY")]
-    Py,
-    #[serde(rename = "QA")]
-    Qa,
-    #[serde(rename = "RE")]
-    Re,
-    #[serde(rename = "RO")]
-    Ro,
-    #[serde(rename = "RS")]
-    Rs,
-    #[serde(rename = "RU")]
-    Ru,
-    #[serde(rename = "RW")]
-    Rw,
-    #[serde(rename = "SA")]
-    Sa,
-    #[serde(rename = "SB")]
-    Sb,
-    #[serde(rename = "SC")]
-    Sc,
-    #[serde(rename = "SE")]
-    Se,
-    #[serde(rename = "SG")]
-    Sg,
-    #[serde(rename = "SH")]
-    Sh,
-    #[serde(rename = "SI")]
-    Si,
-    #[serde(rename = "SJ")]
-    Sj,
-    #[serde(rename = "SK")]
-    Sk,
-    #[serde(rename = "SL")]
-    Sl,
-    #[serde(rename = "SM")]
-    Sm,
-    #[serde(rename = "SN")]
-    Sn,
-    #[serde(rename = "SO")]
-    So,
-    #[serde(rename = "SR")]
-    Sr,
-    #[serde(rename = "SS")]
-    Ss,
-    #[serde(rename = "ST")]
-    St,
-    #[serde(rename = "SV")]
-    Sv,
-    #[serde(rename = "SX")]
-    Sx,
-    #[serde(rename = "SZ")]
-    Sz,
-    #[serde(rename = "TA")]
-    Ta,
-    #[serde(rename = "TC")]
-    Tc,
-    #[serde(rename = "TD")]
-    Td,
-    #[serde(rename = "TF")]
-    Tf,
-    #[serde(rename = "TG")]
-    Tg,
-    #[serde(rename = "TH")]
-    Th,
-    #[serde(rename = "TJ")]
-    Tj,
-    #[serde(rename = "TK")]
-    Tk,
-    #[serde(rename = "TL")]
-    Tl,
-    #[serde(rename = "TM")]
-    Tm,
-    #[serde(rename = "TN")]
-    Tn,
-    #[serde(rename = "TO")]
-    To,
-    #[serde(rename = "TR")]
-    Tr,
-    #[serde(rename = "TT")]
-    Tt,
-    #[serde(rename = "TV")]
-    Tv,
-    #[serde(rename = "TW")]
-    Tw,
-    #[serde(rename = "TZ")]
-    Tz,
-    #[serde(rename = "UA")]
-    Ua,
-    #[serde(rename = "UG")]
-    Ug,
-    #[serde(rename = "US")]
-    Us,
-    #[serde(rename = "UY")]
-    Uy,
-    #[serde(rename = "UZ")]
-    Uz,
-    #[serde(rename = "VA")]
-    Va,
-    #[serde(rename = "VC")]
-    Vc,
-    #[serde(rename = "VE")]
-    Ve,
-    #[serde(rename = "VG")]
-    Vg,
-    #[serde(rename = "VN")]
-    Vn,
-    #[serde(rename = "VU")]
-    Vu,
-    #[serde(rename = "WF")]
-    Wf,
-    #[serde(rename = "WS")]
-    Ws,
-    #[serde(rename = "XK")]
-    Xk,
-    #[serde(rename = "YE")]
-    Ye,
-    #[serde(rename = "YT")]
-    Yt,
-    #[serde(rename = "ZA")]
-    Za,
-    #[serde(rename = "ZM")]
-    Zm,
-    #[serde(rename = "ZW")]
-    Zw,
-    #[serde(rename = "ZZ")]
-    Zz,
-}
-
-impl CreatePaymentLinkShippingAddressCollectionAllowedCountries {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ac => "AC",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ad => "AD",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ae => "AE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Af => "AF",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ag => "AG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ai => "AI",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Al => "AL",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Am => "AM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ao => "AO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Aq => "AQ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ar => "AR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::At => "AT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Au => "AU",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Aw => "AW",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ax => "AX",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Az => "AZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ba => "BA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bb => "BB",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bd => "BD",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Be => "BE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bf => "BF",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bg => "BG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bh => "BH",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bi => "BI",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bj => "BJ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bl => "BL",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bm => "BM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bn => "BN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bo => "BO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bq => "BQ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Br => "BR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bs => "BS",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bt => "BT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bv => "BV",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bw => "BW",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::By => "BY",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Bz => "BZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ca => "CA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cd => "CD",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cf => "CF",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cg => "CG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ch => "CH",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ci => "CI",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ck => "CK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cl => "CL",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cm => "CM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cn => "CN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Co => "CO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cr => "CR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cv => "CV",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cw => "CW",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cy => "CY",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Cz => "CZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::De => "DE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Dj => "DJ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Dk => "DK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Dm => "DM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Do => "DO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Dz => "DZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ec => "EC",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ee => "EE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Eg => "EG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Eh => "EH",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Er => "ER",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Es => "ES",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Et => "ET",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Fi => "FI",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Fj => "FJ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Fk => "FK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Fo => "FO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Fr => "FR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ga => "GA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gb => "GB",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gd => "GD",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ge => "GE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gf => "GF",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gg => "GG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gh => "GH",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gi => "GI",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gl => "GL",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gm => "GM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gn => "GN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gp => "GP",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gq => "GQ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gr => "GR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gs => "GS",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gt => "GT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gu => "GU",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gw => "GW",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Gy => "GY",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Hk => "HK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Hn => "HN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Hr => "HR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ht => "HT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Hu => "HU",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Id => "ID",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ie => "IE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Il => "IL",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Im => "IM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::In => "IN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Io => "IO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Iq => "IQ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Is => "IS",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::It => "IT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Je => "JE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Jm => "JM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Jo => "JO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Jp => "JP",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ke => "KE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Kg => "KG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Kh => "KH",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ki => "KI",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Km => "KM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Kn => "KN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Kr => "KR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Kw => "KW",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ky => "KY",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Kz => "KZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::La => "LA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Lb => "LB",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Lc => "LC",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Li => "LI",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Lk => "LK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Lr => "LR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ls => "LS",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Lt => "LT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Lu => "LU",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Lv => "LV",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ly => "LY",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ma => "MA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mc => "MC",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Md => "MD",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Me => "ME",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mf => "MF",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mg => "MG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mk => "MK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ml => "ML",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mm => "MM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mn => "MN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mo => "MO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mq => "MQ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mr => "MR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ms => "MS",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mt => "MT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mu => "MU",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mv => "MV",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mw => "MW",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mx => "MX",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::My => "MY",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Mz => "MZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Na => "NA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Nc => "NC",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ne => "NE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ng => "NG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ni => "NI",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Nl => "NL",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::No => "NO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Np => "NP",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Nr => "NR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Nu => "NU",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Nz => "NZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Om => "OM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pa => "PA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pe => "PE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pf => "PF",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pg => "PG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ph => "PH",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pk => "PK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pl => "PL",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pm => "PM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pn => "PN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pr => "PR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ps => "PS",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Pt => "PT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Py => "PY",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Qa => "QA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Re => "RE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ro => "RO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Rs => "RS",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ru => "RU",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Rw => "RW",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sa => "SA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sb => "SB",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sc => "SC",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Se => "SE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sg => "SG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sh => "SH",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Si => "SI",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sj => "SJ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sk => "SK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sl => "SL",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sm => "SM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sn => "SN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::So => "SO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sr => "SR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ss => "SS",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::St => "ST",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sv => "SV",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sx => "SX",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Sz => "SZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ta => "TA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tc => "TC",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Td => "TD",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tf => "TF",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tg => "TG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Th => "TH",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tj => "TJ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tk => "TK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tl => "TL",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tm => "TM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tn => "TN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::To => "TO",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tr => "TR",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tt => "TT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tv => "TV",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tw => "TW",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Tz => "TZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ua => "UA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ug => "UG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Us => "US",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Uy => "UY",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Uz => "UZ",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Va => "VA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Vc => "VC",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ve => "VE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Vg => "VG",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Vn => "VN",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Vu => "VU",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Wf => "WF",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ws => "WS",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Xk => "XK",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Ye => "YE",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Yt => "YT",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Za => "ZA",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Zm => "ZM",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Zw => "ZW",
-            CreatePaymentLinkShippingAddressCollectionAllowedCountries::Zz => "ZZ",
-        }
-    }
-}
-
-impl AsRef<str> for CreatePaymentLinkShippingAddressCollectionAllowedCountries {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for CreatePaymentLinkShippingAddressCollectionAllowedCountries {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for CreatePaymentLinkShippingAddressCollectionAllowedCountries {
-    fn default() -> Self {
-        Self::Ac
-    }
-}
-
-/// An enum representing the possible values of an `PaymentLink`'s `billing_address_collection` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentLinkBillingAddressCollection {
     Auto,
@@ -1774,8 +328,8 @@ pub enum PaymentLinkBillingAddressCollection {
 impl PaymentLinkBillingAddressCollection {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentLinkBillingAddressCollection::Auto => "auto",
-            PaymentLinkBillingAddressCollection::Required => "required",
+            Self::Auto => "auto",
+            Self::Required => "required",
         }
     }
 }
@@ -1791,14 +345,14 @@ impl std::fmt::Display for PaymentLinkBillingAddressCollection {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentLinkBillingAddressCollection {
+
+impl Default for PaymentLinkBillingAddressCollection {
     fn default() -> Self {
         Self::Auto
     }
 }
 
-/// An enum representing the possible values of an `PaymentLink`'s `customer_creation` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentLinkCustomerCreation {
     Always,
@@ -1808,8 +362,8 @@ pub enum PaymentLinkCustomerCreation {
 impl PaymentLinkCustomerCreation {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentLinkCustomerCreation::Always => "always",
-            PaymentLinkCustomerCreation::IfRequired => "if_required",
+            Self::Always => "always",
+            Self::IfRequired => "if_required",
         }
     }
 }
@@ -1825,14 +379,14 @@ impl std::fmt::Display for PaymentLinkCustomerCreation {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentLinkCustomerCreation {
+
+impl Default for PaymentLinkCustomerCreation {
     fn default() -> Self {
         Self::Always
     }
 }
 
-/// An enum representing the possible values of an `PaymentLink`'s `payment_method_collection` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentLinkPaymentMethodCollection {
     Always,
@@ -1842,8 +396,8 @@ pub enum PaymentLinkPaymentMethodCollection {
 impl PaymentLinkPaymentMethodCollection {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentLinkPaymentMethodCollection::Always => "always",
-            PaymentLinkPaymentMethodCollection::IfRequired => "if_required",
+            Self::Always => "always",
+            Self::IfRequired => "if_required",
         }
     }
 }
@@ -1859,14 +413,14 @@ impl std::fmt::Display for PaymentLinkPaymentMethodCollection {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentLinkPaymentMethodCollection {
+
+impl Default for PaymentLinkPaymentMethodCollection {
     fn default() -> Self {
         Self::Always
     }
 }
 
-/// An enum representing the possible values of an `PaymentLink`'s `payment_method_types` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentLinkPaymentMethodTypes {
     Affirm,
@@ -1899,31 +453,31 @@ pub enum PaymentLinkPaymentMethodTypes {
 impl PaymentLinkPaymentMethodTypes {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentLinkPaymentMethodTypes::Affirm => "affirm",
-            PaymentLinkPaymentMethodTypes::AfterpayClearpay => "afterpay_clearpay",
-            PaymentLinkPaymentMethodTypes::Alipay => "alipay",
-            PaymentLinkPaymentMethodTypes::AuBecsDebit => "au_becs_debit",
-            PaymentLinkPaymentMethodTypes::BacsDebit => "bacs_debit",
-            PaymentLinkPaymentMethodTypes::Bancontact => "bancontact",
-            PaymentLinkPaymentMethodTypes::Blik => "blik",
-            PaymentLinkPaymentMethodTypes::Boleto => "boleto",
-            PaymentLinkPaymentMethodTypes::Card => "card",
-            PaymentLinkPaymentMethodTypes::Eps => "eps",
-            PaymentLinkPaymentMethodTypes::Fpx => "fpx",
-            PaymentLinkPaymentMethodTypes::Giropay => "giropay",
-            PaymentLinkPaymentMethodTypes::Grabpay => "grabpay",
-            PaymentLinkPaymentMethodTypes::Ideal => "ideal",
-            PaymentLinkPaymentMethodTypes::Klarna => "klarna",
-            PaymentLinkPaymentMethodTypes::Konbini => "konbini",
-            PaymentLinkPaymentMethodTypes::Oxxo => "oxxo",
-            PaymentLinkPaymentMethodTypes::P24 => "p24",
-            PaymentLinkPaymentMethodTypes::Paynow => "paynow",
-            PaymentLinkPaymentMethodTypes::Pix => "pix",
-            PaymentLinkPaymentMethodTypes::Promptpay => "promptpay",
-            PaymentLinkPaymentMethodTypes::SepaDebit => "sepa_debit",
-            PaymentLinkPaymentMethodTypes::Sofort => "sofort",
-            PaymentLinkPaymentMethodTypes::UsBankAccount => "us_bank_account",
-            PaymentLinkPaymentMethodTypes::WechatPay => "wechat_pay",
+            Self::Affirm => "affirm",
+            Self::AfterpayClearpay => "afterpay_clearpay",
+            Self::Alipay => "alipay",
+            Self::AuBecsDebit => "au_becs_debit",
+            Self::BacsDebit => "bacs_debit",
+            Self::Bancontact => "bancontact",
+            Self::Blik => "blik",
+            Self::Boleto => "boleto",
+            Self::Card => "card",
+            Self::Eps => "eps",
+            Self::Fpx => "fpx",
+            Self::Giropay => "giropay",
+            Self::Grabpay => "grabpay",
+            Self::Ideal => "ideal",
+            Self::Klarna => "klarna",
+            Self::Konbini => "konbini",
+            Self::Oxxo => "oxxo",
+            Self::P24 => "p24",
+            Self::Paynow => "paynow",
+            Self::Pix => "pix",
+            Self::Promptpay => "promptpay",
+            Self::SepaDebit => "sepa_debit",
+            Self::Sofort => "sofort",
+            Self::UsBankAccount => "us_bank_account",
+            Self::WechatPay => "wechat_pay",
         }
     }
 }
@@ -1939,14 +493,14 @@ impl std::fmt::Display for PaymentLinkPaymentMethodTypes {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentLinkPaymentMethodTypes {
+
+impl Default for PaymentLinkPaymentMethodTypes {
     fn default() -> Self {
         Self::Affirm
     }
 }
 
-/// An enum representing the possible values of an `PaymentLink`'s `submit_type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentLinkSubmitType {
     Auto,
@@ -1958,10 +512,10 @@ pub enum PaymentLinkSubmitType {
 impl PaymentLinkSubmitType {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentLinkSubmitType::Auto => "auto",
-            PaymentLinkSubmitType::Book => "book",
-            PaymentLinkSubmitType::Donate => "donate",
-            PaymentLinkSubmitType::Pay => "pay",
+            Self::Auto => "auto",
+            Self::Book => "book",
+            Self::Donate => "donate",
+            Self::Pay => "pay",
         }
     }
 }
@@ -1977,961 +531,191 @@ impl std::fmt::Display for PaymentLinkSubmitType {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentLinkSubmitType {
+
+impl Default for PaymentLinkSubmitType {
     fn default() -> Self {
         Self::Auto
     }
 }
+/// Behavior after the purchase is complete.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsAfterCompletion {
+    /// Configuration when `type=hosted_confirmation`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hosted_confirmation: Option<PostPaymentLinksParamsAfterCompletionHostedConfirmation>,
 
-/// An enum representing the possible values of an `PaymentLinksResourceAfterCompletion`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+    /// Configuration when `type=redirect`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub redirect: Option<PostPaymentLinksParamsAfterCompletionRedirect>,
+
+    /// The specified behavior after the purchase is complete.
+    ///
+    /// Either `redirect` or `hosted_confirmation`.
+    #[serde(rename = "type")]
+    pub type_: PostPaymentLinksParamsAfterCompletionType,
+}
+
+/// Configuration for automatic tax collection.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsAutomaticTax {
+    /// If `true`, tax will be calculated automatically using the customer's location.
+    pub enabled: bool,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum PaymentLinksResourceAfterCompletionType {
-    HostedConfirmation,
-    Redirect,
-}
-
-impl PaymentLinksResourceAfterCompletionType {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            PaymentLinksResourceAfterCompletionType::HostedConfirmation => "hosted_confirmation",
-            PaymentLinksResourceAfterCompletionType::Redirect => "redirect",
-        }
-    }
-}
-
-impl AsRef<str> for PaymentLinksResourceAfterCompletionType {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for PaymentLinksResourceAfterCompletionType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for PaymentLinksResourceAfterCompletionType {
-    fn default() -> Self {
-        Self::HostedConfirmation
-    }
-}
-
-/// An enum representing the possible values of an `PaymentLinksResourceConsentCollection`'s `promotions` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum PaymentLinksResourceConsentCollectionPromotions {
+pub enum PostPaymentLinksParamsBillingAddressCollection {
     Auto,
-    None,
-}
-
-impl PaymentLinksResourceConsentCollectionPromotions {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            PaymentLinksResourceConsentCollectionPromotions::Auto => "auto",
-            PaymentLinksResourceConsentCollectionPromotions::None => "none",
-        }
-    }
-}
-
-impl AsRef<str> for PaymentLinksResourceConsentCollectionPromotions {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for PaymentLinksResourceConsentCollectionPromotions {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for PaymentLinksResourceConsentCollectionPromotions {
-    fn default() -> Self {
-        Self::Auto
-    }
-}
-
-/// An enum representing the possible values of an `PaymentLinksResourceConsentCollection`'s `terms_of_service` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum PaymentLinksResourceConsentCollectionTermsOfService {
-    None,
     Required,
 }
 
-impl PaymentLinksResourceConsentCollectionTermsOfService {
+impl PostPaymentLinksParamsBillingAddressCollection {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentLinksResourceConsentCollectionTermsOfService::None => "none",
-            PaymentLinksResourceConsentCollectionTermsOfService::Required => "required",
+            Self::Auto => "auto",
+            Self::Required => "required",
         }
     }
 }
 
-impl AsRef<str> for PaymentLinksResourceConsentCollectionTermsOfService {
+impl AsRef<str> for PostPaymentLinksParamsBillingAddressCollection {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for PaymentLinksResourceConsentCollectionTermsOfService {
+impl std::fmt::Display for PostPaymentLinksParamsBillingAddressCollection {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentLinksResourceConsentCollectionTermsOfService {
+
+impl Default for PostPaymentLinksParamsBillingAddressCollection {
     fn default() -> Self {
-        Self::None
+        Self::Auto
     }
 }
+/// Configure fields to gather active consent from customers.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsConsentCollection {
+    /// If set to `auto`, enables the collection of customer consent for promotional communications.
+    ///
+    /// The Checkout Session will determine whether to display an option to opt into promotional communication from the merchant depending on the customer's locale.
+    /// Only available to US merchants.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub promotions: Option<PostPaymentLinksParamsConsentCollectionPromotions>,
 
-/// An enum representing the possible values of an `PaymentLinksResourcePaymentIntentData`'s `capture_method` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum PaymentLinksResourcePaymentIntentDataCaptureMethod {
-    Automatic,
-    Manual,
+    /// If set to `required`, it requires customers to check a terms of service checkbox before being able to pay.
+    /// There must be a valid terms of service URL set in your [Dashboard settings](https://dashboard.stripe.com/settings/public).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub terms_of_service: Option<PostPaymentLinksParamsConsentCollectionTermsOfService>,
 }
 
-impl PaymentLinksResourcePaymentIntentDataCaptureMethod {
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksParamsCustomerCreation {
+    Always,
+    IfRequired,
+}
+
+impl PostPaymentLinksParamsCustomerCreation {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentLinksResourcePaymentIntentDataCaptureMethod::Automatic => "automatic",
-            PaymentLinksResourcePaymentIntentDataCaptureMethod::Manual => "manual",
+            Self::Always => "always",
+            Self::IfRequired => "if_required",
         }
     }
 }
 
-impl AsRef<str> for PaymentLinksResourcePaymentIntentDataCaptureMethod {
+impl AsRef<str> for PostPaymentLinksParamsCustomerCreation {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for PaymentLinksResourcePaymentIntentDataCaptureMethod {
+impl std::fmt::Display for PostPaymentLinksParamsCustomerCreation {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentLinksResourcePaymentIntentDataCaptureMethod {
+
+impl Default for PostPaymentLinksParamsCustomerCreation {
     fn default() -> Self {
-        Self::Automatic
+        Self::Always
     }
 }
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsLineItems {
+    /// When set, provides configuration for this item’s quantity to be adjusted by the customer during checkout.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub adjustable_quantity: Option<PostPaymentLinksParamsLineItemsAdjustableQuantity>,
 
-/// An enum representing the possible values of an `PaymentLinksResourcePaymentIntentData`'s `setup_future_usage` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum PaymentLinksResourcePaymentIntentDataSetupFutureUsage {
-    OffSession,
-    OnSession,
+    /// The ID of the [Price](https://stripe.com/docs/api/prices) or [Plan](https://stripe.com/docs/api/plans) object.
+    pub price: String,
+
+    /// The quantity of the line item being purchased.
+    pub quantity: u64,
 }
 
-impl PaymentLinksResourcePaymentIntentDataSetupFutureUsage {
+/// A subset of parameters to be passed to PaymentIntent creation for Checkout Sessions in `payment` mode.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsPaymentIntentData {
+    /// Controls when the funds will be captured from the customer's account.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub capture_method: Option<PostPaymentLinksParamsPaymentIntentDataCaptureMethod>,
+
+    /// Indicates that you intend to [make future payments](https://stripe.com/docs/payments/payment-intents#future-usage) with the payment method collected by this Checkout Session.
+    ///
+    /// When setting this to `on_session`, Checkout will show a notice to the customer that their payment details will be saved.
+    ///
+    /// When setting this to `off_session`, Checkout will show a notice to the customer that their payment details will be saved and used for future payments.
+    ///
+    /// If a Customer has been provided or Checkout creates a new Customer,Checkout will attach the payment method to the Customer.
+    ///
+    /// If Checkout does not create a Customer, the payment method is not attached to a Customer.
+    ///
+    /// To reuse the payment method, you can retrieve it from the Checkout Session's PaymentIntent.  When processing card payments, Checkout also uses `setup_future_usage` to dynamically optimize your payment flow and comply with regional legislation and network rules, such as SCA.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub setup_future_usage: Option<PostPaymentLinksParamsPaymentIntentDataSetupFutureUsage>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksParamsPaymentMethodCollection {
+    Always,
+    IfRequired,
+}
+
+impl PostPaymentLinksParamsPaymentMethodCollection {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentLinksResourcePaymentIntentDataSetupFutureUsage::OffSession => "off_session",
-            PaymentLinksResourcePaymentIntentDataSetupFutureUsage::OnSession => "on_session",
+            Self::Always => "always",
+            Self::IfRequired => "if_required",
         }
     }
 }
 
-impl AsRef<str> for PaymentLinksResourcePaymentIntentDataSetupFutureUsage {
+impl AsRef<str> for PostPaymentLinksParamsPaymentMethodCollection {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for PaymentLinksResourcePaymentIntentDataSetupFutureUsage {
+impl std::fmt::Display for PostPaymentLinksParamsPaymentMethodCollection {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentLinksResourcePaymentIntentDataSetupFutureUsage {
+
+impl Default for PostPaymentLinksParamsPaymentMethodCollection {
     fn default() -> Self {
-        Self::OffSession
+        Self::Always
     }
 }
 
-/// An enum representing the possible values of an `PaymentLinksResourceShippingAddressCollection`'s `allowed_countries` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum PaymentLinksResourceShippingAddressCollectionAllowedCountries {
-    #[serde(rename = "AC")]
-    Ac,
-    #[serde(rename = "AD")]
-    Ad,
-    #[serde(rename = "AE")]
-    Ae,
-    #[serde(rename = "AF")]
-    Af,
-    #[serde(rename = "AG")]
-    Ag,
-    #[serde(rename = "AI")]
-    Ai,
-    #[serde(rename = "AL")]
-    Al,
-    #[serde(rename = "AM")]
-    Am,
-    #[serde(rename = "AO")]
-    Ao,
-    #[serde(rename = "AQ")]
-    Aq,
-    #[serde(rename = "AR")]
-    Ar,
-    #[serde(rename = "AT")]
-    At,
-    #[serde(rename = "AU")]
-    Au,
-    #[serde(rename = "AW")]
-    Aw,
-    #[serde(rename = "AX")]
-    Ax,
-    #[serde(rename = "AZ")]
-    Az,
-    #[serde(rename = "BA")]
-    Ba,
-    #[serde(rename = "BB")]
-    Bb,
-    #[serde(rename = "BD")]
-    Bd,
-    #[serde(rename = "BE")]
-    Be,
-    #[serde(rename = "BF")]
-    Bf,
-    #[serde(rename = "BG")]
-    Bg,
-    #[serde(rename = "BH")]
-    Bh,
-    #[serde(rename = "BI")]
-    Bi,
-    #[serde(rename = "BJ")]
-    Bj,
-    #[serde(rename = "BL")]
-    Bl,
-    #[serde(rename = "BM")]
-    Bm,
-    #[serde(rename = "BN")]
-    Bn,
-    #[serde(rename = "BO")]
-    Bo,
-    #[serde(rename = "BQ")]
-    Bq,
-    #[serde(rename = "BR")]
-    Br,
-    #[serde(rename = "BS")]
-    Bs,
-    #[serde(rename = "BT")]
-    Bt,
-    #[serde(rename = "BV")]
-    Bv,
-    #[serde(rename = "BW")]
-    Bw,
-    #[serde(rename = "BY")]
-    By,
-    #[serde(rename = "BZ")]
-    Bz,
-    #[serde(rename = "CA")]
-    Ca,
-    #[serde(rename = "CD")]
-    Cd,
-    #[serde(rename = "CF")]
-    Cf,
-    #[serde(rename = "CG")]
-    Cg,
-    #[serde(rename = "CH")]
-    Ch,
-    #[serde(rename = "CI")]
-    Ci,
-    #[serde(rename = "CK")]
-    Ck,
-    #[serde(rename = "CL")]
-    Cl,
-    #[serde(rename = "CM")]
-    Cm,
-    #[serde(rename = "CN")]
-    Cn,
-    #[serde(rename = "CO")]
-    Co,
-    #[serde(rename = "CR")]
-    Cr,
-    #[serde(rename = "CV")]
-    Cv,
-    #[serde(rename = "CW")]
-    Cw,
-    #[serde(rename = "CY")]
-    Cy,
-    #[serde(rename = "CZ")]
-    Cz,
-    #[serde(rename = "DE")]
-    De,
-    #[serde(rename = "DJ")]
-    Dj,
-    #[serde(rename = "DK")]
-    Dk,
-    #[serde(rename = "DM")]
-    Dm,
-    #[serde(rename = "DO")]
-    Do,
-    #[serde(rename = "DZ")]
-    Dz,
-    #[serde(rename = "EC")]
-    Ec,
-    #[serde(rename = "EE")]
-    Ee,
-    #[serde(rename = "EG")]
-    Eg,
-    #[serde(rename = "EH")]
-    Eh,
-    #[serde(rename = "ER")]
-    Er,
-    #[serde(rename = "ES")]
-    Es,
-    #[serde(rename = "ET")]
-    Et,
-    #[serde(rename = "FI")]
-    Fi,
-    #[serde(rename = "FJ")]
-    Fj,
-    #[serde(rename = "FK")]
-    Fk,
-    #[serde(rename = "FO")]
-    Fo,
-    #[serde(rename = "FR")]
-    Fr,
-    #[serde(rename = "GA")]
-    Ga,
-    #[serde(rename = "GB")]
-    Gb,
-    #[serde(rename = "GD")]
-    Gd,
-    #[serde(rename = "GE")]
-    Ge,
-    #[serde(rename = "GF")]
-    Gf,
-    #[serde(rename = "GG")]
-    Gg,
-    #[serde(rename = "GH")]
-    Gh,
-    #[serde(rename = "GI")]
-    Gi,
-    #[serde(rename = "GL")]
-    Gl,
-    #[serde(rename = "GM")]
-    Gm,
-    #[serde(rename = "GN")]
-    Gn,
-    #[serde(rename = "GP")]
-    Gp,
-    #[serde(rename = "GQ")]
-    Gq,
-    #[serde(rename = "GR")]
-    Gr,
-    #[serde(rename = "GS")]
-    Gs,
-    #[serde(rename = "GT")]
-    Gt,
-    #[serde(rename = "GU")]
-    Gu,
-    #[serde(rename = "GW")]
-    Gw,
-    #[serde(rename = "GY")]
-    Gy,
-    #[serde(rename = "HK")]
-    Hk,
-    #[serde(rename = "HN")]
-    Hn,
-    #[serde(rename = "HR")]
-    Hr,
-    #[serde(rename = "HT")]
-    Ht,
-    #[serde(rename = "HU")]
-    Hu,
-    #[serde(rename = "ID")]
-    Id,
-    #[serde(rename = "IE")]
-    Ie,
-    #[serde(rename = "IL")]
-    Il,
-    #[serde(rename = "IM")]
-    Im,
-    #[serde(rename = "IN")]
-    In,
-    #[serde(rename = "IO")]
-    Io,
-    #[serde(rename = "IQ")]
-    Iq,
-    #[serde(rename = "IS")]
-    Is,
-    #[serde(rename = "IT")]
-    It,
-    #[serde(rename = "JE")]
-    Je,
-    #[serde(rename = "JM")]
-    Jm,
-    #[serde(rename = "JO")]
-    Jo,
-    #[serde(rename = "JP")]
-    Jp,
-    #[serde(rename = "KE")]
-    Ke,
-    #[serde(rename = "KG")]
-    Kg,
-    #[serde(rename = "KH")]
-    Kh,
-    #[serde(rename = "KI")]
-    Ki,
-    #[serde(rename = "KM")]
-    Km,
-    #[serde(rename = "KN")]
-    Kn,
-    #[serde(rename = "KR")]
-    Kr,
-    #[serde(rename = "KW")]
-    Kw,
-    #[serde(rename = "KY")]
-    Ky,
-    #[serde(rename = "KZ")]
-    Kz,
-    #[serde(rename = "LA")]
-    La,
-    #[serde(rename = "LB")]
-    Lb,
-    #[serde(rename = "LC")]
-    Lc,
-    #[serde(rename = "LI")]
-    Li,
-    #[serde(rename = "LK")]
-    Lk,
-    #[serde(rename = "LR")]
-    Lr,
-    #[serde(rename = "LS")]
-    Ls,
-    #[serde(rename = "LT")]
-    Lt,
-    #[serde(rename = "LU")]
-    Lu,
-    #[serde(rename = "LV")]
-    Lv,
-    #[serde(rename = "LY")]
-    Ly,
-    #[serde(rename = "MA")]
-    Ma,
-    #[serde(rename = "MC")]
-    Mc,
-    #[serde(rename = "MD")]
-    Md,
-    #[serde(rename = "ME")]
-    Me,
-    #[serde(rename = "MF")]
-    Mf,
-    #[serde(rename = "MG")]
-    Mg,
-    #[serde(rename = "MK")]
-    Mk,
-    #[serde(rename = "ML")]
-    Ml,
-    #[serde(rename = "MM")]
-    Mm,
-    #[serde(rename = "MN")]
-    Mn,
-    #[serde(rename = "MO")]
-    Mo,
-    #[serde(rename = "MQ")]
-    Mq,
-    #[serde(rename = "MR")]
-    Mr,
-    #[serde(rename = "MS")]
-    Ms,
-    #[serde(rename = "MT")]
-    Mt,
-    #[serde(rename = "MU")]
-    Mu,
-    #[serde(rename = "MV")]
-    Mv,
-    #[serde(rename = "MW")]
-    Mw,
-    #[serde(rename = "MX")]
-    Mx,
-    #[serde(rename = "MY")]
-    My,
-    #[serde(rename = "MZ")]
-    Mz,
-    #[serde(rename = "NA")]
-    Na,
-    #[serde(rename = "NC")]
-    Nc,
-    #[serde(rename = "NE")]
-    Ne,
-    #[serde(rename = "NG")]
-    Ng,
-    #[serde(rename = "NI")]
-    Ni,
-    #[serde(rename = "NL")]
-    Nl,
-    #[serde(rename = "NO")]
-    No,
-    #[serde(rename = "NP")]
-    Np,
-    #[serde(rename = "NR")]
-    Nr,
-    #[serde(rename = "NU")]
-    Nu,
-    #[serde(rename = "NZ")]
-    Nz,
-    #[serde(rename = "OM")]
-    Om,
-    #[serde(rename = "PA")]
-    Pa,
-    #[serde(rename = "PE")]
-    Pe,
-    #[serde(rename = "PF")]
-    Pf,
-    #[serde(rename = "PG")]
-    Pg,
-    #[serde(rename = "PH")]
-    Ph,
-    #[serde(rename = "PK")]
-    Pk,
-    #[serde(rename = "PL")]
-    Pl,
-    #[serde(rename = "PM")]
-    Pm,
-    #[serde(rename = "PN")]
-    Pn,
-    #[serde(rename = "PR")]
-    Pr,
-    #[serde(rename = "PS")]
-    Ps,
-    #[serde(rename = "PT")]
-    Pt,
-    #[serde(rename = "PY")]
-    Py,
-    #[serde(rename = "QA")]
-    Qa,
-    #[serde(rename = "RE")]
-    Re,
-    #[serde(rename = "RO")]
-    Ro,
-    #[serde(rename = "RS")]
-    Rs,
-    #[serde(rename = "RU")]
-    Ru,
-    #[serde(rename = "RW")]
-    Rw,
-    #[serde(rename = "SA")]
-    Sa,
-    #[serde(rename = "SB")]
-    Sb,
-    #[serde(rename = "SC")]
-    Sc,
-    #[serde(rename = "SE")]
-    Se,
-    #[serde(rename = "SG")]
-    Sg,
-    #[serde(rename = "SH")]
-    Sh,
-    #[serde(rename = "SI")]
-    Si,
-    #[serde(rename = "SJ")]
-    Sj,
-    #[serde(rename = "SK")]
-    Sk,
-    #[serde(rename = "SL")]
-    Sl,
-    #[serde(rename = "SM")]
-    Sm,
-    #[serde(rename = "SN")]
-    Sn,
-    #[serde(rename = "SO")]
-    So,
-    #[serde(rename = "SR")]
-    Sr,
-    #[serde(rename = "SS")]
-    Ss,
-    #[serde(rename = "ST")]
-    St,
-    #[serde(rename = "SV")]
-    Sv,
-    #[serde(rename = "SX")]
-    Sx,
-    #[serde(rename = "SZ")]
-    Sz,
-    #[serde(rename = "TA")]
-    Ta,
-    #[serde(rename = "TC")]
-    Tc,
-    #[serde(rename = "TD")]
-    Td,
-    #[serde(rename = "TF")]
-    Tf,
-    #[serde(rename = "TG")]
-    Tg,
-    #[serde(rename = "TH")]
-    Th,
-    #[serde(rename = "TJ")]
-    Tj,
-    #[serde(rename = "TK")]
-    Tk,
-    #[serde(rename = "TL")]
-    Tl,
-    #[serde(rename = "TM")]
-    Tm,
-    #[serde(rename = "TN")]
-    Tn,
-    #[serde(rename = "TO")]
-    To,
-    #[serde(rename = "TR")]
-    Tr,
-    #[serde(rename = "TT")]
-    Tt,
-    #[serde(rename = "TV")]
-    Tv,
-    #[serde(rename = "TW")]
-    Tw,
-    #[serde(rename = "TZ")]
-    Tz,
-    #[serde(rename = "UA")]
-    Ua,
-    #[serde(rename = "UG")]
-    Ug,
-    #[serde(rename = "US")]
-    Us,
-    #[serde(rename = "UY")]
-    Uy,
-    #[serde(rename = "UZ")]
-    Uz,
-    #[serde(rename = "VA")]
-    Va,
-    #[serde(rename = "VC")]
-    Vc,
-    #[serde(rename = "VE")]
-    Ve,
-    #[serde(rename = "VG")]
-    Vg,
-    #[serde(rename = "VN")]
-    Vn,
-    #[serde(rename = "VU")]
-    Vu,
-    #[serde(rename = "WF")]
-    Wf,
-    #[serde(rename = "WS")]
-    Ws,
-    #[serde(rename = "XK")]
-    Xk,
-    #[serde(rename = "YE")]
-    Ye,
-    #[serde(rename = "YT")]
-    Yt,
-    #[serde(rename = "ZA")]
-    Za,
-    #[serde(rename = "ZM")]
-    Zm,
-    #[serde(rename = "ZW")]
-    Zw,
-    #[serde(rename = "ZZ")]
-    Zz,
-}
-
-impl PaymentLinksResourceShippingAddressCollectionAllowedCountries {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ac => "AC",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ad => "AD",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ae => "AE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Af => "AF",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ag => "AG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ai => "AI",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Al => "AL",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Am => "AM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ao => "AO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Aq => "AQ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ar => "AR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::At => "AT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Au => "AU",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Aw => "AW",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ax => "AX",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Az => "AZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ba => "BA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bb => "BB",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bd => "BD",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Be => "BE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bf => "BF",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bg => "BG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bh => "BH",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bi => "BI",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bj => "BJ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bl => "BL",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bm => "BM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bn => "BN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bo => "BO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bq => "BQ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Br => "BR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bs => "BS",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bt => "BT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bv => "BV",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bw => "BW",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::By => "BY",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Bz => "BZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ca => "CA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cd => "CD",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cf => "CF",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cg => "CG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ch => "CH",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ci => "CI",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ck => "CK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cl => "CL",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cm => "CM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cn => "CN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Co => "CO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cr => "CR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cv => "CV",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cw => "CW",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cy => "CY",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Cz => "CZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::De => "DE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Dj => "DJ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Dk => "DK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Dm => "DM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Do => "DO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Dz => "DZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ec => "EC",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ee => "EE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Eg => "EG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Eh => "EH",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Er => "ER",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Es => "ES",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Et => "ET",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Fi => "FI",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Fj => "FJ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Fk => "FK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Fo => "FO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Fr => "FR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ga => "GA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gb => "GB",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gd => "GD",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ge => "GE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gf => "GF",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gg => "GG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gh => "GH",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gi => "GI",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gl => "GL",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gm => "GM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gn => "GN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gp => "GP",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gq => "GQ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gr => "GR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gs => "GS",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gt => "GT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gu => "GU",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gw => "GW",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Gy => "GY",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Hk => "HK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Hn => "HN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Hr => "HR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ht => "HT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Hu => "HU",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Id => "ID",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ie => "IE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Il => "IL",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Im => "IM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::In => "IN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Io => "IO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Iq => "IQ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Is => "IS",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::It => "IT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Je => "JE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Jm => "JM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Jo => "JO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Jp => "JP",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ke => "KE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Kg => "KG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Kh => "KH",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ki => "KI",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Km => "KM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Kn => "KN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Kr => "KR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Kw => "KW",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ky => "KY",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Kz => "KZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::La => "LA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Lb => "LB",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Lc => "LC",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Li => "LI",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Lk => "LK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Lr => "LR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ls => "LS",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Lt => "LT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Lu => "LU",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Lv => "LV",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ly => "LY",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ma => "MA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mc => "MC",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Md => "MD",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Me => "ME",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mf => "MF",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mg => "MG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mk => "MK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ml => "ML",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mm => "MM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mn => "MN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mo => "MO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mq => "MQ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mr => "MR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ms => "MS",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mt => "MT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mu => "MU",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mv => "MV",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mw => "MW",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mx => "MX",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::My => "MY",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Mz => "MZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Na => "NA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Nc => "NC",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ne => "NE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ng => "NG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ni => "NI",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Nl => "NL",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::No => "NO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Np => "NP",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Nr => "NR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Nu => "NU",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Nz => "NZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Om => "OM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pa => "PA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pe => "PE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pf => "PF",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pg => "PG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ph => "PH",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pk => "PK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pl => "PL",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pm => "PM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pn => "PN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pr => "PR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ps => "PS",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Pt => "PT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Py => "PY",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Qa => "QA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Re => "RE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ro => "RO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Rs => "RS",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ru => "RU",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Rw => "RW",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sa => "SA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sb => "SB",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sc => "SC",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Se => "SE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sg => "SG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sh => "SH",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Si => "SI",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sj => "SJ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sk => "SK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sl => "SL",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sm => "SM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sn => "SN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::So => "SO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sr => "SR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ss => "SS",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::St => "ST",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sv => "SV",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sx => "SX",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Sz => "SZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ta => "TA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tc => "TC",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Td => "TD",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tf => "TF",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tg => "TG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Th => "TH",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tj => "TJ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tk => "TK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tl => "TL",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tm => "TM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tn => "TN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::To => "TO",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tr => "TR",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tt => "TT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tv => "TV",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tw => "TW",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Tz => "TZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ua => "UA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ug => "UG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Us => "US",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Uy => "UY",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Uz => "UZ",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Va => "VA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Vc => "VC",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ve => "VE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Vg => "VG",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Vn => "VN",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Vu => "VU",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Wf => "WF",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ws => "WS",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Xk => "XK",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Ye => "YE",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Yt => "YT",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Za => "ZA",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Zm => "ZM",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Zw => "ZW",
-            PaymentLinksResourceShippingAddressCollectionAllowedCountries::Zz => "ZZ",
-        }
-    }
-}
-
-impl AsRef<str> for PaymentLinksResourceShippingAddressCollectionAllowedCountries {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for PaymentLinksResourceShippingAddressCollectionAllowedCountries {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for PaymentLinksResourceShippingAddressCollectionAllowedCountries {
-    fn default() -> Self {
-        Self::Ac
-    }
-}
-
-/// An enum representing the possible values of an `UpdatePaymentLinkAfterCompletion`'s `type` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum UpdatePaymentLinkAfterCompletionType {
-    HostedConfirmation,
-    Redirect,
-}
-
-impl UpdatePaymentLinkAfterCompletionType {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            UpdatePaymentLinkAfterCompletionType::HostedConfirmation => "hosted_confirmation",
-            UpdatePaymentLinkAfterCompletionType::Redirect => "redirect",
-        }
-    }
-}
-
-impl AsRef<str> for UpdatePaymentLinkAfterCompletionType {
-    fn as_ref(&self) -> &str {
-        self.as_str()
-    }
-}
-
-impl std::fmt::Display for UpdatePaymentLinkAfterCompletionType {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.as_str().fmt(f)
-    }
-}
-impl std::default::Default for UpdatePaymentLinkAfterCompletionType {
-    fn default() -> Self {
-        Self::HostedConfirmation
-    }
-}
-
-/// An enum representing the possible values of an `UpdatePaymentLink`'s `payment_method_types` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
-#[serde(rename_all = "snake_case")]
-pub enum UpdatePaymentLinkPaymentMethodTypes {
+pub enum PostPaymentLinksParamsPaymentMethodTypes {
     Affirm,
     AfterpayClearpay,
     Alipay,
@@ -2959,59 +743,599 @@ pub enum UpdatePaymentLinkPaymentMethodTypes {
     WechatPay,
 }
 
-impl UpdatePaymentLinkPaymentMethodTypes {
+impl PostPaymentLinksParamsPaymentMethodTypes {
     pub fn as_str(self) -> &'static str {
         match self {
-            UpdatePaymentLinkPaymentMethodTypes::Affirm => "affirm",
-            UpdatePaymentLinkPaymentMethodTypes::AfterpayClearpay => "afterpay_clearpay",
-            UpdatePaymentLinkPaymentMethodTypes::Alipay => "alipay",
-            UpdatePaymentLinkPaymentMethodTypes::AuBecsDebit => "au_becs_debit",
-            UpdatePaymentLinkPaymentMethodTypes::BacsDebit => "bacs_debit",
-            UpdatePaymentLinkPaymentMethodTypes::Bancontact => "bancontact",
-            UpdatePaymentLinkPaymentMethodTypes::Blik => "blik",
-            UpdatePaymentLinkPaymentMethodTypes::Boleto => "boleto",
-            UpdatePaymentLinkPaymentMethodTypes::Card => "card",
-            UpdatePaymentLinkPaymentMethodTypes::Eps => "eps",
-            UpdatePaymentLinkPaymentMethodTypes::Fpx => "fpx",
-            UpdatePaymentLinkPaymentMethodTypes::Giropay => "giropay",
-            UpdatePaymentLinkPaymentMethodTypes::Grabpay => "grabpay",
-            UpdatePaymentLinkPaymentMethodTypes::Ideal => "ideal",
-            UpdatePaymentLinkPaymentMethodTypes::Klarna => "klarna",
-            UpdatePaymentLinkPaymentMethodTypes::Konbini => "konbini",
-            UpdatePaymentLinkPaymentMethodTypes::Oxxo => "oxxo",
-            UpdatePaymentLinkPaymentMethodTypes::P24 => "p24",
-            UpdatePaymentLinkPaymentMethodTypes::Paynow => "paynow",
-            UpdatePaymentLinkPaymentMethodTypes::Pix => "pix",
-            UpdatePaymentLinkPaymentMethodTypes::Promptpay => "promptpay",
-            UpdatePaymentLinkPaymentMethodTypes::SepaDebit => "sepa_debit",
-            UpdatePaymentLinkPaymentMethodTypes::Sofort => "sofort",
-            UpdatePaymentLinkPaymentMethodTypes::UsBankAccount => "us_bank_account",
-            UpdatePaymentLinkPaymentMethodTypes::WechatPay => "wechat_pay",
+            Self::Affirm => "affirm",
+            Self::AfterpayClearpay => "afterpay_clearpay",
+            Self::Alipay => "alipay",
+            Self::AuBecsDebit => "au_becs_debit",
+            Self::BacsDebit => "bacs_debit",
+            Self::Bancontact => "bancontact",
+            Self::Blik => "blik",
+            Self::Boleto => "boleto",
+            Self::Card => "card",
+            Self::Eps => "eps",
+            Self::Fpx => "fpx",
+            Self::Giropay => "giropay",
+            Self::Grabpay => "grabpay",
+            Self::Ideal => "ideal",
+            Self::Klarna => "klarna",
+            Self::Konbini => "konbini",
+            Self::Oxxo => "oxxo",
+            Self::P24 => "p24",
+            Self::Paynow => "paynow",
+            Self::Pix => "pix",
+            Self::Promptpay => "promptpay",
+            Self::SepaDebit => "sepa_debit",
+            Self::Sofort => "sofort",
+            Self::UsBankAccount => "us_bank_account",
+            Self::WechatPay => "wechat_pay",
         }
     }
 }
 
-impl AsRef<str> for UpdatePaymentLinkPaymentMethodTypes {
+impl AsRef<str> for PostPaymentLinksParamsPaymentMethodTypes {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for UpdatePaymentLinkPaymentMethodTypes {
+impl std::fmt::Display for PostPaymentLinksParamsPaymentMethodTypes {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for UpdatePaymentLinkPaymentMethodTypes {
+
+impl Default for PostPaymentLinksParamsPaymentMethodTypes {
     fn default() -> Self {
         Self::Affirm
     }
 }
+/// Controls phone number collection settings during checkout.
+///
+/// We recommend that you review your privacy policy and check with your legal contacts.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsPhoneNumberCollection {
+    /// Set to `true` to enable phone number collection.
+    pub enabled: bool,
+}
 
-/// An enum representing the possible values of an `UpdatePaymentLinkShippingAddressCollection`'s `allowed_countries` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+/// Configuration for collecting the customer's shipping address.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsShippingAddressCollection {
+    /// An array of two-letter ISO country codes representing which countries Checkout should provide as options for
+    /// shipping locations.
+    ///
+    /// Unsupported country codes: `AS, CX, CC, CU, HM, IR, KP, MH, FM, NF, MP, PW, SD, SY, UM, VI`.
+    pub allowed_countries: Vec<PostPaymentLinksParamsShippingAddressCollectionAllowedCountries>,
+}
+
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsShippingOptions {
+    /// The ID of the Shipping Rate to use for this shipping option.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub shipping_rate: Option<String>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
-pub enum UpdatePaymentLinkShippingAddressCollectionAllowedCountries {
+pub enum PostPaymentLinksParamsSubmitType {
+    Auto,
+    Book,
+    Donate,
+    Pay,
+}
+
+impl PostPaymentLinksParamsSubmitType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Auto => "auto",
+            Self::Book => "book",
+            Self::Donate => "donate",
+            Self::Pay => "pay",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksParamsSubmitType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksParamsSubmitType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksParamsSubmitType {
+    fn default() -> Self {
+        Self::Auto
+    }
+}
+/// When creating a subscription, the specified configuration data will be used.
+///
+/// There must be at least one line item with a recurring price to use `subscription_data`.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsSubscriptionData {
+    /// The subscription's description, meant to be displayable to the customer.
+    ///
+    /// Use this field to optionally store an explanation of the subscription.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+
+    /// Integer representing the number of trial period days before the customer is charged for the first time.
+    ///
+    /// Has to be at least 1.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub trial_period_days: Option<u32>,
+}
+
+/// Controls tax ID collection during checkout.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsTaxIdCollection {
+    /// Set to `true` to enable tax ID collection.
+    pub enabled: bool,
+}
+
+/// The account (if any) the payments will be attributed to for tax reporting, and where funds from each payment will be transferred to.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsTransferData {
+    /// The amount that will be transferred automatically when a charge succeeds.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount: Option<i64>,
+
+    /// If specified, successful charges will be attributed to the destination
+    /// account for tax reporting, and the funds from charges will be transferred
+    /// to the destination account.
+    ///
+    /// The ID of the resulting transfer will be returned on the successful charge's `transfer` field.
+    pub destination: String,
+}
+
+/// Behavior after the purchase is complete.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksPaymentLinkParamsAfterCompletion {
+    /// Configuration when `type=hosted_confirmation`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hosted_confirmation:
+        Option<PostPaymentLinksPaymentLinkParamsAfterCompletionHostedConfirmation>,
+
+    /// Configuration when `type=redirect`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub redirect: Option<PostPaymentLinksPaymentLinkParamsAfterCompletionRedirect>,
+
+    /// The specified behavior after the purchase is complete.
+    ///
+    /// Either `redirect` or `hosted_confirmation`.
+    #[serde(rename = "type")]
+    pub type_: PostPaymentLinksPaymentLinkParamsAfterCompletionType,
+}
+
+/// Configuration for automatic tax collection.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksPaymentLinkParamsAutomaticTax {
+    /// If `true`, tax will be calculated automatically using the customer's location.
+    pub enabled: bool,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksPaymentLinkParamsBillingAddressCollection {
+    Auto,
+    Required,
+}
+
+impl PostPaymentLinksPaymentLinkParamsBillingAddressCollection {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Auto => "auto",
+            Self::Required => "required",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksPaymentLinkParamsBillingAddressCollection {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksPaymentLinkParamsBillingAddressCollection {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksPaymentLinkParamsBillingAddressCollection {
+    fn default() -> Self {
+        Self::Auto
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksPaymentLinkParamsCustomerCreation {
+    Always,
+    IfRequired,
+}
+
+impl PostPaymentLinksPaymentLinkParamsCustomerCreation {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Always => "always",
+            Self::IfRequired => "if_required",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksPaymentLinkParamsCustomerCreation {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksPaymentLinkParamsCustomerCreation {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksPaymentLinkParamsCustomerCreation {
+    fn default() -> Self {
+        Self::Always
+    }
+}
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksPaymentLinkParamsLineItems {
+    /// When set, provides configuration for this item’s quantity to be adjusted by the customer during checkout.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub adjustable_quantity: Option<PostPaymentLinksPaymentLinkParamsLineItemsAdjustableQuantity>,
+
+    /// The ID of an existing line item on the payment link.
+    pub id: String,
+
+    /// The quantity of the line item being purchased.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub quantity: Option<u64>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksPaymentLinkParamsPaymentMethodCollection {
+    Always,
+    IfRequired,
+}
+
+impl PostPaymentLinksPaymentLinkParamsPaymentMethodCollection {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Always => "always",
+            Self::IfRequired => "if_required",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksPaymentLinkParamsPaymentMethodCollection {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksPaymentLinkParamsPaymentMethodCollection {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksPaymentLinkParamsPaymentMethodCollection {
+    fn default() -> Self {
+        Self::Always
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksPaymentLinkParamsPaymentMethodTypes {
+    Affirm,
+    AfterpayClearpay,
+    Alipay,
+    AuBecsDebit,
+    BacsDebit,
+    Bancontact,
+    Blik,
+    Boleto,
+    Card,
+    Eps,
+    Fpx,
+    Giropay,
+    Grabpay,
+    Ideal,
+    Klarna,
+    Konbini,
+    Oxxo,
+    P24,
+    Paynow,
+    Pix,
+    Promptpay,
+    SepaDebit,
+    Sofort,
+    UsBankAccount,
+    WechatPay,
+}
+
+impl PostPaymentLinksPaymentLinkParamsPaymentMethodTypes {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Affirm => "affirm",
+            Self::AfterpayClearpay => "afterpay_clearpay",
+            Self::Alipay => "alipay",
+            Self::AuBecsDebit => "au_becs_debit",
+            Self::BacsDebit => "bacs_debit",
+            Self::Bancontact => "bancontact",
+            Self::Blik => "blik",
+            Self::Boleto => "boleto",
+            Self::Card => "card",
+            Self::Eps => "eps",
+            Self::Fpx => "fpx",
+            Self::Giropay => "giropay",
+            Self::Grabpay => "grabpay",
+            Self::Ideal => "ideal",
+            Self::Klarna => "klarna",
+            Self::Konbini => "konbini",
+            Self::Oxxo => "oxxo",
+            Self::P24 => "p24",
+            Self::Paynow => "paynow",
+            Self::Pix => "pix",
+            Self::Promptpay => "promptpay",
+            Self::SepaDebit => "sepa_debit",
+            Self::Sofort => "sofort",
+            Self::UsBankAccount => "us_bank_account",
+            Self::WechatPay => "wechat_pay",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksPaymentLinkParamsPaymentMethodTypes {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksPaymentLinkParamsPaymentMethodTypes {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksPaymentLinkParamsPaymentMethodTypes {
+    fn default() -> Self {
+        Self::Affirm
+    }
+}
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksPaymentLinkParamsShippingAddressCollection {
+    /// An array of two-letter ISO country codes representing which countries Checkout should provide as options for
+    /// shipping locations.
+    ///
+    /// Unsupported country codes: `AS, CX, CC, CU, HM, IR, KP, MH, FM, NF, MP, PW, SD, SY, UM, VI`.
+    pub allowed_countries:
+        Vec<PostPaymentLinksPaymentLinkParamsShippingAddressCollectionAllowedCountries>,
+}
+
+/// Configuration when `type=hosted_confirmation`.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsAfterCompletionHostedConfirmation {
+    /// A custom message to display to the customer after the purchase is complete.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub custom_message: Option<String>,
+}
+
+/// Configuration when `type=redirect`.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsAfterCompletionRedirect {
+    /// The URL the customer will be redirected to after the purchase is complete.
+    ///
+    /// You can embed `{CHECKOUT_SESSION_ID}` into the URL to have the `id` of the completed [checkout session](https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-id) included.
+    pub url: String,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksParamsAfterCompletionType {
+    HostedConfirmation,
+    Redirect,
+}
+
+impl PostPaymentLinksParamsAfterCompletionType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::HostedConfirmation => "hosted_confirmation",
+            Self::Redirect => "redirect",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksParamsAfterCompletionType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksParamsAfterCompletionType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksParamsAfterCompletionType {
+    fn default() -> Self {
+        Self::HostedConfirmation
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksParamsConsentCollectionPromotions {
+    Auto,
+    None,
+}
+
+impl PostPaymentLinksParamsConsentCollectionPromotions {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Auto => "auto",
+            Self::None => "none",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksParamsConsentCollectionPromotions {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksParamsConsentCollectionPromotions {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksParamsConsentCollectionPromotions {
+    fn default() -> Self {
+        Self::Auto
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksParamsConsentCollectionTermsOfService {
+    None,
+    Required,
+}
+
+impl PostPaymentLinksParamsConsentCollectionTermsOfService {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Required => "required",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksParamsConsentCollectionTermsOfService {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksParamsConsentCollectionTermsOfService {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksParamsConsentCollectionTermsOfService {
+    fn default() -> Self {
+        Self::None
+    }
+}
+/// When set, provides configuration for this item’s quantity to be adjusted by the customer during checkout.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksParamsLineItemsAdjustableQuantity {
+    /// Set to true if the quantity can be adjusted to any non-negative Integer.
+    pub enabled: bool,
+
+    /// The maximum quantity the customer can purchase.
+    ///
+    /// By default this value is 99.
+    /// You can specify a value up to 99.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub maximum: Option<i64>,
+
+    /// The minimum quantity the customer can purchase.
+    ///
+    /// By default this value is 0.
+    /// You can specify a value up to 98.
+    /// If there is only one item in the cart then that item's quantity cannot go down to 0.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub minimum: Option<i64>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksParamsPaymentIntentDataCaptureMethod {
+    Automatic,
+    Manual,
+}
+
+impl PostPaymentLinksParamsPaymentIntentDataCaptureMethod {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Automatic => "automatic",
+            Self::Manual => "manual",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksParamsPaymentIntentDataCaptureMethod {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksParamsPaymentIntentDataCaptureMethod {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksParamsPaymentIntentDataCaptureMethod {
+    fn default() -> Self {
+        Self::Automatic
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksParamsPaymentIntentDataSetupFutureUsage {
+    OffSession,
+    OnSession,
+}
+
+impl PostPaymentLinksParamsPaymentIntentDataSetupFutureUsage {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::OffSession => "off_session",
+            Self::OnSession => "on_session",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksParamsPaymentIntentDataSetupFutureUsage {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksParamsPaymentIntentDataSetupFutureUsage {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksParamsPaymentIntentDataSetupFutureUsage {
+    fn default() -> Self {
+        Self::OffSession
+    }
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksParamsShippingAddressCollectionAllowedCountries {
     #[serde(rename = "AC")]
     Ac,
     #[serde(rename = "AD")]
@@ -3488,263 +1812,1118 @@ pub enum UpdatePaymentLinkShippingAddressCollectionAllowedCountries {
     Zz,
 }
 
-impl UpdatePaymentLinkShippingAddressCollectionAllowedCountries {
+impl PostPaymentLinksParamsShippingAddressCollectionAllowedCountries {
     pub fn as_str(self) -> &'static str {
         match self {
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ac => "AC",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ad => "AD",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ae => "AE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Af => "AF",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ag => "AG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ai => "AI",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Al => "AL",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Am => "AM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ao => "AO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Aq => "AQ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ar => "AR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::At => "AT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Au => "AU",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Aw => "AW",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ax => "AX",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Az => "AZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ba => "BA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bb => "BB",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bd => "BD",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Be => "BE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bf => "BF",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bg => "BG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bh => "BH",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bi => "BI",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bj => "BJ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bl => "BL",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bm => "BM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bn => "BN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bo => "BO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bq => "BQ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Br => "BR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bs => "BS",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bt => "BT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bv => "BV",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bw => "BW",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::By => "BY",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Bz => "BZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ca => "CA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cd => "CD",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cf => "CF",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cg => "CG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ch => "CH",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ci => "CI",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ck => "CK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cl => "CL",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cm => "CM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cn => "CN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Co => "CO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cr => "CR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cv => "CV",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cw => "CW",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cy => "CY",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Cz => "CZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::De => "DE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Dj => "DJ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Dk => "DK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Dm => "DM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Do => "DO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Dz => "DZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ec => "EC",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ee => "EE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Eg => "EG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Eh => "EH",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Er => "ER",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Es => "ES",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Et => "ET",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Fi => "FI",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Fj => "FJ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Fk => "FK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Fo => "FO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Fr => "FR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ga => "GA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gb => "GB",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gd => "GD",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ge => "GE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gf => "GF",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gg => "GG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gh => "GH",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gi => "GI",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gl => "GL",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gm => "GM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gn => "GN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gp => "GP",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gq => "GQ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gr => "GR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gs => "GS",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gt => "GT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gu => "GU",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gw => "GW",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Gy => "GY",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Hk => "HK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Hn => "HN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Hr => "HR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ht => "HT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Hu => "HU",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Id => "ID",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ie => "IE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Il => "IL",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Im => "IM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::In => "IN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Io => "IO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Iq => "IQ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Is => "IS",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::It => "IT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Je => "JE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Jm => "JM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Jo => "JO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Jp => "JP",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ke => "KE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Kg => "KG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Kh => "KH",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ki => "KI",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Km => "KM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Kn => "KN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Kr => "KR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Kw => "KW",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ky => "KY",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Kz => "KZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::La => "LA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Lb => "LB",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Lc => "LC",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Li => "LI",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Lk => "LK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Lr => "LR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ls => "LS",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Lt => "LT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Lu => "LU",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Lv => "LV",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ly => "LY",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ma => "MA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mc => "MC",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Md => "MD",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Me => "ME",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mf => "MF",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mg => "MG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mk => "MK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ml => "ML",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mm => "MM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mn => "MN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mo => "MO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mq => "MQ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mr => "MR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ms => "MS",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mt => "MT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mu => "MU",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mv => "MV",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mw => "MW",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mx => "MX",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::My => "MY",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Mz => "MZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Na => "NA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Nc => "NC",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ne => "NE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ng => "NG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ni => "NI",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Nl => "NL",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::No => "NO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Np => "NP",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Nr => "NR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Nu => "NU",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Nz => "NZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Om => "OM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pa => "PA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pe => "PE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pf => "PF",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pg => "PG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ph => "PH",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pk => "PK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pl => "PL",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pm => "PM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pn => "PN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pr => "PR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ps => "PS",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Pt => "PT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Py => "PY",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Qa => "QA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Re => "RE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ro => "RO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Rs => "RS",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ru => "RU",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Rw => "RW",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sa => "SA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sb => "SB",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sc => "SC",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Se => "SE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sg => "SG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sh => "SH",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Si => "SI",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sj => "SJ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sk => "SK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sl => "SL",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sm => "SM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sn => "SN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::So => "SO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sr => "SR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ss => "SS",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::St => "ST",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sv => "SV",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sx => "SX",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Sz => "SZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ta => "TA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tc => "TC",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Td => "TD",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tf => "TF",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tg => "TG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Th => "TH",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tj => "TJ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tk => "TK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tl => "TL",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tm => "TM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tn => "TN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::To => "TO",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tr => "TR",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tt => "TT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tv => "TV",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tw => "TW",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Tz => "TZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ua => "UA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ug => "UG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Us => "US",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Uy => "UY",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Uz => "UZ",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Va => "VA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Vc => "VC",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ve => "VE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Vg => "VG",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Vn => "VN",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Vu => "VU",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Wf => "WF",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ws => "WS",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Xk => "XK",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Ye => "YE",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Yt => "YT",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Za => "ZA",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Zm => "ZM",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Zw => "ZW",
-            UpdatePaymentLinkShippingAddressCollectionAllowedCountries::Zz => "ZZ",
+            Self::Ac => "AC",
+            Self::Ad => "AD",
+            Self::Ae => "AE",
+            Self::Af => "AF",
+            Self::Ag => "AG",
+            Self::Ai => "AI",
+            Self::Al => "AL",
+            Self::Am => "AM",
+            Self::Ao => "AO",
+            Self::Aq => "AQ",
+            Self::Ar => "AR",
+            Self::At => "AT",
+            Self::Au => "AU",
+            Self::Aw => "AW",
+            Self::Ax => "AX",
+            Self::Az => "AZ",
+            Self::Ba => "BA",
+            Self::Bb => "BB",
+            Self::Bd => "BD",
+            Self::Be => "BE",
+            Self::Bf => "BF",
+            Self::Bg => "BG",
+            Self::Bh => "BH",
+            Self::Bi => "BI",
+            Self::Bj => "BJ",
+            Self::Bl => "BL",
+            Self::Bm => "BM",
+            Self::Bn => "BN",
+            Self::Bo => "BO",
+            Self::Bq => "BQ",
+            Self::Br => "BR",
+            Self::Bs => "BS",
+            Self::Bt => "BT",
+            Self::Bv => "BV",
+            Self::Bw => "BW",
+            Self::By => "BY",
+            Self::Bz => "BZ",
+            Self::Ca => "CA",
+            Self::Cd => "CD",
+            Self::Cf => "CF",
+            Self::Cg => "CG",
+            Self::Ch => "CH",
+            Self::Ci => "CI",
+            Self::Ck => "CK",
+            Self::Cl => "CL",
+            Self::Cm => "CM",
+            Self::Cn => "CN",
+            Self::Co => "CO",
+            Self::Cr => "CR",
+            Self::Cv => "CV",
+            Self::Cw => "CW",
+            Self::Cy => "CY",
+            Self::Cz => "CZ",
+            Self::De => "DE",
+            Self::Dj => "DJ",
+            Self::Dk => "DK",
+            Self::Dm => "DM",
+            Self::Do => "DO",
+            Self::Dz => "DZ",
+            Self::Ec => "EC",
+            Self::Ee => "EE",
+            Self::Eg => "EG",
+            Self::Eh => "EH",
+            Self::Er => "ER",
+            Self::Es => "ES",
+            Self::Et => "ET",
+            Self::Fi => "FI",
+            Self::Fj => "FJ",
+            Self::Fk => "FK",
+            Self::Fo => "FO",
+            Self::Fr => "FR",
+            Self::Ga => "GA",
+            Self::Gb => "GB",
+            Self::Gd => "GD",
+            Self::Ge => "GE",
+            Self::Gf => "GF",
+            Self::Gg => "GG",
+            Self::Gh => "GH",
+            Self::Gi => "GI",
+            Self::Gl => "GL",
+            Self::Gm => "GM",
+            Self::Gn => "GN",
+            Self::Gp => "GP",
+            Self::Gq => "GQ",
+            Self::Gr => "GR",
+            Self::Gs => "GS",
+            Self::Gt => "GT",
+            Self::Gu => "GU",
+            Self::Gw => "GW",
+            Self::Gy => "GY",
+            Self::Hk => "HK",
+            Self::Hn => "HN",
+            Self::Hr => "HR",
+            Self::Ht => "HT",
+            Self::Hu => "HU",
+            Self::Id => "ID",
+            Self::Ie => "IE",
+            Self::Il => "IL",
+            Self::Im => "IM",
+            Self::In => "IN",
+            Self::Io => "IO",
+            Self::Iq => "IQ",
+            Self::Is => "IS",
+            Self::It => "IT",
+            Self::Je => "JE",
+            Self::Jm => "JM",
+            Self::Jo => "JO",
+            Self::Jp => "JP",
+            Self::Ke => "KE",
+            Self::Kg => "KG",
+            Self::Kh => "KH",
+            Self::Ki => "KI",
+            Self::Km => "KM",
+            Self::Kn => "KN",
+            Self::Kr => "KR",
+            Self::Kw => "KW",
+            Self::Ky => "KY",
+            Self::Kz => "KZ",
+            Self::La => "LA",
+            Self::Lb => "LB",
+            Self::Lc => "LC",
+            Self::Li => "LI",
+            Self::Lk => "LK",
+            Self::Lr => "LR",
+            Self::Ls => "LS",
+            Self::Lt => "LT",
+            Self::Lu => "LU",
+            Self::Lv => "LV",
+            Self::Ly => "LY",
+            Self::Ma => "MA",
+            Self::Mc => "MC",
+            Self::Md => "MD",
+            Self::Me => "ME",
+            Self::Mf => "MF",
+            Self::Mg => "MG",
+            Self::Mk => "MK",
+            Self::Ml => "ML",
+            Self::Mm => "MM",
+            Self::Mn => "MN",
+            Self::Mo => "MO",
+            Self::Mq => "MQ",
+            Self::Mr => "MR",
+            Self::Ms => "MS",
+            Self::Mt => "MT",
+            Self::Mu => "MU",
+            Self::Mv => "MV",
+            Self::Mw => "MW",
+            Self::Mx => "MX",
+            Self::My => "MY",
+            Self::Mz => "MZ",
+            Self::Na => "NA",
+            Self::Nc => "NC",
+            Self::Ne => "NE",
+            Self::Ng => "NG",
+            Self::Ni => "NI",
+            Self::Nl => "NL",
+            Self::No => "NO",
+            Self::Np => "NP",
+            Self::Nr => "NR",
+            Self::Nu => "NU",
+            Self::Nz => "NZ",
+            Self::Om => "OM",
+            Self::Pa => "PA",
+            Self::Pe => "PE",
+            Self::Pf => "PF",
+            Self::Pg => "PG",
+            Self::Ph => "PH",
+            Self::Pk => "PK",
+            Self::Pl => "PL",
+            Self::Pm => "PM",
+            Self::Pn => "PN",
+            Self::Pr => "PR",
+            Self::Ps => "PS",
+            Self::Pt => "PT",
+            Self::Py => "PY",
+            Self::Qa => "QA",
+            Self::Re => "RE",
+            Self::Ro => "RO",
+            Self::Rs => "RS",
+            Self::Ru => "RU",
+            Self::Rw => "RW",
+            Self::Sa => "SA",
+            Self::Sb => "SB",
+            Self::Sc => "SC",
+            Self::Se => "SE",
+            Self::Sg => "SG",
+            Self::Sh => "SH",
+            Self::Si => "SI",
+            Self::Sj => "SJ",
+            Self::Sk => "SK",
+            Self::Sl => "SL",
+            Self::Sm => "SM",
+            Self::Sn => "SN",
+            Self::So => "SO",
+            Self::Sr => "SR",
+            Self::Ss => "SS",
+            Self::St => "ST",
+            Self::Sv => "SV",
+            Self::Sx => "SX",
+            Self::Sz => "SZ",
+            Self::Ta => "TA",
+            Self::Tc => "TC",
+            Self::Td => "TD",
+            Self::Tf => "TF",
+            Self::Tg => "TG",
+            Self::Th => "TH",
+            Self::Tj => "TJ",
+            Self::Tk => "TK",
+            Self::Tl => "TL",
+            Self::Tm => "TM",
+            Self::Tn => "TN",
+            Self::To => "TO",
+            Self::Tr => "TR",
+            Self::Tt => "TT",
+            Self::Tv => "TV",
+            Self::Tw => "TW",
+            Self::Tz => "TZ",
+            Self::Ua => "UA",
+            Self::Ug => "UG",
+            Self::Us => "US",
+            Self::Uy => "UY",
+            Self::Uz => "UZ",
+            Self::Va => "VA",
+            Self::Vc => "VC",
+            Self::Ve => "VE",
+            Self::Vg => "VG",
+            Self::Vn => "VN",
+            Self::Vu => "VU",
+            Self::Wf => "WF",
+            Self::Ws => "WS",
+            Self::Xk => "XK",
+            Self::Ye => "YE",
+            Self::Yt => "YT",
+            Self::Za => "ZA",
+            Self::Zm => "ZM",
+            Self::Zw => "ZW",
+            Self::Zz => "ZZ",
         }
     }
 }
 
-impl AsRef<str> for UpdatePaymentLinkShippingAddressCollectionAllowedCountries {
+impl AsRef<str> for PostPaymentLinksParamsShippingAddressCollectionAllowedCountries {
     fn as_ref(&self) -> &str {
         self.as_str()
     }
 }
 
-impl std::fmt::Display for UpdatePaymentLinkShippingAddressCollectionAllowedCountries {
+impl std::fmt::Display for PostPaymentLinksParamsShippingAddressCollectionAllowedCountries {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for UpdatePaymentLinkShippingAddressCollectionAllowedCountries {
+
+impl Default for PostPaymentLinksParamsShippingAddressCollectionAllowedCountries {
     fn default() -> Self {
         Self::Ac
     }
+}
+/// Configuration when `type=hosted_confirmation`.
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksPaymentLinkParamsAfterCompletionHostedConfirmation {
+    /// A custom message to display to the customer after the purchase is complete.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub custom_message: Option<String>,
+}
+
+/// Configuration when `type=redirect`.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksPaymentLinkParamsAfterCompletionRedirect {
+    /// The URL the customer will be redirected to after the purchase is complete.
+    ///
+    /// You can embed `{CHECKOUT_SESSION_ID}` into the URL to have the `id` of the completed [checkout session](https://stripe.com/docs/api/checkout/sessions/object#checkout_session_object-id) included.
+    pub url: String,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksPaymentLinkParamsAfterCompletionType {
+    HostedConfirmation,
+    Redirect,
+}
+
+impl PostPaymentLinksPaymentLinkParamsAfterCompletionType {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::HostedConfirmation => "hosted_confirmation",
+            Self::Redirect => "redirect",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksPaymentLinkParamsAfterCompletionType {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display for PostPaymentLinksPaymentLinkParamsAfterCompletionType {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksPaymentLinkParamsAfterCompletionType {
+    fn default() -> Self {
+        Self::HostedConfirmation
+    }
+}
+/// When set, provides configuration for this item’s quantity to be adjusted by the customer during checkout.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub struct PostPaymentLinksPaymentLinkParamsLineItemsAdjustableQuantity {
+    /// Set to true if the quantity can be adjusted to any non-negative Integer.
+    pub enabled: bool,
+
+    /// The maximum quantity the customer can purchase.
+    ///
+    /// By default this value is 99.
+    /// You can specify a value up to 99.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub maximum: Option<i64>,
+
+    /// The minimum quantity the customer can purchase.
+    ///
+    /// By default this value is 0.
+    /// You can specify a value up to 98.
+    /// If there is only one item in the cart then that item's quantity cannot go down to 0.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub minimum: Option<i64>,
+}
+
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PostPaymentLinksPaymentLinkParamsShippingAddressCollectionAllowedCountries {
+    #[serde(rename = "AC")]
+    Ac,
+    #[serde(rename = "AD")]
+    Ad,
+    #[serde(rename = "AE")]
+    Ae,
+    #[serde(rename = "AF")]
+    Af,
+    #[serde(rename = "AG")]
+    Ag,
+    #[serde(rename = "AI")]
+    Ai,
+    #[serde(rename = "AL")]
+    Al,
+    #[serde(rename = "AM")]
+    Am,
+    #[serde(rename = "AO")]
+    Ao,
+    #[serde(rename = "AQ")]
+    Aq,
+    #[serde(rename = "AR")]
+    Ar,
+    #[serde(rename = "AT")]
+    At,
+    #[serde(rename = "AU")]
+    Au,
+    #[serde(rename = "AW")]
+    Aw,
+    #[serde(rename = "AX")]
+    Ax,
+    #[serde(rename = "AZ")]
+    Az,
+    #[serde(rename = "BA")]
+    Ba,
+    #[serde(rename = "BB")]
+    Bb,
+    #[serde(rename = "BD")]
+    Bd,
+    #[serde(rename = "BE")]
+    Be,
+    #[serde(rename = "BF")]
+    Bf,
+    #[serde(rename = "BG")]
+    Bg,
+    #[serde(rename = "BH")]
+    Bh,
+    #[serde(rename = "BI")]
+    Bi,
+    #[serde(rename = "BJ")]
+    Bj,
+    #[serde(rename = "BL")]
+    Bl,
+    #[serde(rename = "BM")]
+    Bm,
+    #[serde(rename = "BN")]
+    Bn,
+    #[serde(rename = "BO")]
+    Bo,
+    #[serde(rename = "BQ")]
+    Bq,
+    #[serde(rename = "BR")]
+    Br,
+    #[serde(rename = "BS")]
+    Bs,
+    #[serde(rename = "BT")]
+    Bt,
+    #[serde(rename = "BV")]
+    Bv,
+    #[serde(rename = "BW")]
+    Bw,
+    #[serde(rename = "BY")]
+    By,
+    #[serde(rename = "BZ")]
+    Bz,
+    #[serde(rename = "CA")]
+    Ca,
+    #[serde(rename = "CD")]
+    Cd,
+    #[serde(rename = "CF")]
+    Cf,
+    #[serde(rename = "CG")]
+    Cg,
+    #[serde(rename = "CH")]
+    Ch,
+    #[serde(rename = "CI")]
+    Ci,
+    #[serde(rename = "CK")]
+    Ck,
+    #[serde(rename = "CL")]
+    Cl,
+    #[serde(rename = "CM")]
+    Cm,
+    #[serde(rename = "CN")]
+    Cn,
+    #[serde(rename = "CO")]
+    Co,
+    #[serde(rename = "CR")]
+    Cr,
+    #[serde(rename = "CV")]
+    Cv,
+    #[serde(rename = "CW")]
+    Cw,
+    #[serde(rename = "CY")]
+    Cy,
+    #[serde(rename = "CZ")]
+    Cz,
+    #[serde(rename = "DE")]
+    De,
+    #[serde(rename = "DJ")]
+    Dj,
+    #[serde(rename = "DK")]
+    Dk,
+    #[serde(rename = "DM")]
+    Dm,
+    #[serde(rename = "DO")]
+    Do,
+    #[serde(rename = "DZ")]
+    Dz,
+    #[serde(rename = "EC")]
+    Ec,
+    #[serde(rename = "EE")]
+    Ee,
+    #[serde(rename = "EG")]
+    Eg,
+    #[serde(rename = "EH")]
+    Eh,
+    #[serde(rename = "ER")]
+    Er,
+    #[serde(rename = "ES")]
+    Es,
+    #[serde(rename = "ET")]
+    Et,
+    #[serde(rename = "FI")]
+    Fi,
+    #[serde(rename = "FJ")]
+    Fj,
+    #[serde(rename = "FK")]
+    Fk,
+    #[serde(rename = "FO")]
+    Fo,
+    #[serde(rename = "FR")]
+    Fr,
+    #[serde(rename = "GA")]
+    Ga,
+    #[serde(rename = "GB")]
+    Gb,
+    #[serde(rename = "GD")]
+    Gd,
+    #[serde(rename = "GE")]
+    Ge,
+    #[serde(rename = "GF")]
+    Gf,
+    #[serde(rename = "GG")]
+    Gg,
+    #[serde(rename = "GH")]
+    Gh,
+    #[serde(rename = "GI")]
+    Gi,
+    #[serde(rename = "GL")]
+    Gl,
+    #[serde(rename = "GM")]
+    Gm,
+    #[serde(rename = "GN")]
+    Gn,
+    #[serde(rename = "GP")]
+    Gp,
+    #[serde(rename = "GQ")]
+    Gq,
+    #[serde(rename = "GR")]
+    Gr,
+    #[serde(rename = "GS")]
+    Gs,
+    #[serde(rename = "GT")]
+    Gt,
+    #[serde(rename = "GU")]
+    Gu,
+    #[serde(rename = "GW")]
+    Gw,
+    #[serde(rename = "GY")]
+    Gy,
+    #[serde(rename = "HK")]
+    Hk,
+    #[serde(rename = "HN")]
+    Hn,
+    #[serde(rename = "HR")]
+    Hr,
+    #[serde(rename = "HT")]
+    Ht,
+    #[serde(rename = "HU")]
+    Hu,
+    #[serde(rename = "ID")]
+    Id,
+    #[serde(rename = "IE")]
+    Ie,
+    #[serde(rename = "IL")]
+    Il,
+    #[serde(rename = "IM")]
+    Im,
+    #[serde(rename = "IN")]
+    In,
+    #[serde(rename = "IO")]
+    Io,
+    #[serde(rename = "IQ")]
+    Iq,
+    #[serde(rename = "IS")]
+    Is,
+    #[serde(rename = "IT")]
+    It,
+    #[serde(rename = "JE")]
+    Je,
+    #[serde(rename = "JM")]
+    Jm,
+    #[serde(rename = "JO")]
+    Jo,
+    #[serde(rename = "JP")]
+    Jp,
+    #[serde(rename = "KE")]
+    Ke,
+    #[serde(rename = "KG")]
+    Kg,
+    #[serde(rename = "KH")]
+    Kh,
+    #[serde(rename = "KI")]
+    Ki,
+    #[serde(rename = "KM")]
+    Km,
+    #[serde(rename = "KN")]
+    Kn,
+    #[serde(rename = "KR")]
+    Kr,
+    #[serde(rename = "KW")]
+    Kw,
+    #[serde(rename = "KY")]
+    Ky,
+    #[serde(rename = "KZ")]
+    Kz,
+    #[serde(rename = "LA")]
+    La,
+    #[serde(rename = "LB")]
+    Lb,
+    #[serde(rename = "LC")]
+    Lc,
+    #[serde(rename = "LI")]
+    Li,
+    #[serde(rename = "LK")]
+    Lk,
+    #[serde(rename = "LR")]
+    Lr,
+    #[serde(rename = "LS")]
+    Ls,
+    #[serde(rename = "LT")]
+    Lt,
+    #[serde(rename = "LU")]
+    Lu,
+    #[serde(rename = "LV")]
+    Lv,
+    #[serde(rename = "LY")]
+    Ly,
+    #[serde(rename = "MA")]
+    Ma,
+    #[serde(rename = "MC")]
+    Mc,
+    #[serde(rename = "MD")]
+    Md,
+    #[serde(rename = "ME")]
+    Me,
+    #[serde(rename = "MF")]
+    Mf,
+    #[serde(rename = "MG")]
+    Mg,
+    #[serde(rename = "MK")]
+    Mk,
+    #[serde(rename = "ML")]
+    Ml,
+    #[serde(rename = "MM")]
+    Mm,
+    #[serde(rename = "MN")]
+    Mn,
+    #[serde(rename = "MO")]
+    Mo,
+    #[serde(rename = "MQ")]
+    Mq,
+    #[serde(rename = "MR")]
+    Mr,
+    #[serde(rename = "MS")]
+    Ms,
+    #[serde(rename = "MT")]
+    Mt,
+    #[serde(rename = "MU")]
+    Mu,
+    #[serde(rename = "MV")]
+    Mv,
+    #[serde(rename = "MW")]
+    Mw,
+    #[serde(rename = "MX")]
+    Mx,
+    #[serde(rename = "MY")]
+    My,
+    #[serde(rename = "MZ")]
+    Mz,
+    #[serde(rename = "NA")]
+    Na,
+    #[serde(rename = "NC")]
+    Nc,
+    #[serde(rename = "NE")]
+    Ne,
+    #[serde(rename = "NG")]
+    Ng,
+    #[serde(rename = "NI")]
+    Ni,
+    #[serde(rename = "NL")]
+    Nl,
+    #[serde(rename = "NO")]
+    No,
+    #[serde(rename = "NP")]
+    Np,
+    #[serde(rename = "NR")]
+    Nr,
+    #[serde(rename = "NU")]
+    Nu,
+    #[serde(rename = "NZ")]
+    Nz,
+    #[serde(rename = "OM")]
+    Om,
+    #[serde(rename = "PA")]
+    Pa,
+    #[serde(rename = "PE")]
+    Pe,
+    #[serde(rename = "PF")]
+    Pf,
+    #[serde(rename = "PG")]
+    Pg,
+    #[serde(rename = "PH")]
+    Ph,
+    #[serde(rename = "PK")]
+    Pk,
+    #[serde(rename = "PL")]
+    Pl,
+    #[serde(rename = "PM")]
+    Pm,
+    #[serde(rename = "PN")]
+    Pn,
+    #[serde(rename = "PR")]
+    Pr,
+    #[serde(rename = "PS")]
+    Ps,
+    #[serde(rename = "PT")]
+    Pt,
+    #[serde(rename = "PY")]
+    Py,
+    #[serde(rename = "QA")]
+    Qa,
+    #[serde(rename = "RE")]
+    Re,
+    #[serde(rename = "RO")]
+    Ro,
+    #[serde(rename = "RS")]
+    Rs,
+    #[serde(rename = "RU")]
+    Ru,
+    #[serde(rename = "RW")]
+    Rw,
+    #[serde(rename = "SA")]
+    Sa,
+    #[serde(rename = "SB")]
+    Sb,
+    #[serde(rename = "SC")]
+    Sc,
+    #[serde(rename = "SE")]
+    Se,
+    #[serde(rename = "SG")]
+    Sg,
+    #[serde(rename = "SH")]
+    Sh,
+    #[serde(rename = "SI")]
+    Si,
+    #[serde(rename = "SJ")]
+    Sj,
+    #[serde(rename = "SK")]
+    Sk,
+    #[serde(rename = "SL")]
+    Sl,
+    #[serde(rename = "SM")]
+    Sm,
+    #[serde(rename = "SN")]
+    Sn,
+    #[serde(rename = "SO")]
+    So,
+    #[serde(rename = "SR")]
+    Sr,
+    #[serde(rename = "SS")]
+    Ss,
+    #[serde(rename = "ST")]
+    St,
+    #[serde(rename = "SV")]
+    Sv,
+    #[serde(rename = "SX")]
+    Sx,
+    #[serde(rename = "SZ")]
+    Sz,
+    #[serde(rename = "TA")]
+    Ta,
+    #[serde(rename = "TC")]
+    Tc,
+    #[serde(rename = "TD")]
+    Td,
+    #[serde(rename = "TF")]
+    Tf,
+    #[serde(rename = "TG")]
+    Tg,
+    #[serde(rename = "TH")]
+    Th,
+    #[serde(rename = "TJ")]
+    Tj,
+    #[serde(rename = "TK")]
+    Tk,
+    #[serde(rename = "TL")]
+    Tl,
+    #[serde(rename = "TM")]
+    Tm,
+    #[serde(rename = "TN")]
+    Tn,
+    #[serde(rename = "TO")]
+    To,
+    #[serde(rename = "TR")]
+    Tr,
+    #[serde(rename = "TT")]
+    Tt,
+    #[serde(rename = "TV")]
+    Tv,
+    #[serde(rename = "TW")]
+    Tw,
+    #[serde(rename = "TZ")]
+    Tz,
+    #[serde(rename = "UA")]
+    Ua,
+    #[serde(rename = "UG")]
+    Ug,
+    #[serde(rename = "US")]
+    Us,
+    #[serde(rename = "UY")]
+    Uy,
+    #[serde(rename = "UZ")]
+    Uz,
+    #[serde(rename = "VA")]
+    Va,
+    #[serde(rename = "VC")]
+    Vc,
+    #[serde(rename = "VE")]
+    Ve,
+    #[serde(rename = "VG")]
+    Vg,
+    #[serde(rename = "VN")]
+    Vn,
+    #[serde(rename = "VU")]
+    Vu,
+    #[serde(rename = "WF")]
+    Wf,
+    #[serde(rename = "WS")]
+    Ws,
+    #[serde(rename = "XK")]
+    Xk,
+    #[serde(rename = "YE")]
+    Ye,
+    #[serde(rename = "YT")]
+    Yt,
+    #[serde(rename = "ZA")]
+    Za,
+    #[serde(rename = "ZM")]
+    Zm,
+    #[serde(rename = "ZW")]
+    Zw,
+    #[serde(rename = "ZZ")]
+    Zz,
+}
+
+impl PostPaymentLinksPaymentLinkParamsShippingAddressCollectionAllowedCountries {
+    pub fn as_str(self) -> &'static str {
+        match self {
+            Self::Ac => "AC",
+            Self::Ad => "AD",
+            Self::Ae => "AE",
+            Self::Af => "AF",
+            Self::Ag => "AG",
+            Self::Ai => "AI",
+            Self::Al => "AL",
+            Self::Am => "AM",
+            Self::Ao => "AO",
+            Self::Aq => "AQ",
+            Self::Ar => "AR",
+            Self::At => "AT",
+            Self::Au => "AU",
+            Self::Aw => "AW",
+            Self::Ax => "AX",
+            Self::Az => "AZ",
+            Self::Ba => "BA",
+            Self::Bb => "BB",
+            Self::Bd => "BD",
+            Self::Be => "BE",
+            Self::Bf => "BF",
+            Self::Bg => "BG",
+            Self::Bh => "BH",
+            Self::Bi => "BI",
+            Self::Bj => "BJ",
+            Self::Bl => "BL",
+            Self::Bm => "BM",
+            Self::Bn => "BN",
+            Self::Bo => "BO",
+            Self::Bq => "BQ",
+            Self::Br => "BR",
+            Self::Bs => "BS",
+            Self::Bt => "BT",
+            Self::Bv => "BV",
+            Self::Bw => "BW",
+            Self::By => "BY",
+            Self::Bz => "BZ",
+            Self::Ca => "CA",
+            Self::Cd => "CD",
+            Self::Cf => "CF",
+            Self::Cg => "CG",
+            Self::Ch => "CH",
+            Self::Ci => "CI",
+            Self::Ck => "CK",
+            Self::Cl => "CL",
+            Self::Cm => "CM",
+            Self::Cn => "CN",
+            Self::Co => "CO",
+            Self::Cr => "CR",
+            Self::Cv => "CV",
+            Self::Cw => "CW",
+            Self::Cy => "CY",
+            Self::Cz => "CZ",
+            Self::De => "DE",
+            Self::Dj => "DJ",
+            Self::Dk => "DK",
+            Self::Dm => "DM",
+            Self::Do => "DO",
+            Self::Dz => "DZ",
+            Self::Ec => "EC",
+            Self::Ee => "EE",
+            Self::Eg => "EG",
+            Self::Eh => "EH",
+            Self::Er => "ER",
+            Self::Es => "ES",
+            Self::Et => "ET",
+            Self::Fi => "FI",
+            Self::Fj => "FJ",
+            Self::Fk => "FK",
+            Self::Fo => "FO",
+            Self::Fr => "FR",
+            Self::Ga => "GA",
+            Self::Gb => "GB",
+            Self::Gd => "GD",
+            Self::Ge => "GE",
+            Self::Gf => "GF",
+            Self::Gg => "GG",
+            Self::Gh => "GH",
+            Self::Gi => "GI",
+            Self::Gl => "GL",
+            Self::Gm => "GM",
+            Self::Gn => "GN",
+            Self::Gp => "GP",
+            Self::Gq => "GQ",
+            Self::Gr => "GR",
+            Self::Gs => "GS",
+            Self::Gt => "GT",
+            Self::Gu => "GU",
+            Self::Gw => "GW",
+            Self::Gy => "GY",
+            Self::Hk => "HK",
+            Self::Hn => "HN",
+            Self::Hr => "HR",
+            Self::Ht => "HT",
+            Self::Hu => "HU",
+            Self::Id => "ID",
+            Self::Ie => "IE",
+            Self::Il => "IL",
+            Self::Im => "IM",
+            Self::In => "IN",
+            Self::Io => "IO",
+            Self::Iq => "IQ",
+            Self::Is => "IS",
+            Self::It => "IT",
+            Self::Je => "JE",
+            Self::Jm => "JM",
+            Self::Jo => "JO",
+            Self::Jp => "JP",
+            Self::Ke => "KE",
+            Self::Kg => "KG",
+            Self::Kh => "KH",
+            Self::Ki => "KI",
+            Self::Km => "KM",
+            Self::Kn => "KN",
+            Self::Kr => "KR",
+            Self::Kw => "KW",
+            Self::Ky => "KY",
+            Self::Kz => "KZ",
+            Self::La => "LA",
+            Self::Lb => "LB",
+            Self::Lc => "LC",
+            Self::Li => "LI",
+            Self::Lk => "LK",
+            Self::Lr => "LR",
+            Self::Ls => "LS",
+            Self::Lt => "LT",
+            Self::Lu => "LU",
+            Self::Lv => "LV",
+            Self::Ly => "LY",
+            Self::Ma => "MA",
+            Self::Mc => "MC",
+            Self::Md => "MD",
+            Self::Me => "ME",
+            Self::Mf => "MF",
+            Self::Mg => "MG",
+            Self::Mk => "MK",
+            Self::Ml => "ML",
+            Self::Mm => "MM",
+            Self::Mn => "MN",
+            Self::Mo => "MO",
+            Self::Mq => "MQ",
+            Self::Mr => "MR",
+            Self::Ms => "MS",
+            Self::Mt => "MT",
+            Self::Mu => "MU",
+            Self::Mv => "MV",
+            Self::Mw => "MW",
+            Self::Mx => "MX",
+            Self::My => "MY",
+            Self::Mz => "MZ",
+            Self::Na => "NA",
+            Self::Nc => "NC",
+            Self::Ne => "NE",
+            Self::Ng => "NG",
+            Self::Ni => "NI",
+            Self::Nl => "NL",
+            Self::No => "NO",
+            Self::Np => "NP",
+            Self::Nr => "NR",
+            Self::Nu => "NU",
+            Self::Nz => "NZ",
+            Self::Om => "OM",
+            Self::Pa => "PA",
+            Self::Pe => "PE",
+            Self::Pf => "PF",
+            Self::Pg => "PG",
+            Self::Ph => "PH",
+            Self::Pk => "PK",
+            Self::Pl => "PL",
+            Self::Pm => "PM",
+            Self::Pn => "PN",
+            Self::Pr => "PR",
+            Self::Ps => "PS",
+            Self::Pt => "PT",
+            Self::Py => "PY",
+            Self::Qa => "QA",
+            Self::Re => "RE",
+            Self::Ro => "RO",
+            Self::Rs => "RS",
+            Self::Ru => "RU",
+            Self::Rw => "RW",
+            Self::Sa => "SA",
+            Self::Sb => "SB",
+            Self::Sc => "SC",
+            Self::Se => "SE",
+            Self::Sg => "SG",
+            Self::Sh => "SH",
+            Self::Si => "SI",
+            Self::Sj => "SJ",
+            Self::Sk => "SK",
+            Self::Sl => "SL",
+            Self::Sm => "SM",
+            Self::Sn => "SN",
+            Self::So => "SO",
+            Self::Sr => "SR",
+            Self::Ss => "SS",
+            Self::St => "ST",
+            Self::Sv => "SV",
+            Self::Sx => "SX",
+            Self::Sz => "SZ",
+            Self::Ta => "TA",
+            Self::Tc => "TC",
+            Self::Td => "TD",
+            Self::Tf => "TF",
+            Self::Tg => "TG",
+            Self::Th => "TH",
+            Self::Tj => "TJ",
+            Self::Tk => "TK",
+            Self::Tl => "TL",
+            Self::Tm => "TM",
+            Self::Tn => "TN",
+            Self::To => "TO",
+            Self::Tr => "TR",
+            Self::Tt => "TT",
+            Self::Tv => "TV",
+            Self::Tw => "TW",
+            Self::Tz => "TZ",
+            Self::Ua => "UA",
+            Self::Ug => "UG",
+            Self::Us => "US",
+            Self::Uy => "UY",
+            Self::Uz => "UZ",
+            Self::Va => "VA",
+            Self::Vc => "VC",
+            Self::Ve => "VE",
+            Self::Vg => "VG",
+            Self::Vn => "VN",
+            Self::Vu => "VU",
+            Self::Wf => "WF",
+            Self::Ws => "WS",
+            Self::Xk => "XK",
+            Self::Ye => "YE",
+            Self::Yt => "YT",
+            Self::Za => "ZA",
+            Self::Zm => "ZM",
+            Self::Zw => "ZW",
+            Self::Zz => "ZZ",
+        }
+    }
+}
+
+impl AsRef<str> for PostPaymentLinksPaymentLinkParamsShippingAddressCollectionAllowedCountries {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl std::fmt::Display
+    for PostPaymentLinksPaymentLinkParamsShippingAddressCollectionAllowedCountries
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        self.as_str().fmt(f)
+    }
+}
+
+impl Default for PostPaymentLinksPaymentLinkParamsShippingAddressCollectionAllowedCountries {
+    fn default() -> Self {
+        Self::Ac
+    }
+}
+pub fn get_payment_links(
+    client: &crate::Client,
+    params: GetPaymentLinksParams,
+) -> crate::Response<crate::params::List<crate::generated::PaymentLink>> {
+    client.get_query("/payment_links", params)
+}
+
+pub fn get_payment_links_payment_link(
+    client: &crate::Client,
+    payment_link: String,
+    params: GetPaymentLinksPaymentLinkParams,
+) -> crate::Response<crate::generated::PaymentLink> {
+    client.get_query(&format!("/payment_links/{payment_link}", payment_link = payment_link), params)
+}
+
+pub fn get_payment_links_payment_link_line_items(
+    client: &crate::Client,
+    payment_link: String,
+    params: GetPaymentLinksPaymentLinkLineItemsParams,
+) -> crate::Response<crate::params::List<crate::generated::Item>> {
+    client.get_query(
+        &format!("/payment_links/{payment_link}/line_items", payment_link = payment_link),
+        params,
+    )
+}
+
+pub fn post_payment_links(
+    client: &crate::Client,
+    params: PostPaymentLinksParams,
+) -> crate::Response<crate::generated::PaymentLink> {
+    client.post_form("/payment_links", params)
+}
+
+pub fn post_payment_links_payment_link(
+    client: &crate::Client,
+    payment_link: String,
+    params: PostPaymentLinksPaymentLinkParams,
+) -> crate::Response<crate::generated::PaymentLink> {
+    client.post_form(&format!("/payment_links/{payment_link}", payment_link = payment_link), params)
 }

@@ -4,7 +4,7 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
 use crate::error::StripeError;
-use crate::resources::ApiVersion;
+use crate::generated::webhook_endpoint::PostWebhookEndpointsParamsApiVersion;
 use crate::{
     client::{
         config::{err, ok},
@@ -36,7 +36,7 @@ impl ToString for AppInfo {
 
 #[derive(Clone)]
 pub struct Headers {
-    pub stripe_version: ApiVersion,
+    pub stripe_version: PostWebhookEndpointsParamsApiVersion,
     pub user_agent: String,
 
     pub client_id: Option<ApplicationId>,
@@ -62,15 +62,6 @@ pub trait Object {
     fn id(&self) -> Self::Id;
     /// The object's type, typically represented in wire format as the `object` property.
     fn object(&self) -> &'static str;
-}
-
-/// A deleted object.
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Deleted<T> {
-    /// Unique identifier for the object.
-    pub id: T,
-    /// Always true for a deleted object.
-    pub deleted: bool,
 }
 
 /// The `Expand` struct is used to serialize `expand` arguments in retrieve and list apis.
@@ -362,54 +353,47 @@ where
 pub type Metadata = HashMap<String, String>;
 pub type Timestamp = i64;
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-#[serde(rename_all = "lowercase")]
-pub struct RangeBounds<T> {
-    pub gt: Option<T>,
-    pub gte: Option<T>,
-    pub lt: Option<T>,
-    pub lte: Option<T>,
-}
-
-impl<T> Default for RangeBounds<T> {
-    fn default() -> Self {
-        RangeBounds { gt: None, gte: None, lt: None, lte: None }
-    }
+#[derive(Clone, Debug, Deserialize, Serialize, Default)]
+pub struct RangeBoundsTs {
+    pub gt: Option<Timestamp>,
+    pub gte: Option<Timestamp>,
+    pub lt: Option<Timestamp>,
+    pub lte: Option<Timestamp>,
 }
 
 /// A set of generic request parameters that can be used on
 /// list endpoints to filter their results by some timestamp.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(untagged)]
-pub enum RangeQuery<T> {
-    Exact(T),
-    Bounds(RangeBounds<T>),
+pub enum RangeQueryTs {
+    Exact(Timestamp),
+    Bounds(RangeBoundsTs),
 }
 
-impl<T> RangeQuery<T> {
+impl RangeQueryTs {
     /// Filter results to exactly match a given value
-    pub fn eq(value: T) -> RangeQuery<T> {
-        RangeQuery::Exact(value)
+    pub fn eq(value: Timestamp) -> Self {
+        Self::Exact(value)
     }
 
     /// Filter results to be after a given value
-    pub fn gt(value: T) -> RangeQuery<T> {
-        RangeQuery::Bounds(RangeBounds { gt: Some(value), ..Default::default() })
+    pub fn gt(value: Timestamp) -> Self {
+        Self::Bounds(RangeBoundsTs { gt: Some(value), ..Default::default() })
     }
 
     /// Filter results to be after or equal to a given value
-    pub fn gte(value: T) -> RangeQuery<T> {
-        RangeQuery::Bounds(RangeBounds { gte: Some(value), ..Default::default() })
+    pub fn gte(value: Timestamp) -> Self {
+        Self::Bounds(RangeBoundsTs { gte: Some(value), ..Default::default() })
     }
 
     /// Filter results to be before to a given value
-    pub fn lt(value: T) -> RangeQuery<T> {
-        RangeQuery::Bounds(RangeBounds { lt: Some(value), ..Default::default() })
+    pub fn lt(value: Timestamp) -> Self {
+        Self::Bounds(RangeBoundsTs { lt: Some(value), ..Default::default() })
     }
 
     /// Filter results to be before or equal to a given value
-    pub fn lte(value: T) -> RangeQuery<T> {
-        RangeQuery::Bounds(RangeBounds { lte: Some(value), ..Default::default() })
+    pub fn lte(value: Timestamp) -> Self {
+        Self::Bounds(RangeBoundsTs { lte: Some(value), ..Default::default() })
     }
 }
 

@@ -1,11 +1,4 @@
-// ======================================
-// This file was automatically generated.
-// ======================================
-
-use serde::{Deserialize, Serialize};
-
-/// The resource representing a Stripe "payment_method_options_sofort".
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]
 pub struct PaymentMethodOptionsSofort {
     /// Preferred language of the SOFORT authorization page that the customer is redirected to.
     pub preferred_language: Option<PaymentMethodOptionsSofortPreferredLanguage>,
@@ -19,8 +12,7 @@ pub struct PaymentMethodOptionsSofort {
     pub setup_future_usage: Option<PaymentMethodOptionsSofortSetupFutureUsage>,
 }
 
-/// An enum representing the possible values of an `PaymentMethodOptionsSofort`'s `preferred_language` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOptionsSofortPreferredLanguage {
     De,
@@ -35,13 +27,13 @@ pub enum PaymentMethodOptionsSofortPreferredLanguage {
 impl PaymentMethodOptionsSofortPreferredLanguage {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentMethodOptionsSofortPreferredLanguage::De => "de",
-            PaymentMethodOptionsSofortPreferredLanguage::En => "en",
-            PaymentMethodOptionsSofortPreferredLanguage::Es => "es",
-            PaymentMethodOptionsSofortPreferredLanguage::Fr => "fr",
-            PaymentMethodOptionsSofortPreferredLanguage::It => "it",
-            PaymentMethodOptionsSofortPreferredLanguage::Nl => "nl",
-            PaymentMethodOptionsSofortPreferredLanguage::Pl => "pl",
+            Self::De => "de",
+            Self::En => "en",
+            Self::Es => "es",
+            Self::Fr => "fr",
+            Self::It => "it",
+            Self::Nl => "nl",
+            Self::Pl => "pl",
         }
     }
 }
@@ -57,14 +49,14 @@ impl std::fmt::Display for PaymentMethodOptionsSofortPreferredLanguage {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentMethodOptionsSofortPreferredLanguage {
+
+impl Default for PaymentMethodOptionsSofortPreferredLanguage {
     fn default() -> Self {
         Self::De
     }
 }
 
-/// An enum representing the possible values of an `PaymentMethodOptionsSofort`'s `setup_future_usage` field.
-#[derive(Copy, Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, serde::Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PaymentMethodOptionsSofortSetupFutureUsage {
     None,
@@ -74,8 +66,8 @@ pub enum PaymentMethodOptionsSofortSetupFutureUsage {
 impl PaymentMethodOptionsSofortSetupFutureUsage {
     pub fn as_str(self) -> &'static str {
         match self {
-            PaymentMethodOptionsSofortSetupFutureUsage::None => "none",
-            PaymentMethodOptionsSofortSetupFutureUsage::OffSession => "off_session",
+            Self::None => "none",
+            Self::OffSession => "off_session",
         }
     }
 }
@@ -91,7 +83,8 @@ impl std::fmt::Display for PaymentMethodOptionsSofortSetupFutureUsage {
         self.as_str().fmt(f)
     }
 }
-impl std::default::Default for PaymentMethodOptionsSofortSetupFutureUsage {
+
+impl Default for PaymentMethodOptionsSofortSetupFutureUsage {
     fn default() -> Self {
         Self::None
     }
