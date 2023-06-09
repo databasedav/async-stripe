@@ -54,7 +54,7 @@ pub struct Price {
     pub nickname: Option<String>,
 
     /// The ID of the product this price is associated with.
-    pub product: Vec<crate::generated::Product>,
+    pub product: crate::params::Expandable<crate::generated::Product>,
 
     /// The recurring components of a price such as `interval` and `usage_type`.
     pub recurring: Option<crate::generated::Recurring>,

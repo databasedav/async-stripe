@@ -1,3 +1,4 @@
+use std::str::FromStr;
 /// This object represents a customer of your business.
 ///
 /// It lets you create recurring charges and track payments that belong to the same customer.  Related guide: [Save a card during payment](https://stripe.com/docs/payments/save-during-payment).
@@ -130,6 +131,16 @@ pub struct Customer {
     /// ID of the test clock this customer belongs to.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub test_clock: Option<Vec<crate::generated::TestHelpersTestClock>>,
+}
+
+impl crate::params::Object for Customer {
+    type Id = crate::ids::CustomerId;
+    fn id(&self) -> Self::Id {
+        crate::ids::CustomerId::from_str(&self.id).unwrap()
+    }
+    fn object(&self) -> &'static str {
+        "customer"
+    }
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]

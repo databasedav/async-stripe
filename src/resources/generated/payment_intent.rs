@@ -1,3 +1,4 @@
+use std::str::FromStr;
 /// A PaymentIntent guides you through the process of collecting a payment from your customer.
 /// We recommend that you create exactly one PaymentIntent for each order or
 /// customer session in your system.
@@ -171,6 +172,16 @@ pub struct PaymentIntent {
     ///
     /// See the PaymentIntents [use case for connected accounts](https://stripe.com/docs/payments/connected-accounts) for details.
     pub transfer_group: Option<String>,
+}
+
+impl crate::params::Object for PaymentIntent {
+    type Id = crate::ids::PaymentIntentId;
+    fn id(&self) -> Self::Id {
+        crate::ids::PaymentIntentId::from_str(&self.id).unwrap()
+    }
+    fn object(&self) -> &'static str {
+        "payment_intent"
+    }
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]

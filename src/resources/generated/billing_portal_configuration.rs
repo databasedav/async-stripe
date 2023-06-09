@@ -1,3 +1,4 @@
+use std::str::FromStr;
 /// A portal configuration describes the functionality and behavior of a portal session.
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct BillingPortalConfiguration {
@@ -5,7 +6,7 @@ pub struct BillingPortalConfiguration {
     pub active: bool,
 
     /// ID of the Connect Application that created the configuration.
-    pub application: Option<Vec<crate::generated::Application>>,
+    pub application: Option<crate::params::Expandable<crate::generated::Application>>,
 
     pub business_profile: crate::generated::PortalBusinessProfile,
 
@@ -43,6 +44,16 @@ pub struct BillingPortalConfiguration {
     ///
     /// Measured in seconds since the Unix epoch.
     pub updated: crate::params::Timestamp,
+}
+
+impl crate::params::Object for BillingPortalConfiguration {
+    type Id = crate::ids::BillingPortalConfigurationId;
+    fn id(&self) -> Self::Id {
+        crate::ids::BillingPortalConfigurationId::from_str(&self.id).unwrap()
+    }
+    fn object(&self) -> &'static str {
+        "billing_portal_configuration"
+    }
 }
 
 #[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]

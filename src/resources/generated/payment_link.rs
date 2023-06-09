@@ -1,3 +1,4 @@
+use std::str::FromStr;
 /// A payment link is a shareable URL that will take your customers to a hosted payment page.
 ///
 /// A payment link can be shared and used multiple times.  When a customer opens a payment link it will open a new [checkout session](https://stripe.com/docs/api/checkout/sessions) to render the payment page.
@@ -91,6 +92,16 @@ pub struct PaymentLink {
 
     /// The public URL that can be shared with customers.
     pub url: String,
+}
+
+impl crate::params::Object for PaymentLink {
+    type Id = crate::ids::PaymentLinkId;
+    fn id(&self) -> Self::Id {
+        crate::ids::PaymentLinkId::from_str(&self.id).unwrap()
+    }
+    fn object(&self) -> &'static str {
+        "payment_link"
+    }
 }
 
 #[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]

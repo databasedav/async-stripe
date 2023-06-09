@@ -1,3 +1,4 @@
+use std::str::FromStr;
 /// Products describe the specific goods or services you offer to your customers.
 /// For example, you might offer a Standard and Premium version of your goods or service; each version would be a separate Product.
 /// They can be used in conjunction with [Prices](https://stripe.com/docs/api#prices) to configure pricing in Payment Links, Checkout, and Subscriptions.
@@ -91,6 +92,16 @@ pub struct Product {
 
     /// A URL of a publicly-accessible webpage for this product.
     pub url: Option<String>,
+}
+
+impl crate::params::Object for Product {
+    type Id = crate::ids::ProductId;
+    fn id(&self) -> Self::Id {
+        crate::ids::ProductId::from_str(&self.id).unwrap()
+    }
+    fn object(&self) -> &'static str {
+        "product"
+    }
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]

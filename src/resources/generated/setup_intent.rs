@@ -1,3 +1,4 @@
+use std::str::FromStr;
 /// A SetupIntent guides you through the process of setting up and saving a customer's payment credentials for future payments.
 /// For example, you could use a SetupIntent to set up and save your customer's card without immediately collecting a payment.
 /// Later, you can use [PaymentIntents](https://stripe.com/docs/api#payment_intents) to drive the payment flow.
@@ -118,6 +119,16 @@ pub struct SetupIntent {
     /// Use `off_session` if your customer may or may not be in your checkout flow.
     /// If not provided, this value defaults to `off_session`.
     pub usage: String,
+}
+
+impl crate::params::Object for SetupIntent {
+    type Id = crate::ids::SetupIntentId;
+    fn id(&self) -> Self::Id {
+        crate::ids::SetupIntentId::from_str(&self.id).unwrap()
+    }
+    fn object(&self) -> &'static str {
+        "setup_intent"
+    }
 }
 
 #[derive(Clone, Debug, Default, serde::Deserialize, serde::Serialize)]

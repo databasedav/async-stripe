@@ -1,3 +1,4 @@
+use std::str::FromStr;
 /// Subscriptions allow you to charge a customer on a recurring basis.
 ///
 /// Related guide: [Creating Subscriptions](https://stripe.com/docs/billing/subscriptions/creating).
@@ -177,6 +178,16 @@ pub struct Subscription {
 
     /// If the subscription has a trial, the beginning of that trial.
     pub trial_start: Option<crate::params::Timestamp>,
+}
+
+impl crate::params::Object for Subscription {
+    type Id = crate::ids::SubscriptionId;
+    fn id(&self) -> Self::Id {
+        crate::ids::SubscriptionId::from_str(&self.id).unwrap()
+    }
+    fn object(&self) -> &'static str {
+        "subscription"
+    }
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]

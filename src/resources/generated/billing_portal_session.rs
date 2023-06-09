@@ -12,7 +12,7 @@
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub struct BillingPortalSession {
     /// The configuration used by this session, describing the features available.
-    pub configuration: Vec<crate::generated::BillingPortalConfiguration>,
+    pub configuration: crate::params::Expandable<crate::generated::BillingPortalConfiguration>,
 
     /// Time at which the object was created.
     ///

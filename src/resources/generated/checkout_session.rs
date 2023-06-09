@@ -51,7 +51,7 @@ pub struct CheckoutSession {
     /// will create a new customer object based on information provided
     /// during the payment flow unless an existing customer was provided when
     /// the Session was created.
-    pub customer: Option<Vec<crate::generated::Customer>>,
+    pub customer: Option<crate::params::Expandable<crate::generated::Customer>>,
 
     /// Configure whether a Checkout Session creates a Customer when the Checkout Session completes.
     pub customer_creation: Option<CheckoutSessionCustomerCreation>,
@@ -98,10 +98,10 @@ pub struct CheckoutSession {
     pub mode: CheckoutSessionMode,
 
     /// The ID of the PaymentIntent for Checkout Sessions in `payment` mode.
-    pub payment_intent: Option<Vec<crate::generated::PaymentIntent>>,
+    pub payment_intent: Option<crate::params::Expandable<crate::generated::PaymentIntent>>,
 
     /// The ID of the Payment Link that created this Session.
-    pub payment_link: Option<Vec<crate::generated::PaymentLink>>,
+    pub payment_link: Option<crate::params::Expandable<crate::generated::PaymentLink>>,
 
     /// Configure whether a Checkout Session should collect a payment method.
     pub payment_method_collection: Option<CheckoutSessionPaymentMethodCollection>,
@@ -126,7 +126,7 @@ pub struct CheckoutSession {
     pub recovered_from: Option<String>,
 
     /// The ID of the SetupIntent for Checkout Sessions in `setup` mode.
-    pub setup_intent: Option<Vec<crate::generated::SetupIntent>>,
+    pub setup_intent: Option<crate::params::Expandable<crate::generated::SetupIntent>>,
 
     /// When set, provides configuration for Checkout to collect a shipping address from a customer.
     pub shipping_address_collection:
@@ -151,7 +151,7 @@ pub struct CheckoutSession {
     pub submit_type: Option<CheckoutSessionSubmitType>,
 
     /// The ID of the subscription for Checkout Sessions in `subscription` mode.
-    pub subscription: Option<Vec<crate::generated::Subscription>>,
+    pub subscription: Option<crate::params::Expandable<crate::generated::Subscription>>,
 
     /// The URL the customer will be directed to after the payment or
     /// subscription creation is successful.
